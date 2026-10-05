@@ -3,21 +3,21 @@
 Author: Rasul Ruslanovitsj Øzdber, Department of Physics, University of Oslo.
 Repository: https://github.com/rasuluzd/fys-stk3155-project1
 
-The report fits Runge's function from noisy data with OLS, Ridge and Lasso regression, estimates the test error with the bootstrap and k-fold cross-validation, and compares plain, momentum, adaptive and stochastic gradient descent with the closed-form solutions. It answers parts a–i of the assignment with ten figures and three tables.
+The report fits Runge's function from noisy data with OLS, Ridge and Lasso regression, estimates the test error with the bootstrap and k-fold cross-validation, and compares plain, momentum, adaptive and stochastic gradient descent with the closed-form solutions. It answers parts a–i of the assignment with nine figures and three tables.
 
 ## Contents
 
 | Location | Purpose |
 |---|---|
 | `report/report.tex`, `report/references.bib` | Report source and references |
-| `report/figures/` | The ten figures used in the report |
+| `report/figures/` | The nine figures used in the report |
 | `code/` | Numerical modules, one script per assignment part, supplementary checks and tests |
 | `results/` | Saved results (JSON) behind every number quoted in the report |
 | `requirements.txt` | Python dependencies |
 
 `regression.py`, `resampling.py` and `optimizers.py` implement the numerical methods; `part_a_ols.py` to `part_i_model_selection.py` run the assignment parts. Supplementary scripts produce further evidence quoted in the report:
 
-- `ridge_supplement.py`: Ridge scores, coefficients and paired simulations (part b);
+- `ridge_supplement.py`: Ridge errors, coefficient norms and paired simulations (part b);
 - `lasso_course_comparison.py`: all five update rules on the part-g Lasso problem;
 - `edge_effects.py`: how much of the small-sample errors comes from extrapolation at the interval edge, and the fit figure (parts a, c and i);
 - `benchmarks.py`: comparisons with closed-form results and scikit-learn.

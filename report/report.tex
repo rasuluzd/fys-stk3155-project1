@@ -148,7 +148,7 @@ d_k&=\eta\frac{m_k/(1-\beta_1^k)}{\sqrt{v_k/(1-\beta_2^k)}+\epsilon}.
 \end{align}
 All operations are componentwise, state starts at zero and $k=1$ on the first update. Momentum \cite{Polyak1964} retains the previous step; AdaGrad \cite{Duchi2011} and RMSprop \cite{Tieleman2012} rescale each coordinate by its gradient history; Adam \cite{Kingma2015} combines both ideas and corrects its initially small moving averages. We used $\beta=0.9$, $\rho=0.99$, $(\beta_1,\beta_2)=(0.9,0.999)$ and $\epsilon=10^{-8}$, outside the square root, as in week~38's Tuesday implementation \cite[Secs.~4.6 and 4.8--4.11]{HjorthJensen2026}. The comparisons follow week~37, Exercise~6 and week~38, Exercises~1--3 \cite{Exercises37,Exercises38,Week38Tuesday}.
 
-Autograd differentiates the implemented scalar cost by applying the chain rule to the elementary operations recorded while the cost is evaluated \cite{Maclaurin2015,Baydin2018}. This is neither symbolic differentiation, which manipulates expressions and can produce very large formulas, nor numerical differentiation, which perturbs the inputs and suffers from truncation and round-off error: AD gives the exact derivative of the program, up to floating-point rounding. In reverse mode one forward and one backward sweep give all $p$ partial derivatives at a cost of a small constant multiple of one cost evaluation, independent of $p$ \cite{Baydin2018}, \cite[Sec.~4.14]{HjorthJensen2026}.
+Autograd differentiates the implemented scalar cost by applying the chain rule to the elementary operations recorded while the cost is evaluated \cite{Maclaurin2015,Baydin2018}. This is neither symbolic differentiation, which manipulates expressions and can produce very large formulas, nor numerical differentiation, which perturbs the inputs and suffers from truncation and round-off error: AD gives the exact derivative of the program, up to floating-point rounding. In reverse mode one forward and one backward sweep give all $p$ partial derivatives at a cost of a small constant multiple of one cost evaluation, independent of $p$ \cite{Baydin2018}, \cite[Sec.~4.14]{HjorthJensen2026}. We used Autograd rather than JAX because it differentiates the NumPy cost functions directly and works in 64-bit precision by default, so the analytical and automatic gradients can be compared at machine precision without extra configuration.
 
 For Lasso we add $\lambda\operatorname{sign}(\theta)$ to the OLS gradient and choose $\operatorname{sign}(0)=0$. This is a valid subgradient because the subdifferential of $|\theta|$ at zero is $[-1,1]$; the value 1 that JAX returns in the project notebook is an equally valid choice \cite{Project1_2026}. A fixed-step subgradient method does not, however, produce exact zeros at a finite iteration.
 
@@ -168,14 +168,6 @@ The GD/SGD comparisons start at zero; the library Lasso penalty paths use warm s
 
 \subsection{a) Ordinary least squares}\label{sec:res_ols}
 % Evidence: part_a.json/main, scaling, ensembles; part_a_ols.py; edge_effects.json/main_split, part_a.
-On the main split, test MSE was 0.01894 at degree 12 and 0.01899 at degree 6 (Fig.~\ref{fig:mse_r2}). This difference is too small to establish a unique optimum from 20 test points. Training error continued to fall, while high-degree test error increased. The corresponding fall in test $R^2$ shows that fitting training noise does not improve prediction.
-
-Figure~\ref{fig:edge} shows where the high-degree fits fail. Three of the 20 test inputs lie below the smallest training input, $x=-0.953$, so every model must extrapolate there. These three points carry 89\% and 92\% of the test error at degrees 13 and 15; without them the test MSE stays between 0.014 and 0.018 from degree 8 to 15. The spikes in Fig.~\ref{fig:mse_r2} are therefore the Runge phenomenon at the left edge, where the two outermost training inputs are $-0.953$ and $-0.883$, rather than a uniform loss of accuracy.
-
-The standardized coefficient norm rose from 2.70 at degree 6 to 856 at degree 15 (Fig.~\ref{fig:coef}). Large coefficients cancel to form the fitted curve, making it sensitive to data perturbations. At degree 15, standardization reduced the design condition number from $4.7\times10^5$ to $1.9\times10^5$, but the columns remained strongly correlated. This explains why scaling alone did not cure the instability.
-
-Over 200 datasets per setting, the degree giving the lowest median test MSE increased from 10 to 18 when total sample size increased from 50 to 1000 at $\sigma=0.1$. At $N=100$, increasing noise from 0.05 to 0.3 moved it from degree 16 to 8. More data supported greater complexity; more noise favored simpler fits. These are median results: rare unstable fits can make the mean much larger.
-
 \begin{figure*}[tb]
 \includegraphics[width=\textwidth]{a_mse_r2.pdf}
 \caption{Test errors at degrees 6 and 12 are almost equal on the seed-2026 split, despite falling training error. MSE and $R^2$ use the same 80 training and 20 test observations; the dotted line marks $\sigma^2=0.01$.}\label{fig:mse_r2}
@@ -191,32 +183,29 @@ Over 200 datasets per setting, the degree giving the lowest median test MSE incr
 \caption{The standardized OLS coefficient norm grows from 2.70 at degree 6 to 856 at degree 15. Large, cancelling slopes indicate sensitivity to small changes in the observations.}\label{fig:coef}
 \end{figure*}
 
+On the main split, test MSE was 0.01894 at degree 12 and 0.01899 at degree 6 (Fig.~\ref{fig:mse_r2}). This difference is too small to establish a unique optimum from 20 test points. Training error continued to fall, while high-degree test error increased. The corresponding fall in test $R^2$ shows that fitting training noise does not improve prediction.
+
+Figure~\ref{fig:edge} shows where the high-degree fits fail. Three of the 20 test inputs lie below the smallest training input, $x=-0.953$, so every model must extrapolate there. These three points carry 89\% and 92\% of the test error at degrees 13 and 15; without them the test MSE stays between 0.014 and 0.018 from degree 8 to 15. The spikes in Fig.~\ref{fig:mse_r2} are therefore the Runge phenomenon at the left edge, where the two outermost training inputs are $-0.953$ and $-0.883$, rather than a uniform loss of accuracy.
+
+The standardized coefficient norm rose from 2.70 at degree 6 to 856 at degree 15 (Fig.~\ref{fig:coef}). Large coefficients cancel to form the fitted curve, making it sensitive to data perturbations. At degree 15, standardization reduced the design condition number from $4.7\times10^5$ to $1.9\times10^5$, but the columns remained strongly correlated. This explains why scaling alone did not cure the instability.
+
+Over 200 datasets per setting, the degree giving the lowest median test MSE increased from 10 to 18 when total sample size increased from 50 to 1000 at $\sigma=0.1$. At $N=100$, increasing noise from 0.05 to 0.3 moved it from degree 16 to 8. More data supported greater complexity; more noise favored simpler fits. These are median results: rare unstable fits can make the mean much larger.
+
 \subsection{b) Ridge regression}\label{sec:res_ridge}
 % Evidence: part_b.json/main, svd_degree15; ridge_supplement.json/main, ensemble.
+\begin{figure*}[tb]
+\includegraphics[width=\textwidth]{b_ridge.pdf}
+\caption{Fixed Ridge penalties keep the high-degree test error bounded and shrink the coefficients by orders of magnitude, at the price of a higher training error for large $\lambda$. (a) Test MSE, (b) training MSE and (c) norm of the standardized coefficients against degree for OLS and four penalties, all on the seed-2026 split.}\label{fig:ridge}
+\end{figure*}
+
 Ridge used degrees 1--20 and 45 penalties from $10^{-10}$ to 10. The main-split minimum test MSE was 0.01347 at degree 10 and $\lambda=1.78\times10^{-6}$, below OLS's 0.01894. This is an exploratory grid minimum; part i uses CV and a separate test set for final selection.
 
-Figures~\ref{fig:ridge_metrics} and \ref{fig:ridge_coefficients} repeat the scores and coefficient analysis at fixed penalties. Increasing $\lambda$ limits the large coefficients, but excessive shrinkage increases both training and test error. At degree 15, singular values ranged from 27.59 to $1.49\times10^{-4}$. The factors $q_j$ suppress these small, unstable directions most strongly, explaining Ridge's wider usable degree range.
+Figure~\ref{fig:ridge} repeats the error and coefficient analysis of part a at four fixed penalties. Increasing $\lambda$ keeps the high-degree test error bounded and shrinks the coefficient norm at degree 15 from 856 for OLS to 1.8 at $\lambda=10^{-3}$, but excessive shrinkage raises both training and test error. Test $R^2=1-\MSE/\operatorname{var}(y)$ on the same split, so it adds nothing beyond the test MSE. At degree 15, singular values ranged from 27.59 to $1.49\times10^{-4}$. The factors $q_j$ suppress these small, unstable directions most strongly, explaining Ridge's wider usable degree range.
 
 In 40 paired datasets per setting, degree-20 Ridge with $\lambda=10^{-7}$ reduced median test MSE from 0.236 to 0.0183 at $N=50$, $\sigma=0.1$. Ridge improved 38 of the 40 paired runs. At $N=1000$, the values were 0.01049 for OLS and 0.01083 for Ridge, with Ridge improving only 3 of 40 runs. At $N=100$ without noise, Ridge gave 0.00101 against OLS's $6.17\times10^{-5}$. Shrinkage helps when variance dominates, but can add unnecessary bias when the data already constrain the fit.
 
-\begin{figure*}[tb]
-\includegraphics[width=\textwidth]{ridge_supplement_metrics.pdf}
-\caption{Fixed Ridge penalties stabilize high-degree test scores, while strong penalties also worsen training fits. All curves use the seed-2026 split; test $R^2$ has a symmetric logarithmic axis to show large negative values.}\label{fig:ridge_metrics}
-\end{figure*}
-
-\begin{figure*}[tb]
-\includegraphics[width=\textwidth]{ridge_supplement_coefficients.pdf}
-\caption{Increasing the Ridge penalty reduces large standardized slopes. The first six coefficients are shown against degree, on symmetric logarithmic axes, for the same training data as Fig.~\ref{fig:ridge_metrics}.}\label{fig:ridge_coefficients}
-\end{figure*}
-
 \subsection{c) Bias, variance and bootstrap}\label{sec:res_biasvar}
 % Evidence: part_c.json/train_test,n=100,n=1000; part_c_bias_variance.py; edge_effects.json/part_c.
-Figure~\ref{fig:hastie} compares 100 independent training sets of 80 observations, scored on 2000 fixed noisy test observations. Mean test MSE was lowest at degree 8, at 0.01656; median MSE favored degree 12, at 0.01339. The difference reflects occasional very inaccurate high-degree fits. The average training error fell throughout.
-
-The bootstrap used 200 resamples per degree, with a reference of 400 independently generated training sets (Fig.~\ref{fig:biasvar}). With 80 training points, bootstrap error selected degree 4 and the fresh-set reference selected degree 8. At degree 8, variance estimates were 7.754 and 0.00597. The cause is the three extrapolated test inputs of part a: from degree 7 upward they account for more than 99.9\% of the bootstrap variance, and without them the degree-8 variance is 0.0044, comparable to the fresh-set value. Without these points the bootstrap error is also lowest at degree 8, the degree selected by the fresh-set reference. Each training observation is absent from a resample with probability $(1-1/80)^{80}\approx0.37$, and a resample that loses the leftmost training point must extrapolate over a longer interval, which a high-degree polynomial amplifies. The bootstrap is conditional on one training set with poor coverage of the left edge, whereas the fresh sets redraw the input locations; 400 fresh sets also cannot precisely characterize rare extreme fits.
-
-With 800 training points, the degree-12 variance estimates were much closer: $1.79\times10^{-4}$ and $1.81\times10^{-4}$. More observations reduced the variance, allowing higher degree. Using noisy $y$ instead of known $f$ raised the measured squared bias by 0.01030, close to $\sigma^2=0.01$. The finite-sample noise cross term explains the remaining difference. The curves illustrate the bias--variance trade-off, but small-sample resampling need not locate it accurately.
-
 \begin{figure}[tb]
 \includegraphics[width=\columnwidth]{c_train_test.pdf}
 \caption{Mean training MSE falls with degree, while mean test MSE reaches its minimum at degree 8, as in Fig.~2.11 of Ref.~\cite{Hastie2009}. The median favors degree 12 because rare large errors affect the mean. Thick curves summarize 100 training sets; thin curves show 40; large errors exceed the displayed range.}\label{fig:hastie}
@@ -227,16 +216,22 @@ With 800 training points, the degree-12 variance estimates were much closer: $1.
 \caption{Bootstrap variance is unstable with 80 training points and agrees better with fresh-set variance at 800 points. Each degree uses 200 bootstrap fits and 400 fresh fits, with seed 2026 for the original sample. Both noisy-target and known-function squared bias are shown; the small-sample panel clips large errors and degrees above 14.}\label{fig:biasvar}
 \end{figure*}
 
+Figure~\ref{fig:hastie} compares 100 independent training sets of 80 observations, scored on 2000 fixed noisy test observations. Mean test MSE was lowest at degree 8, at 0.01656; median MSE favored degree 12, at 0.01339. The difference reflects occasional very inaccurate high-degree fits. The average training error fell throughout.
+
+The bootstrap used 200 resamples per degree, with a reference of 400 independently generated training sets (Fig.~\ref{fig:biasvar}). With 80 training points, bootstrap error selected degree 4 and the fresh-set reference selected degree 8. At degree 8, variance estimates were 7.754 and 0.00597. The cause is the three extrapolated test inputs of part a: from degree 7 upward they account for more than 99.9\% of the bootstrap variance, and without them the degree-8 variance is 0.0044, comparable to the fresh-set value. Without these points the bootstrap error is also lowest at degree 8, the degree selected by the fresh-set reference. Each training observation is absent from a resample with probability $(1-1/80)^{80}\approx0.37$, and a resample that loses the leftmost training point must extrapolate over a longer interval, which a high-degree polynomial amplifies. The bootstrap is conditional on one training set with poor coverage of the left edge, whereas the fresh sets redraw the input locations; 400 fresh sets also cannot precisely characterize rare extreme fits.
+
+With 800 training points, the degree-12 variance estimates were much closer: $1.79\times10^{-4}$ and $1.81\times10^{-4}$. More observations reduced the variance, allowing higher degree. Using noisy $y$ instead of known $f$ raised the measured squared bias by 0.01030, close to $\sigma^2=0.01$. The finite-sample noise cross term explains the remaining difference. The curves illustrate the bias--variance trade-off, but small-sample resampling need not locate it accurately.
+
 \subsection{d) Cross-validation}\label{sec:res_cv}
 % Evidence: part_d.json/ols,ridge,own_vs_sklearn,reshuffle.
-Five- and ten-fold CV both selected degree-12 OLS, with MSE 0.02016 and 0.01731. Ridge's 21-penalty grid, $10^{-10}$--1, selected degree 11 and $\lambda=10^{-6}$ for five folds, and degree 12 with $\lambda=10^{-10}$ for ten folds. The latter was essentially OLS.
-
-Figure~\ref{fig:cv} shows that CV and the small-sample bootstrap did not select the same degree. They estimate the error on different points: the bootstrap scores refits built from about 63\% of the distinct training points on the 20 fixed test inputs, including the three extrapolated ones, whereas CV trains on 80--90\% of all 100 observations and scores every observation once. Without the three extrapolated inputs the bootstrap selects degree 8 instead of 4 (part c), so the disagreement comes from the extrapolation rather than from a different bias--variance balance in the interior. Neither estimate is exact. Across 20 shuffled fold assignments, the selected OLS degree ranged from 4--13 for five folds and 10--13 for ten folds, with median 12. The one-standard-error check also selected degree 12 on the original folds. This variation argues for reporting uncertainty alongside the selected degree.
-
 \begin{figure*}[tb]
 \includegraphics[width=\textwidth]{d_cross_validation.pdf}
 \caption{Both CV choices select degree 12, while bootstrap selects degree 4 on the original small sample. Left: OLS errors and descriptive fold-standard-error bands. Right: ten-fold Ridge errors. Scaling is fitted inside each fold. The vertical limit omits degree-20 CV MSEs of 1782 and 7.98.}\label{fig:cv}
 \end{figure*}
+
+Five- and ten-fold CV both selected degree-12 OLS, with MSE 0.02016 and 0.01731. Ridge's 21-penalty grid, $10^{-10}$--1, selected degree 11 and $\lambda=10^{-6}$ for five folds, and degree 12 with $\lambda=10^{-10}$ for ten folds. The latter was essentially OLS.
+
+Figure~\ref{fig:cv} shows that CV and the small-sample bootstrap did not select the same degree. They estimate the error on different points: the bootstrap scores refits built from about 63\% of the distinct training points on the 20 fixed test inputs, including the three extrapolated ones, whereas CV trains on 80--90\% of all 100 observations and scores every observation once. Without the three extrapolated inputs the bootstrap selects degree 8 instead of 4 (part c), so the disagreement comes from the extrapolation rather than from a different bias--variance balance in the interior. Neither estimate is exact. Across 20 shuffled fold assignments, the selected OLS degree ranged from 4--13 for five folds and 10--13 for ten folds, with median 12. The one-standard-error check also selected degree 12 on the original folds. This variation argues for reporting uncertainty alongside the selected degree.
 
 \subsection{e) Gradient descent and automatic derivatives}\label{sec:res_gd}
 % Evidence: part_e.json/gradient_check,timing,degree6.
@@ -246,10 +241,6 @@ For degree-6 OLS, $h_{\max}=7.69648$ and $h_{\min}=0.00368262$, giving $\eta<0.2
 
 \subsection{f) Momentum and adaptive updates}\label{sec:res_adaptive}
 % Evidence: part_f.json/degree6,ridge_degree6,rmsprop_plateau,rmsprop_decay,degree10.
-Each method used the same data, zero initialization, 28 rates from $10^{-4}$ to $10^{0.5}$, and a budget of $10^5$ iterations. OLS and Ridge rates were tuned separately on this same grid. Table~\ref{tab:opt} compares iterations to $r<10^{-6}$. Momentum was fastest on this grid; Adam succeeded over the widest tested rate range. GD's grid omits $\eta_*$, explaining its larger count than in part e. AdaGrad slowed as its accumulated denominator grew.
-
-Constant-rate RMSprop did not reach the target at any rate. Its relative error stalled at a floor proportional to the rate, from $4.5\times10^{-4}$ at $\eta=10^{-3}$ to $1.4\times10^{-2}$ at $\eta=0.03$. Near the minimum the normalized step $g_k/\sqrt{a_k}$ stays of order one, so the iterate keeps moving by about $\eta$ instead of settling. A decaying rate reduced the error to $1.50\times10^{-5}$ after 30\,000 steps, still above the target (Fig.~\ref{fig:optimizers}). At degree 10, none of the five methods reached the target within 50\,000 steps on the separate tested grid. Adaptive coordinate scaling did not remove the strong correlations between polynomial features.
-
 \begin{table}[tb]
 \caption{Momentum needs the fewest iterations on the degree-6 rate grid. Ridge uses $\lambda=10^{-3}$. OLS and Ridge were tuned separately; their best rates coincide for all four converging methods. A dash means the tolerance was not reached.}\label{tab:opt}
 \begin{ruledtabular}
@@ -269,14 +260,12 @@ Adam & 0.068 & 1\,144 & 852 \\
 \caption{Momentum is fastest at its best tested rate; Adam reaches $r<10^{-6}$ at all 28 rates. Left: iterations to tolerance, capped at $10^5$. Right: selected convergence histories. Constant-rate RMSprop stalls above tolerance; decay improves it but does not reach the target.}\label{fig:optimizers}
 \end{figure*}
 
+Each method used the same data, zero initialization, 28 rates from $10^{-4}$ to $10^{0.5}$, and a budget of $10^5$ iterations. OLS and Ridge rates were tuned separately on this same grid. Table~\ref{tab:opt} compares iterations to $r<10^{-6}$. Momentum was fastest on this grid; Adam succeeded over the widest tested rate range. GD's grid omits $\eta_*$, explaining its larger count than in part e. AdaGrad slowed as its accumulated denominator grew.
+
+Constant-rate RMSprop did not reach the target at any rate. Its relative error stalled at a floor proportional to the rate, from $4.5\times10^{-4}$ at $\eta=10^{-3}$ to $1.4\times10^{-2}$ at $\eta=0.03$. Near the minimum the normalized step $g_k/\sqrt{a_k}$ stays of order one, so the iterate keeps moving by about $\eta$ instead of settling. A decaying rate reduced the error to $1.50\times10^{-5}$ after 30\,000 steps, still above the target (Fig.~\ref{fig:optimizers}). At degree 10, none of the five methods reached the target within 50\,000 steps on the separate tested grid. Adaptive coordinate scaling did not remove the strong correlations between polynomial features.
+
 \subsection{g) Lasso with gradient updates}\label{sec:res_lasso}
 % Evidence: part_g.json/autograd_abs_derivative,methods_degree10; lasso_course_comparison.json.
-Autograd returned zero for the derivative of $|\theta|$ at zero, which is a valid subgradient. We used this convention with all five update rules on the degree-10 problem at $\lambda=10^{-3}$. Each run used 40\,000 updates and eight fixed candidate rates: seven logarithmic values from $10^{-4}$ to 0.1, plus $1/L$. Rates minimized mean training objective gap over the last 200 updates; test error did not select them.
-
-Table~\ref{tab:lasso} compares final iterates with coordinate-descent Lasso at $\alpha=\lambda/2$. Adam was closest, followed by momentum. None produced exact zeros, while the reference had three: a small coefficient and an exact zero are different numerical outcomes. Runge's function is even, but the random noisy sample is not symmetric, so odd coefficients need not vanish.
-
-The comparison with OLS and Ridge also depends on the accuracy criterion. After 10\,000 degree-10 GD steps, OLS had test MSE 0.01990 despite coefficient error 0.990; exact OLS gave 0.03702. Incomplete optimization happened to improve prediction on this split. Ridge ($\lambda=10^{-4}$) and Lasso ($\lambda=10^{-3}$) Adam fits gave test MSEs 0.019892 and 0.019220, close to their reference values 0.019887 and 0.019221. A good prediction does not establish optimizer convergence.
-
 \begin{table}[tb]
 \caption{Adam best matches the Lasso reference within this grid and budget. $\Delta C$ is the penalized training objective gap and $r$ the relative coefficient error.}\label{tab:lasso}
 \begin{ruledtabular}
@@ -291,31 +280,27 @@ Adam & 0.000316 & $\mathbf{4.98\times10^{-8}}$ & $\mathbf{2.98\times10^{-5}}$ \\
 \end{ruledtabular}
 \end{table}
 
+Autograd returned zero for the derivative of $|\theta|$ at zero, which is a valid subgradient. We used this convention with all five update rules on the degree-10 problem at $\lambda=10^{-3}$. Each run used 40\,000 updates and eight fixed candidate rates: seven logarithmic values from $10^{-4}$ to 0.1, plus $1/L$. Rates minimized mean training objective gap over the last 200 updates; test error did not select them.
+
+Table~\ref{tab:lasso} compares final iterates with coordinate-descent Lasso at $\alpha=\lambda/2$. Adam was closest, followed by momentum. None produced exact zeros, while the reference had three: a small coefficient and an exact zero are different numerical outcomes. Runge's function is even, but the random noisy sample is not symmetric, so odd coefficients need not vanish.
+
+The comparison with OLS and Ridge also depends on the accuracy criterion. After 10\,000 degree-10 GD steps, OLS had test MSE 0.01990 despite coefficient error 0.990; exact OLS gave 0.03702. Incomplete optimization happened to improve prediction on this split. Ridge ($\lambda=10^{-4}$) and Lasso ($\lambda=10^{-3}$) Adam fits gave test MSEs 0.019892 and 0.019220, close to their reference values 0.019887 and 0.019221. A good prediction does not establish optimizer convergence.
+
 \subsection{h) Stochastic gradient descent}\label{sec:res_sgd}
 % Evidence: part_h.json/setup,batch_size,methods_M10.
+\begin{figure*}[tb]
+\includegraphics[width=\textwidth]{h_sgd.pdf}
+\caption{Decaying rates reduce stochastic fluctuations, but can slow late progress. Degree-6 OLS uses 80 training observations, five shuffle seeds and separately tuned rates. Left: batch-size comparison. Right: five updates at batch size 10. Curves are smoothed in logarithmic epoch bins; the horizontal line is a reference scale, not a stopping guarantee.}\label{fig:sgd}
+\end{figure*}
+
 We ran degree-6 OLS for 2000 epochs with batch sizes 1, 5, 20 and 80. Rates were tuned on the last 200 epochs' excess training cost; curves summarize five shuffle seeds. For decay, $t_1$ corresponds to 250 epochs. Constant-rate SGD fluctuated near the solution because individual batch gradients need not vanish there. Decay reduced batch-5 final excess cost from $4.37\times10^{-4}$ to $4.70\times10^{-5}$ (Fig.~\ref{fig:sgd}), but a rapidly shrinking step also slowed late coefficient convergence.
 
 An epoch processes all 80 observations. Its main gradient work is proportional to $np$, like one full GD step, but batch size 1 requires 80 updates per epoch. Across 2000 epochs, batch sizes 1 and 80 took 0.871 and 0.0454~s in the recorded runs. Smaller updates therefore did not give a wall-time advantage on these small matrices.
 
 For batch size 10, Adam's OLS coefficient error was 0.0204 after 2000 epochs, the lowest of the five update rules, at about twice the run time of plain SGD (0.23 versus 0.12~s). These timings describe the recorded machine and include update overhead. For this small regression problem, an SVD solve is simpler than tuning SGD; momentum is a useful iterative choice when high coefficient accuracy is required.
 
-\begin{figure*}[tb]
-\includegraphics[width=\textwidth]{h_sgd.pdf}
-\caption{Decaying rates reduce stochastic fluctuations, but can slow late progress. Degree-6 OLS uses 80 training observations, five shuffle seeds and separately tuned rates. Left: batch-size comparison. Right: five updates at batch size 10. Curves are smoothed in logarithmic epoch bins; the horizontal line is a reference scale, not a stopping guarantee.}\label{fig:sgd}
-\end{figure*}
-
 \subsection{i) Final model selection}\label{sec:res_final}
 % Evidence: part_i.json/grids,sigma=0.1,sigma=0.3,bias_variance_degree15,lasso_convergence_cv; edge_effects.json/part_i.
-Ten-fold CV used degrees 1--20, 21 Ridge penalties from $10^{-10}$ to 1, and seven Lasso penalties from $10^{-4}$ to $10^{-1}$. Each selected model was refitted on all 100 observations and evaluated on 2000 independent observations generated with seed 2027. The test set was used only after selection.
-
-Table~\ref{tab:final} favors degree-12 OLS at $\sigma=0.1$. Ridge's CV score differs by only $1.8\times10^{-6}$, far below the descriptive fold standard error; its selected penalty is practically zero. OLS is therefore a reasonable choice without an additional tuning parameter. At $\sigma=0.3$, Ridge has the smallest CV MSE, but the three models' differences are again small compared with fold uncertainty. Increasing noise favors lower selected degrees.
-
-The CV MSE of the selected OLS fit, 0.0173, lies well above its independent test MSE, 0.0113. The difference is mostly noise. The realized noise variance of the 100 observations is 0.0139, against 0.0101 for the 2000 new ones, while the error relative to $f$ is small in both cases: 0.0023 for the fold fits and 0.0016 for the refit. Cross-validation thus measures the error on the noisy observations of this particular sample; the selected model itself lies within about 0.002 of the true function in mean square.
-
-Regularization mainly reduced variance here. In 150 independent degree-15 fits with 80 observations, OLS squared bias and variance were 0.00654 and 0.21098. At $\lambda=3.16\times10^{-4}$, Ridge gave 0.00670 and 0.00349, while Lasso gave 0.00485 and 0.00345. The penalties thus attack the variance term of Eq.~(\ref{eq:biasvar}), by a factor of about 60, at almost no cost in bias. The OLS bias is not reliably larger than Lasso's: it is estimated from the mean of only 150 fits, and with a variance of 0.211 this sampling error alone inflates it by about $0.211/150\approx0.0014$. These known-function calculations explain the effect of the penalties; they did not select the models in the table. Degree selection controls OLS complexity; Ridge damps unstable directions; Lasso also removes coefficients. None changes the observation noise.
-
-All 3080 Lasso fits behind Table~\ref{tab:final} passed the convergence checks of Sec.~\ref{sec:theory}. At $\sigma=0.1$, however, Lasso selected the weakest tested penalty, so a search below $10^{-4}$ could still improve its score. With 100 observations, fold-to-fold variability and finite grids, the table supports no strong general ranking of the three methods.
-
 \begin{table*}[tb]
 \caption{Minimum ten-fold CV MSEs at two noise levels. OLS and nearly unregularized Ridge are indistinguishable at $\sigma=0.1$; Ridge has the lowest observed CV score at $\sigma=0.3$. Uncertainties are descriptive fold standard errors. Test MSE uses 2000 independent observations.}\label{tab:final}
 \begin{ruledtabular}
@@ -331,6 +316,17 @@ $\sigma$ & Method & Degree & $\lambda$ & CV MSE & Independent test MSE \\ \hline
 \end{ruledtabular}
 \end{table*}
 
+Ten-fold CV used degrees 1--20, 21 Ridge penalties from $10^{-10}$ to 1, and seven Lasso penalties from $10^{-4}$ to $10^{-1}$. Each selected model was refitted on all 100 observations and evaluated on 2000 independent observations generated with seed 2027. The test set was used only after selection.
+
+Table~\ref{tab:final} favors degree-12 OLS at $\sigma=0.1$. Ridge's CV score differs by only $1.8\times10^{-6}$, far below the descriptive fold standard error; its selected penalty is practically zero. OLS is therefore a reasonable choice without an additional tuning parameter. At $\sigma=0.3$, Ridge has the smallest CV MSE, but the three models' differences are again small compared with fold uncertainty. Increasing noise favors lower selected degrees.
+
+The CV MSE of the selected OLS fit, 0.0173, lies well above its independent test MSE, 0.0113. The difference is mostly noise. The realized noise variance of the 100 observations is 0.0139, against 0.0101 for the 2000 new ones, while the error relative to $f$ is small in both cases: 0.0023 for the fold fits and 0.0016 for the refit. Cross-validation thus measures the error on the noisy observations of this particular sample; the selected model itself lies within about 0.002 of the true function in mean square.
+
+Regularization mainly reduced variance here. In 150 independent degree-15 fits with 80 observations, OLS squared bias and variance were 0.00654 and 0.21098. At $\lambda=3.16\times10^{-4}$, Ridge gave 0.00670 and 0.00349, while Lasso gave 0.00485 and 0.00345. The penalties thus attack the variance term of Eq.~(\ref{eq:biasvar}), by a factor of about 60, at almost no cost in bias. The OLS bias is not reliably larger than Lasso's: it is estimated from the mean of only 150 fits, and with a variance of 0.211 this sampling error alone inflates it by about $0.211/150\approx0.0014$. These known-function calculations explain the effect of the penalties; they did not select the models in the table. Degree selection controls OLS complexity; Ridge damps unstable directions; Lasso also removes coefficients. None changes the observation noise.
+
+All 3080 Lasso fits behind Table~\ref{tab:final} passed the convergence checks of Sec.~\ref{sec:theory}. At $\sigma=0.1$, however, Lasso selected the weakest tested penalty, so a search below $10^{-4}$ could still improve its score. With 100 observations, fold-to-fold variability and finite grids, the table supports no strong general ranking of the three methods.
+
+\clearpage
 \section{Conclusions}\label{sec:conclusion}
 \emph{LLM-assisted text (level 3); see Appendix~\ref{app:llm}.}
 
@@ -348,7 +344,7 @@ This appendix follows the course guidelines for declaring LLM use \cite{LLMGuide
 \begin{itemize}
 \item Claude (Anthropic), through Claude Code, October 2026: structured the LaTeX report and generated its tables, the plotting code and the unit tests, and located the course material relevant to each part.
 \item OpenAI Codex, Codex desktop app, 5 October 2026: reviewed code and report against the project text, added docstrings, comments and source references to the code and the LaTeX source, removed unreported material, corrected the OLS reference cutoff and generated four supplementary scripts, two of which were later removed. It did not rewrite the author's report text.
-\item Claude Opus 5.5 (Anthropic), through Claude Code, 5 October 2026: reviewed the report against the grading form and the course's writing guides, rewrote the introduction and conclusions, revised the abstract, added paragraphs to the methods and results, added the original references, generated the edge-effect script and figure, shortened the docstrings of the core modules and removed two of Codex's verification scripts.
+\item Claude Opus 5.5 (Anthropic), through Claude Code, 5 October 2026: reviewed the report against the grading form and the course's writing guides, rewrote the introduction and conclusions, revised the abstract, added paragraphs to the methods and results, added the original references, generated the edge-effect script and figure, shortened the docstrings of the core modules, removed two of Codex's verification scripts and merged the two Ridge figures into Fig.~\ref{fig:ridge}.
 \end{itemize}
 
 \subsection{Text}
@@ -376,7 +372,7 @@ Paths are relative to \texttt{code/}.
 \item Level 2: \texttt{part\_a\_ols.py} to \texttt{part\_i\_model\_selection.py}. Experiments written by the author; plotting code generated with Claude and marked inline; Codex removed unreported experiments and added the Ridge rate scan (part f) and the Lasso convergence checks (part i).
 \item Level 4: \texttt{plot\_style.py}. Generated with Claude.
 \item Level 4: \texttt{tests/}, \texttt{benchmarks.py}. Generated with Claude; three tests generated by Codex.
-\item Level 4: \texttt{ridge\_supplement.py}, \texttt{lasso\_course\_comparison.py}. Generated by Codex.
+\item Level 4: \texttt{ridge\_supplement.py}, \texttt{lasso\_course\_comparison.py}. Generated by Codex; the figure code of \texttt{ridge\_supplement.py} revised with Claude Opus 5.5.
 \item Level 4: \texttt{edge\_effects.py}. Generated with Claude Opus 5.5.
 \end{itemize}
 
