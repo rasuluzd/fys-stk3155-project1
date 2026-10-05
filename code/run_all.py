@@ -29,9 +29,7 @@ PARTS = {
     "g": "part_g_lasso.py",
     "lasso": "lasso_course_comparison.py",
     "h": "part_h_sgd.py",
-    "verify": "verification_supplement.py",
     "i": "part_i_model_selection.py",
-    "check": "model_selection_check.py",  # uses the part-i selections
     "edge": "edge_effects.py",            # checks itself against parts a, c and i
     "bench": "benchmarks.py",
 }

@@ -3,7 +3,7 @@
 Author: Rasul Ruslanovitsj Øzdber, Department of Physics, University of Oslo.
 Repository: https://github.com/rasuluzd/fys-stk3155-project1
 
-The report fits Runge's function from noisy data with OLS, Ridge and Lasso regression, estimates the test error with the bootstrap and k-fold cross-validation, and compares plain, momentum, adaptive and stochastic gradient descent with the closed-form solutions. It answers parts a–i of the assignment with ten figures and four tables.
+The report fits Runge's function from noisy data with OLS, Ridge and Lasso regression, estimates the test error with the bootstrap and k-fold cross-validation, and compares plain, momentum, adaptive and stochastic gradient descent with the closed-form solutions. It answers parts a–i of the assignment with ten figures and three tables.
 
 ## Contents
 
@@ -18,9 +18,7 @@ The report fits Runge's function from noisy data with OLS, Ridge and Lasso regre
 `regression.py`, `resampling.py` and `optimizers.py` implement the numerical methods; `part_a_ols.py` to `part_i_model_selection.py` run the assignment parts. Supplementary scripts produce further evidence quoted in the report:
 
 - `ridge_supplement.py`: Ridge scores, coefficients and paired simulations (part b);
-- `verification_supplement.py`: both gradient sources inside Ridge GD, and Ridge SGD (parts e and h);
 - `lasso_course_comparison.py`: all five update rules on the part-g Lasso problem;
-- `model_selection_check.py`: sensitivity of the part-i Lasso selection to the solver settings;
 - `edge_effects.py`: how much of the small-sample errors comes from extrapolation at the interval edge, and the fit figure (parts a, c and i);
 - `benchmarks.py`: comparisons with closed-form results and scikit-learn.
 
@@ -34,7 +32,7 @@ python -m pytest code/tests -q
 python code/run_all.py
 ```
 
-`run_all.py` runs every part and check in dependency order and overwrites the files in `results/` and `report/figures/`. To run a subset, use for example `python code/run_all.py a b ridge`; run b before ridge, c before d, i before check, and a, c and i before edge. Fixed seeds determine the data, folds and shuffling. The results were produced with Python 3.13.15, NumPy 2.5.2, SciPy 1.18.1, scikit-learn 1.9.0 (pinned for the explicit OLS rank cutoff), Matplotlib 3.11.1, Autograd 1.9.1 and pytest 9.1.1. Timings depend on the machine.
+`run_all.py` runs every part and check in dependency order and overwrites the files in `results/` and `report/figures/`. To run a subset, use for example `python code/run_all.py a b ridge`; run b before ridge, c before d, and a, c and i before edge. Fixed seeds determine the data, folds and shuffling. The results were produced with Python 3.13.15, NumPy 2.5.2, SciPy 1.18.1, scikit-learn 1.9.0 (pinned for the explicit OLS rank cutoff), Matplotlib 3.11.1, Autograd 1.9.1 and pytest 9.1.1. Timings depend on the machine.
 
 ## Build the report
 
@@ -46,4 +44,4 @@ Costs are mean losses: Ridge solves `(X^T X + n*lambda*I) theta = X^T y`, and th
 
 ## Use of LLMs
 
-The numerical code and the original report text were written by the author. Claude (through Claude Code) structured the LaTeX report and generated its tables, the plotting code, the plotting style module, the unit tests and `benchmarks.py`. OpenAI Codex (5 October 2026) added docstrings, comments and source references, removed unreported material, corrected the OLS reference cutoff and generated four supplementary scripts. Claude Opus 5.5 (5 October 2026) rewrote the abstract, introduction and conclusions, drafted paragraphs in the methods and results, added references and generated `edge_effects.py`. The report's appendix gives the level for every section and file, consistent with the `LLM-assisted` tags in the code.
+The numerical code and the original report text were written by the author. Claude (through Claude Code) structured the LaTeX report and generated its tables, the plotting code, the plotting style module, the unit tests and `benchmarks.py`. OpenAI Codex (5 October 2026) added docstrings, comments and source references, removed unreported material, corrected the OLS reference cutoff and generated two supplementary scripts. Claude Opus 5.5 (5 October 2026) rewrote the abstract, introduction and conclusions, drafted paragraphs in the methods and results, added references, generated `edge_effects.py`, shortened the docstrings of the core modules and removed two of Codex's verification scripts. The report's appendix gives the level for every section and file, consistent with the `LLM-assisted` tags in the code.

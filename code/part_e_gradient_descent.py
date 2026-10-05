@@ -1,6 +1,5 @@
 """Part e: analytical/Autograd gradients, cost timings, GD learning-rate scan
 and Ridge conditioning at degree six. Writes results/part_e.json.
-verification_supplement.py also runs the analytical/Autograd Ridge comparison.
 LLM-assisted (code level 2): OpenAI Codex removed unreported spectral early-stopping and
 extended conditioning experiments and edited the docstrings, 5 October 2026.
 """

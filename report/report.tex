@@ -239,8 +239,8 @@ Figure~\ref{fig:cv} shows that CV and the small-sample bootstrap did not select 
 \end{figure*}
 
 \subsection{e) Gradient descent and automatic derivatives}\label{sec:res_gd}
-% Evidence: part_e.json/gradient_check,timing,degree6; verification_supplement.json/ridge_gradient_sources.
-For OLS and Ridge at degrees 6 and 15, analytical and AD gradients differed by at most $1.18\times10^{-15}$ relatively over 100 random coefficient vectors. Both derivative sources gave the same iteration counts: 14\,399 for degree-6 OLS and 9\,309 for Ridge at $\lambda=10^{-3}$, using the Hessian-based rates. Their final vectors differed by at most $4.44\times10^{-15}$. AD cost 16.1 objective evaluations at $n=80$, falling to 2.81 at $n=10^6$. The large-$n$ value is the constant factor expected for reverse mode; at small $n$ the Python bookkeeping of the AD library dominates the array work.
+% Evidence: part_e.json/gradient_check,timing,degree6.
+For OLS and Ridge at degrees 6 and 15, analytical and AD gradients differed by at most $1.18\times10^{-15}$ relatively over 100 random coefficient vectors. Used inside gradient descent for degree-6 OLS, both derivative sources needed the same 14\,399 iterations at the Hessian-based rate, and their final vectors differed by at most $4.44\times10^{-15}$. AD cost 16.1 objective evaluations at $n=80$, falling to 2.81 at $n=10^6$. The large-$n$ value is the constant factor expected for reverse mode; at small $n$ the Python bookkeeping of the AD library dominates the array work.
 
 For degree-6 OLS, $h_{\max}=7.69648$ and $h_{\min}=0.00368262$, giving $\eta<0.259859$. The rate $\eta_*=0.259735$ reached the target in 14\,399 iterations, exactly as predicted by the quadratic error recurrence. Smaller rates progressed slowly; rates above the bound amplified the steepest direction. Ridge with $\lambda=0.1$ reduced the condition number from 2090 to 38.8 and required 244 iterations. Regularization improved conditioning as well as changing the statistical fit.
 
@@ -292,27 +292,12 @@ Adam & 0.000316 & $\mathbf{4.98\times10^{-8}}$ & $\mathbf{2.98\times10^{-5}}$ \\
 \end{table}
 
 \subsection{h) Stochastic gradient descent}\label{sec:res_sgd}
-% Evidence: part_h.json/setup,batch_size,methods_M10; verification_supplement.json/ridge_sgd_methods_M10.
+% Evidence: part_h.json/setup,batch_size,methods_M10.
 We ran degree-6 OLS for 2000 epochs with batch sizes 1, 5, 20 and 80. Rates were tuned on the last 200 epochs' excess training cost; curves summarize five shuffle seeds. For decay, $t_1$ corresponds to 250 epochs. Constant-rate SGD fluctuated near the solution because individual batch gradients need not vanish there. Decay reduced batch-5 final excess cost from $4.37\times10^{-4}$ to $4.70\times10^{-5}$ (Fig.~\ref{fig:sgd}), but a rapidly shrinking step also slowed late coefficient convergence.
 
 An epoch processes all 80 observations. Its main gradient work is proportional to $np$, like one full GD step, but batch size 1 requires 80 updates per epoch. Across 2000 epochs, batch sizes 1 and 80 took 0.871 and 0.0454~s in the recorded runs. Smaller updates therefore did not give a wall-time advantage on these small matrices.
 
-For batch size 10, Adam's OLS coefficient error was 0.0204 after 2000 epochs. The Ridge comparison in Table~\ref{tab:ridge_sgd} also favored Adam's accuracy, but full GD was faster. These timings describe the recorded machine and include update overhead. For this small regression problem, an SVD solve is simpler than tuning SGD; momentum is a useful iterative choice when high coefficient accuracy is required.
-
-\begin{table}[tb]
-\caption{Degree-6 Ridge after 2000 epochs, $\lambda=10^{-3}$; $r$ is relative coefficient error. SGD entries use batch size 10 and medians of three shuffle seeds; full GD uses 2000 updates. Rates were tuned separately on training cost.}\label{tab:ridge_sgd}
-\begin{ruledtabular}
-\begin{tabular}{lccc}
-Method & $\eta$ & $r$ & Time (s) \\ \hline
-SGD & 0.0316 & 0.0485 & 0.153 \\
-Momentum & 0.00316 & 0.0510 & 0.186 \\
-AdaGrad & 0.316 & 0.0207 & 0.200 \\
-RMSprop & 0.00316 & 0.0218 & 0.202 \\
-Adam & 0.00316 & \textbf{0.0185} & 0.297 \\
-Full GD & 0.260 & 0.0485 & \textbf{0.0528} \\
-\end{tabular}
-\end{ruledtabular}
-\end{table}
+For batch size 10, Adam's OLS coefficient error was 0.0204 after 2000 epochs, the lowest of the five update rules, at about twice the run time of plain SGD (0.23 versus 0.12~s). These timings describe the recorded machine and include update overhead. For this small regression problem, an SVD solve is simpler than tuning SGD; momentum is a useful iterative choice when high coefficient accuracy is required.
 
 \begin{figure*}[tb]
 \includegraphics[width=\textwidth]{h_sgd.pdf}
@@ -320,7 +305,7 @@ Full GD & 0.260 & 0.0485 & \textbf{0.0528} \\
 \end{figure*}
 
 \subsection{i) Final model selection}\label{sec:res_final}
-% Evidence: part_i.json/grids,sigma=0.1,sigma=0.3,bias_variance_degree15,lasso_convergence_cv; model_selection_check.json; edge_effects.json/part_i.
+% Evidence: part_i.json/grids,sigma=0.1,sigma=0.3,bias_variance_degree15,lasso_convergence_cv; edge_effects.json/part_i.
 Ten-fold CV used degrees 1--20, 21 Ridge penalties from $10^{-10}$ to 1, and seven Lasso penalties from $10^{-4}$ to $10^{-1}$. Each selected model was refitted on all 100 observations and evaluated on 2000 independent observations generated with seed 2027. The test set was used only after selection.
 
 Table~\ref{tab:final} favors degree-12 OLS at $\sigma=0.1$. Ridge's CV score differs by only $1.8\times10^{-6}$, far below the descriptive fold standard error; its selected penalty is practically zero. OLS is therefore a reasonable choice without an additional tuning parameter. At $\sigma=0.3$, Ridge has the smallest CV MSE, but the three models' differences are again small compared with fold uncertainty. Increasing noise favors lower selected degrees.
@@ -329,7 +314,7 @@ The CV MSE of the selected OLS fit, 0.0173, lies well above its independent test
 
 Regularization mainly reduced variance here. In 150 independent degree-15 fits with 80 observations, OLS squared bias and variance were 0.00654 and 0.21098. At $\lambda=3.16\times10^{-4}$, Ridge gave 0.00670 and 0.00349, while Lasso gave 0.00485 and 0.00345. The penalties thus attack the variance term of Eq.~(\ref{eq:biasvar}), by a factor of about 60, at almost no cost in bias. The OLS bias is not reliably larger than Lasso's: it is estimated from the mean of only 150 fits, and with a variance of 0.211 this sampling error alone inflates it by about $0.211/150\approx0.0014$. These known-function calculations explain the effect of the penalties; they did not select the models in the table. Degree selection controls OLS complexity; Ridge damps unstable directions; Lasso also removes coefficients. None changes the observation noise.
 
-All 3080 Lasso fits behind Table~\ref{tab:final} passed the convergence checks of Sec.~\ref{sec:theory}, and tightening the solver tolerance changed neither the selection nor the scores at table precision. At $\sigma=0.1$, however, Lasso selected the weakest tested penalty, so a search below $10^{-4}$ could still improve its score. With 100 observations, fold-to-fold variability and finite grids, the table supports no strong general ranking of the three methods.
+All 3080 Lasso fits behind Table~\ref{tab:final} passed the convergence checks of Sec.~\ref{sec:theory}. At $\sigma=0.1$, however, Lasso selected the weakest tested penalty, so a search below $10^{-4}$ could still improve its score. With 100 observations, fold-to-fold variability and finite grids, the table supports no strong general ranking of the three methods.
 
 \begin{table*}[tb]
 \caption{Minimum ten-fold CV MSEs at two noise levels. OLS and nearly unregularized Ridge are indistinguishable at $\sigma=0.1$; Ridge has the lowest observed CV score at $\sigma=0.3$. Uncertainties are descriptive fold standard errors. Test MSE uses 2000 independent observations.}\label{tab:final}
@@ -362,8 +347,8 @@ This appendix follows the course guidelines for declaring LLM use \cite{LLMGuide
 \subsection{Tools}
 \begin{itemize}
 \item Claude (Anthropic), through Claude Code, October 2026: structured the LaTeX report and generated its tables, the plotting code and the unit tests, and located the course material relevant to each part.
-\item OpenAI Codex, Codex desktop app, 5 October 2026: reviewed code and report against the project text, added docstrings, comments and source references to the code and the LaTeX source, removed unreported material, corrected the OLS reference cutoff and generated four supplementary scripts. It did not rewrite the author's report text.
-\item Claude Opus 5.5 (Anthropic), through Claude Code, 5 October 2026: reviewed the report against the grading form and the course's writing guides, rewrote the introduction and conclusions, revised the abstract, added paragraphs to the methods and results, added the original references, and generated the edge-effect script and figure.
+\item OpenAI Codex, Codex desktop app, 5 October 2026: reviewed code and report against the project text, added docstrings, comments and source references to the code and the LaTeX source, removed unreported material, corrected the OLS reference cutoff and generated four supplementary scripts, two of which were later removed. It did not rewrite the author's report text.
+\item Claude Opus 5.5 (Anthropic), through Claude Code, 5 October 2026: reviewed the report against the grading form and the course's writing guides, rewrote the introduction and conclusions, revised the abstract, added paragraphs to the methods and results, added the original references, generated the edge-effect script and figure, shortened the docstrings of the core modules and removed two of Codex's verification scripts.
 \end{itemize}
 
 \subsection{Text}
@@ -387,11 +372,11 @@ This appendix & 2 & Formatted with Claude Opus 5.5 from the author's description
 \subsection{Code}
 Paths are relative to \texttt{code/}.
 \begin{itemize}
-\item Level 2: \texttt{regression.py}, \texttt{resampling.py}, \texttt{optimizers.py}, \texttt{settings.py}, \texttt{run\_all.py}. Written by the author; docstrings, comments and course references added with Codex and Claude; \texttt{checked\_lasso\_path} generated by Codex.
+\item Level 2: \texttt{regression.py}, \texttt{resampling.py}, \texttt{optimizers.py}, \texttt{settings.py}, \texttt{run\_all.py}. Written by the author; docstrings added with Codex and Claude and shortened with Claude Opus 5.5; \texttt{checked\_lasso\_path} generated by Codex.
 \item Level 2: \texttt{part\_a\_ols.py} to \texttt{part\_i\_model\_selection.py}. Experiments written by the author; plotting code generated with Claude and marked inline; Codex removed unreported experiments and added the Ridge rate scan (part f) and the Lasso convergence checks (part i).
 \item Level 4: \texttt{plot\_style.py}. Generated with Claude.
 \item Level 4: \texttt{tests/}, \texttt{benchmarks.py}. Generated with Claude; three tests generated by Codex.
-\item Level 4: \texttt{ridge\_supplement.py}, \texttt{verification\_supplement.py}, \texttt{model\_selection\_check.py}, \texttt{lasso\_course\_comparison.py}. Generated by Codex.
+\item Level 4: \texttt{ridge\_supplement.py}, \texttt{lasso\_course\_comparison.py}. Generated by Codex.
 \item Level 4: \texttt{edge\_effects.py}. Generated with Claude Opus 5.5.
 \end{itemize}
 

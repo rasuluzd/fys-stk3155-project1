@@ -3,7 +3,7 @@ degree-15 known-function bias/variance from independent training sets.
 Scaling is fitted within each fold. Lasso uses warm-start coordinate descent
 with alpha=lambda/2; every candidate must pass dual-gap and stationarity checks.
 All degrees are refitted once to preserve the documented grid/refit audit.
-Writes results/part_i.json; model_selection_check.py checks the whole grid's sensitivity.
+Writes results/part_i.json.
 LLM-assisted (code level 2): OpenAI Codex added the Lasso convergence checks, removed
 unreported one-SE selections, bootstrap repetition and plots and edited the docstrings,
 5 October 2026.
