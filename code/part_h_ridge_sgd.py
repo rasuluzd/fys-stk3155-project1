@@ -19,8 +19,8 @@ import numpy as np
 
 from optimizers import (GD, OPTIMIZERS, cost_ridge, gradient_descent, grad_ridge, hessian,
                         make_gradient, stochastic_gradient_descent)
-from regression import Scaler, polynomial_features, ridge_parameters
-from settings import main_split, save_results
+from plot_style import save_results
+from regression import Scaler, main_split, polynomial_features, ridge_parameters
 
 LAM = 1e-3                        # same penalty as the Ridge runs in parts e and f
 P = 6                             # same degree as part h

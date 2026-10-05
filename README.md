@@ -1,48 +1,28 @@
-# FYS-STK3155/4155 Project 1: regression, resampling and gradient descent for the Runge function
+# FYS-STK4155 Project 1: Regression, resampling and gradient descent
 
-Author: Rasul Ruslanovitsj Øzdber, Department of Physics, University of Oslo.
-Repository: https://github.com/rasuluzd/fys-stk3155-project1
+Rasul Ruslanovitsj Øzdber, University of Oslo
 
-The report fits Runge's function from noisy data with OLS, Ridge and Lasso regression, estimates the test error with the bootstrap and k-fold cross-validation, and compares plain, momentum, adaptive and stochastic gradient descent with the closed-form solutions. It answers parts a–i of the assignment with nine figures and three tables.
+I fit Runge's function f(x) = 1/(1 + 25x²) to noisy data with OLS, Ridge and Lasso, use the bootstrap and cross-validation to choose the model, and replace the closed-form solutions with gradient descent (plain, momentum, AdaGrad, RMSprop, Adam and SGD).
 
-## Contents
+## What's in the repository
 
-| Location | Purpose |
-|---|---|
-| `report/report.tex`, `report/references.bib` | Report source and references |
-| `report/figures/` | The nine figures used in the report |
-| `code/` | Numerical modules, one script per assignment part, supplementary checks and tests |
-| `results/` | Saved results (JSON) behind every number quoted in the report |
-| `requirements.txt` | Python dependencies |
+- `report/`: the report (`report.tex`, `references.bib`, `figures/`)
+- `code/`: `regression.py`, `resampling.py` and `optimizers.py`, one script per part (`part_a_ols.py` to `part_i_model_selection.py`), a few extra scripts and the tests in `tests/`
+- `results/`: the saved numbers (JSON) that the report quotes
 
-`regression.py`, `resampling.py` and `optimizers.py` implement the numerical methods; `part_a_ols.py` to `part_i_model_selection.py` run the assignment parts. Supplementary scripts produce further evidence quoted in the report:
-
-- `ridge_supplement.py`: Ridge errors, coefficient norms and paired simulations (part b);
-- `part_h_ridge_sgd.py`: SGD with the five update rules against the closed-form Ridge solution (part h);
-- `lasso_course_comparison.py`: all five update rules on the part-g Lasso problem;
-- `edge_effects.py`: how much of the small-sample errors comes from extrapolation at the interval edge, and the fit figure (parts a, c and i);
-- `benchmarks.py`: comparisons with closed-form results and scikit-learn.
-
-## Reproduce the results
-
-From the repository root, preferably in a virtual environment:
+## How to run
 
 ```sh
-python -m pip install -r requirements.txt
+pip install -r requirements.txt
 python -m pytest code/tests -q
-python code/run_all.py
+cd code
+for s in part_a_ols part_b_ridge ridge_supplement part_c_bias_variance part_d_cross_validation \
+         part_e_gradient_descent part_f_adaptive part_g_lasso lasso_course_comparison part_h_sgd \
+         part_h_ridge_sgd part_i_model_selection edge_effects benchmarks; do python $s.py; done
 ```
 
-`run_all.py` runs every part and check in dependency order and overwrites the files in `results/` and `report/figures/`. To run a subset, use for example `python code/run_all.py a b ridge`; run b before ridge, c before d, and a, c and i before edge. Fixed seeds determine the data, folds and shuffling. The results were produced with Python 3.13.15, NumPy 2.5.2, SciPy 1.18.1, scikit-learn 1.9.0 (pinned for the explicit OLS rank cutoff), Matplotlib 3.11.1, Autograd 1.9.1 and pytest 9.1.1. Timings depend on the machine.
-
-## Build the report
-
-Upload the contents of `report/` to Overleaf together with the `figures/` folder, set `report.tex` as the main document and compile with pdfLaTeX and BibTeX (REVTeX 4.2).
-
-## Conventions
-
-Costs are mean losses: Ridge solves `(X^T X + n*lambda*I) theta = X^T y`, and the scikit-learn references use `alpha = n*lambda` for Ridge and `alpha = lambda/2` for Lasso. Scaling is fitted on training data only, also inside every bootstrap sample and CV fold. LaTeX comments in the report name the result file behind each numerical claim.
+Keep this order, since some scripts read the results of earlier ones. The seeds are fixed, so the numbers come out the same every time (except the timings). The whole run takes about eight minutes on a laptop. Tested with Python 3.13, NumPy 2.5, scikit-learn 1.9, Matplotlib 3.11 and Autograd 1.9.
 
 ## Use of LLMs
 
-The numerical code and the original report text were written by the author. Claude (through Claude Code) structured the LaTeX report and generated its tables, the plotting code, the plotting style module, the unit tests and `benchmarks.py`. OpenAI Codex (5 October 2026) added docstrings, comments and source references, removed unreported material, corrected the OLS reference cutoff and generated four supplementary scripts, two of which were later removed. Claude Opus 5.5 (5 October 2026) rewrote the abstract, introduction, results and conclusions, drafted paragraphs in the methods and implementation sections, added references, generated `edge_effects.py` and `part_h_ridge_sgd.py`, merged the two Ridge figures, shortened the docstrings of the core modules and removed two of Codex's verification scripts. The report's appendix gives the level for every section and file, consistent with the `LLM-assisted` tags in the code.
+Claude (through Claude Code) and OpenAI Codex helped with both the code and the report. `resampling.py` and `part_g_lasso.py` are my own code. In `optimizers.py` and parts a, c and d, I wrote the formulas and the experiments, and Claude wrote the structure, the plots and the extra checks. The remaining files were generated with Claude or Codex. The appendix of the report lists the details, and generated code is tagged `LLM-assisted`.

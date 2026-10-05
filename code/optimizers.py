@@ -8,8 +8,9 @@ squared errors, so the Ridge gradient adds 2*lam*theta, also for a mini-batch.
 
 LLM-assisted
 ------------
-Code level 2. The numerical code was written by the author. Docstrings were added with Claude and
-OpenAI Codex and shortened with Claude Opus 5.5 (October 2026).
+Code level 3. Claude (Claude Code, October 2026) generated the class structure and the GD/SGD
+driver loops. The author wrote the cost functions, gradients and update rules. Docstrings added
+with Claude and OpenAI Codex.
 Verification: tests/test_optimizers.py checks analytical/AD agreement, all five update rules on a
 small Ridge problem and selected GD/SGD properties.
 """
@@ -64,11 +65,6 @@ ANALYTICAL_GRADIENTS = {"ols": grad_ols, "ridge": grad_ridge, "lasso": grad_lass
 # Automatic differentiation: autograd traces the Python cost function and applies the chain
 # rule in reverse mode. grad(f) differentiates with respect to the first argument (theta).
 AUTOGRAD_GRADIENTS = {name: _autograd_grad(cost) for name, cost in COSTS.items()}
-
-
-def autograd_gradient(method):
-    """Select the AD-generated gradient with respect to theta."""
-    return AUTOGRAD_GRADIENTS[method]
 
 
 def make_gradient(method, X, y, lam=0.0, use_autograd=False):
@@ -232,11 +228,6 @@ def gradient_descent(gradient, theta0, optimizer, n_iter, theta_ref=None, tol=No
                 break
     return theta, {"errors": np.array(errors), "iterations": k,
                    "converged": converged, "diverged": diverged}
-
-
-def inverse_time_schedule(t0, t1):
-    """Return eta(t)=t0/(t+t1), with t1>0 and update index t starting at zero."""
-    return lambda t: t0 / (t + t1)
 
 
 def stochastic_gradient_descent(grad_fn, X, y, lam, theta0, optimizer, n_epochs, batch_size,

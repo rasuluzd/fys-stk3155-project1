@@ -1,77 +1,50 @@
-"""Part b: Ridge degree/penalty grid and degree-15 singular-value diagnostics.
+"""Part b: Ridge regression on the main split over a grid of degrees and penalties, compared
+with OLS, and the singular values of the degree-15 design matrix.
 
-Writes results/part_b.json. ridge_supplement.py supplies the two retained plots
-and the paired sample-size/noise comparisons.
-LLM-assisted (code level 2): OpenAI Codex removed unreported exploration and edited the
-docstrings, 5 October 2026.
+Writes results/part_b.json. ridge_supplement.py reads the grid, makes the Ridge figure of the
+report and runs the paired sample-size/noise comparisons.
+
+LLM-assisted (code level 4): written with Claude (Claude Code, October 2026), simplified
+on 5 October 2026.
 """
 
 import numpy as np
 
-from regression import (PolynomialRegression, Scaler, mse, polynomial_features,
-                        ridge_shrinkage_factors)
-from settings import main_split, save_results
+from plot_style import save_results
+from regression import PolynomialRegression, Scaler, main_split, mse, polynomial_features
 
 results = {}
 x_train, x_test, y_train, y_test = main_split()
-n = len(x_train)
-
-
-def ridge_path_predictions(x_tr, y_tr, x_te, degree, lams):
-    """Test predictions for all lambdas at once, using one SVD of the scaled design matrix."""
-    X = polynomial_features(x_tr, degree)
-    sc = Scaler().fit(X, y_tr)
-    Xs, yc = sc.transform(X), sc.center(y_tr)
-    U, s, Vt = np.linalg.svd(Xs, full_matrices=False)
-    uty = U.T @ yc
-    factors = s[None, :] / (s[None, :] ** 2 + len(y_tr) * np.asarray(lams)[:, None])
-    thetas = (factors * uty[None, :]) @ Vt                 # shape (n_lambda, degree)
-    return sc.y_mean + sc.transform(polynomial_features(x_te, degree)) @ thetas.T, thetas
-
 
 # ------------------------------------------------------------------------------------------
-# 1) Main data set: test MSE against degree for a few lambdas
+# 1) Train and test MSE over (degree, lambda), and the best OLS fit for comparison
 # ------------------------------------------------------------------------------------------
 degrees = np.arange(1, 21)
-lam_show = [1e-7, 1e-5, 1e-3, 1e-1]
 lams = np.logspace(-10, 1, 45)
-main = {"lambdas": lams, "degrees": degrees}
 test_map = np.empty((len(degrees), len(lams)))
 train_map = np.empty_like(test_map)
-for k, p in enumerate(degrees):
-    pred_te, _ = ridge_path_predictions(x_train, y_train, x_test, p, lams)
-    pred_tr, _ = ridge_path_predictions(x_train, y_train, x_train, p, lams)
-    test_map[k] = np.mean((y_test[:, None] - pred_te) ** 2, axis=0)
-    train_map[k] = np.mean((y_train[:, None] - pred_tr) ** 2, axis=0)
+for a, p in enumerate(degrees):
+    for b, lam in enumerate(lams):
+        model = PolynomialRegression(int(p), "ridge", lam).fit(x_train, y_train)
+        test_map[a, b] = mse(y_test, model.predict(x_test))
+        train_map[a, b] = mse(y_train, model.predict(x_train))
 ols_test = [mse(y_test, PolynomialRegression(int(p)).fit(x_train, y_train).predict(x_test))
             for p in degrees]
-kb, lb = np.unravel_index(np.argmin(test_map), test_map.shape)
-main.update({"test_mse": test_map, "train_mse": train_map, "ols_test_mse": ols_test,
-             "best_degree": int(degrees[kb]), "best_lambda": lams[lb],
-             "best_test_mse": test_map[kb, lb],
-             "best_r2": 1 - test_map[kb, lb] / np.var(y_test),
-             "ols_best_degree": int(degrees[np.argmin(ols_test)]),
-             "ols_best_test_mse": float(np.min(ols_test))})
-for lam in lam_show:
-    j = np.argmin(np.abs(np.log(lams / lam)))
-    main[f"test_mse_lambda_{lam:g}"] = test_map[:, j]
-results["main"] = main
+a, b = np.unravel_index(np.argmin(test_map), test_map.shape)
+results["main"] = {"degrees": degrees, "lambdas": lams, "test_mse": test_map, "train_mse": train_map,
+                   "ols_test_mse": ols_test, "best_degree": int(degrees[a]), "best_lambda": lams[b],
+                   "best_test_mse": test_map[a, b],
+                   "ols_best_degree": int(degrees[np.argmin(ols_test)]),
+                   "ols_best_test_mse": float(np.min(ols_test))}
 
 # ------------------------------------------------------------------------------------------
-# 3) SVD picture at degree 15: signal vs noise in each singular mode, and the shrinkage
+# 2) Singular values at degree 15: Ridge scales mode j by d_j^2 / (d_j^2 + n lambda)
 # ------------------------------------------------------------------------------------------
-p_svd = 15
-X = polynomial_features(x_train, p_svd)
-sc = Scaler().fit(X, y_train)
-Xs, yc = sc.transform(X), sc.center(y_train)
-U, s, Vt = np.linalg.svd(Xs, full_matrices=False)
-uty = U.T @ yc
-results["svd_degree15"] = {
-    "singular_values": s, "abs_uty": np.abs(uty),
-    "ols_mode_coefficients": np.abs(uty) / s,
-    "hessian_eigenvalues": 2 * s**2 / n,
-    "shrinkage": {f"{lam:g}": ridge_shrinkage_factors(Xs, lam) for lam in lam_show}}
+X = polynomial_features(x_train, 15)
+Xs = Scaler().fit(X, y_train).transform(X)
+results["singular_values_degree15"] = np.linalg.svd(Xs, compute_uv=False)
 
 save_results("part_b", results)
-print("Main best (degree, penalty, test MSE):", main["best_degree"], main["best_lambda"], main["best_test_mse"])
-print("Degree-15 singular values:", s)
+print("best Ridge (degree, lambda, test MSE):", results["main"]["best_degree"], lams[b], test_map[a, b])
+print("best OLS (degree, test MSE):", results["main"]["ols_best_degree"], results["main"]["ols_best_test_mse"])
+print("degree-15 singular values:", results["singular_values_degree15"])

@@ -4,8 +4,7 @@ Resampling: the bootstrap bias-variance decomposition and k-fold cross-validatio
 
 LLM-assisted
 ------------
-Code level 2. The functions were written by the author. Docstrings were added with Claude and
-OpenAI Codex and shortened with Claude Opus 5.5 (October 2026).
+Code level 1. Written by the author; docstrings added with Claude and OpenAI Codex (October 2026).
 Verification: tests/test_resampling.py checks the exact decomposition and that our k-fold code
 reproduces scikit-learn's cross_val_score on the same folds.
 """

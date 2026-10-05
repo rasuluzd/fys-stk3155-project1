@@ -4,7 +4,7 @@
     "lambda": 0.001,
     "n_train": 80,
     "n_test": 20,
-    "seed_and_split": "settings.main_split defaults: seed2026, n100, sigma0.1, test fraction0.2",
+    "seed_and_split": "regression.main_split defaults: seed2026, n100, sigma0.1, test fraction0.2",
     "iterations_per_candidate": 40000,
     "initial_theta": "zero",
     "subgradient_at_zero": 0.0,
@@ -68,7 +68,7 @@
         "max_abs_coefficient_error": 2.3779859715629583,
         "kkt_residual": 0.028611166232917446,
         "exact_zeros": 0,
-        "elapsed_seconds": 0.22585480008274317,
+        "elapsed_seconds": 0.21591500006616116,
         "theta": [
           -0.012103627465374958,
           -0.2982234278209674,
@@ -93,7 +93,7 @@
         "max_abs_coefficient_error": 2.266118556030912,
         "kkt_residual": 0.01184067949523461,
         "exact_zeros": 0,
-        "elapsed_seconds": 0.22065639996435493,
+        "elapsed_seconds": 0.2342719999141991,
         "theta": [
           -0.03366016490045003,
           -0.4324249911151496,
@@ -118,7 +118,7 @@
         "max_abs_coefficient_error": 2.0117977105304043,
         "kkt_residual": 0.007176609846496074,
         "exact_zeros": 0,
-        "elapsed_seconds": 0.22107440000399947,
+        "elapsed_seconds": 0.225793500081636,
         "theta": [
           -0.051786820749765324,
           -0.6354490414084846,
@@ -143,7 +143,7 @@
         "max_abs_coefficient_error": 1.6849221419915985,
         "kkt_residual": 0.0025736993047686947,
         "exact_zeros": 0,
-        "elapsed_seconds": 0.22279260004870594,
+        "elapsed_seconds": 0.22459950007032603,
         "theta": [
           -0.042875404083590134,
           -0.8434167396278468,
@@ -168,7 +168,7 @@
         "max_abs_coefficient_error": 1.4021894032703115,
         "kkt_residual": 0.0009488561884803683,
         "exact_zeros": 0,
-        "elapsed_seconds": 0.22212260006926954,
+        "elapsed_seconds": 0.22083020000718534,
         "theta": [
           -0.040413200583929415,
           -0.9897050116901763,
@@ -193,7 +193,7 @@
         "max_abs_coefficient_error": 1.0644116616342885,
         "kkt_residual": 0.0009230275036204423,
         "exact_zeros": 0,
-        "elapsed_seconds": 0.22530169994570315,
+        "elapsed_seconds": 0.21962600003462285,
         "theta": [
           -0.04045925013682766,
           -1.1064989467746598,
@@ -218,7 +218,7 @@
         "max_abs_coefficient_error": 0.5303157427438717,
         "kkt_residual": 0.0012882749250071762,
         "exact_zeros": 0,
-        "elapsed_seconds": 0.22702750004827976,
+        "elapsed_seconds": 0.22395010001491755,
         "theta": [
           -0.04222920004353064,
           -1.1978709351607417,
@@ -243,7 +243,7 @@
         "max_abs_coefficient_error": 0.34108196558682446,
         "kkt_residual": 0.002075960620448014,
         "exact_zeros": 0,
-        "elapsed_seconds": 0.21892450004816055,
+        "elapsed_seconds": 0.22375559993088245,
         "theta": [
           -0.04251312605381268,
           -1.2218633803845542,
@@ -270,7 +270,7 @@
         "max_abs_coefficient_error": 2.0118127265308114,
         "kkt_residual": 0.007176731267731592,
         "exact_zeros": 0,
-        "elapsed_seconds": 0.2609565999591723,
+        "elapsed_seconds": 0.26380559999961406,
         "theta": [
           -0.051793444575490045,
           -0.6354480586378103,
@@ -295,7 +295,7 @@
         "max_abs_coefficient_error": 1.6849994949664264,
         "kkt_residual": 0.002575471075734754,
         "exact_zeros": 0,
-        "elapsed_seconds": 0.26334030006546527,
+        "elapsed_seconds": 0.2586224999977276,
         "theta": [
           -0.04287099171332735,
           -0.84344076817777,
@@ -320,7 +320,7 @@
         "max_abs_coefficient_error": 1.402122922157545,
         "kkt_residual": 0.0013378650928960955,
         "exact_zeros": 0,
-        "elapsed_seconds": 0.27760859997943044,
+        "elapsed_seconds": 0.2562599000521004,
         "theta": [
           -0.04041245188231067,
           -0.9897233037277801,
@@ -345,7 +345,7 @@
         "max_abs_coefficient_error": 1.0642100784552122,
         "kkt_residual": 0.0011173399432451827,
         "exact_zeros": 0,
-        "elapsed_seconds": 0.2669430000241846,
+        "elapsed_seconds": 0.2562370999949053,
         "theta": [
           -0.04045494431893577,
           -1.1065382021398826,
@@ -370,7 +370,7 @@
         "max_abs_coefficient_error": 0.3407130072116935,
         "kkt_residual": 0.0013139311472940075,
         "exact_zeros": 0,
-        "elapsed_seconds": 0.26213809999171644,
+        "elapsed_seconds": 0.2582322000525892,
         "theta": [
           -0.042521795255713826,
           -1.22194038659027,
@@ -395,7 +395,7 @@
         "max_abs_coefficient_error": 0.007585976162987951,
         "kkt_residual": 0.0011180074580819715,
         "exact_zeros": 0,
-        "elapsed_seconds": 0.26376610004808754,
+        "elapsed_seconds": 0.258883300004527,
         "theta": [
           -0.04429189470214139,
           -1.299647664193796,
@@ -420,7 +420,7 @@
         "max_abs_coefficient_error": 0.0002825762997420839,
         "kkt_residual": 0.001484079913270484,
         "exact_zeros": 0,
-        "elapsed_seconds": 0.2609637000132352,
+        "elapsed_seconds": 0.25948799995239824,
         "theta": [
           -0.04442397827291695,
           -1.3013886461027961,
@@ -445,7 +445,7 @@
         "max_abs_coefficient_error": 0.000105133669850505,
         "kkt_residual": 0.0016366826750418553,
         "exact_zeros": 0,
-        "elapsed_seconds": 0.2701448999578133,
+        "elapsed_seconds": 0.25470429996494204,
         "theta": [
           -0.04433982009081667,
           -1.3014086196888526,
@@ -472,7 +472,7 @@
         "max_abs_coefficient_error": 2.3724385180011165,
         "kkt_residual": 0.1895144998110394,
         "exact_zeros": 0,
-        "elapsed_seconds": 0.3461469999747351,
+        "elapsed_seconds": 0.29289170005358756,
         "theta": [
           -0.008456129726878965,
           -0.034393488715751284,
@@ -497,7 +497,7 @@
         "max_abs_coefficient_error": 2.419491071941482,
         "kkt_residual": 0.11660590213060965,
         "exact_zeros": 0,
-        "elapsed_seconds": 0.3111689999932423,
+        "elapsed_seconds": 0.29829479998443276,
         "theta": [
           -0.008689526398404543,
           -0.10134245853389288,
@@ -522,7 +522,7 @@
         "max_abs_coefficient_error": 2.4546404547756335,
         "kkt_residual": 0.03735126485798515,
         "exact_zeros": 0,
-        "elapsed_seconds": 0.31040189997293055,
+        "elapsed_seconds": 0.30169680004473776,
         "theta": [
           -0.05484191890659634,
           -0.2601179992896104,
@@ -547,7 +547,7 @@
         "max_abs_coefficient_error": 2.128834410416288,
         "kkt_residual": 0.010160562858166775,
         "exact_zeros": 0,
-        "elapsed_seconds": 0.30449979996774346,
+        "elapsed_seconds": 0.3008483999874443,
         "theta": [
           -0.043020548051687306,
           -0.6191830410739556,
@@ -572,7 +572,7 @@
         "max_abs_coefficient_error": 1.4421394410970116,
         "kkt_residual": 0.0011976059551318029,
         "exact_zeros": 0,
-        "elapsed_seconds": 0.3089234000071883,
+        "elapsed_seconds": 0.298626699950546,
         "theta": [
           -0.039590881574566604,
           -1.004987855503382,
@@ -597,7 +597,7 @@
         "max_abs_coefficient_error": 0.5638355694425322,
         "kkt_residual": 0.000989718939728813,
         "exact_zeros": 0,
-        "elapsed_seconds": 0.32483890000730753,
+        "elapsed_seconds": 0.2913026000605896,
         "theta": [
           -0.04205624117688073,
           -1.1870718946430412,
@@ -622,7 +622,7 @@
         "max_abs_coefficient_error": 0.4137034829128903,
         "kkt_residual": 0.0010240399144377484,
         "exact_zeros": 0,
-        "elapsed_seconds": 0.31027509993873537,
+        "elapsed_seconds": 0.29415570001583546,
         "theta": [
           -0.042410265874440634,
           -1.2113710805089581,
@@ -647,7 +647,7 @@
         "max_abs_coefficient_error": 0.4300651617099831,
         "kkt_residual": 0.0009949714242650195,
         "exact_zeros": 0,
-        "elapsed_seconds": 0.3081775000318885,
+        "elapsed_seconds": 0.3011514999670908,
         "theta": [
           -0.04240837235688535,
           -1.209998633165677,
@@ -674,7 +674,7 @@
         "max_abs_coefficient_error": 0.4201895632238879,
         "kkt_residual": 0.0020142828768430245,
         "exact_zeros": 0,
-        "elapsed_seconds": 0.35726000007707626,
+        "elapsed_seconds": 0.350039399927482,
         "theta": [
           -0.04243645078859173,
           -1.2138878106529676,
@@ -699,7 +699,7 @@
         "max_abs_coefficient_error": 0.1837835787258888,
         "kkt_residual": 0.0034136538981470407,
         "exact_zeros": 0,
-        "elapsed_seconds": 0.36685730004683137,
+        "elapsed_seconds": 0.3601581999100745,
         "theta": [
           -0.04321445714491755,
           -1.2584464841400558,
@@ -724,7 +724,7 @@
         "max_abs_coefficient_error": 0.15413515785042775,
         "kkt_residual": 0.008052673507932628,
         "exact_zeros": 0,
-        "elapsed_seconds": 0.35602879989892244,
+        "elapsed_seconds": 0.3426089999265969,
         "theta": [
           -0.04304864353601415,
           -1.2652065472661138,
@@ -749,7 +749,7 @@
         "max_abs_coefficient_error": 0.1474885358329645,
         "kkt_residual": 0.0218450990486497,
         "exact_zeros": 0,
-        "elapsed_seconds": 0.3661801000125706,
+        "elapsed_seconds": 0.3604535999475047,
         "theta": [
           -0.042011960963078084,
           -1.2660790167776135,
@@ -774,7 +774,7 @@
         "max_abs_coefficient_error": 0.15099710945692113,
         "kkt_residual": 0.06761522029080787,
         "exact_zeros": 0,
-        "elapsed_seconds": 0.36492799990810454,
+        "elapsed_seconds": 0.3581409999169409,
         "theta": [
           -0.03871513160869476,
           -1.2632913613755403,
@@ -799,7 +799,7 @@
         "max_abs_coefficient_error": 0.1739638256561018,
         "kkt_residual": 0.2081430302548851,
         "exact_zeros": 0,
-        "elapsed_seconds": 0.36523650004528463,
+        "elapsed_seconds": 0.3613097000634298,
         "theta": [
           -0.03044178362433653,
           -1.2525276657464186,
@@ -824,7 +824,7 @@
         "max_abs_coefficient_error": 0.18614996608077217,
         "kkt_residual": 0.5098953406821448,
         "exact_zeros": 0,
-        "elapsed_seconds": 0.35728700004983693,
+        "elapsed_seconds": 0.35553950001485646,
         "theta": [
           -0.08903185436194262,
           -1.3052645616090452,
@@ -849,7 +849,7 @@
         "max_abs_coefficient_error": 0.2015168219181569,
         "kkt_residual": 0.6436652098797812,
         "exact_zeros": 0,
-        "elapsed_seconds": 0.3564120000228286,
+        "elapsed_seconds": 0.3465635000029579,
         "theta": [
           -0.10127992425356248,
           -1.3146588185364205,
@@ -876,7 +876,7 @@
         "max_abs_coefficient_error": 0.019613767570549,
         "kkt_residual": 0.0008817450369927015,
         "exact_zeros": 0,
-        "elapsed_seconds": 0.48208380001597106,
+        "elapsed_seconds": 0.4563300999579951,
         "theta": [
           -0.04422623975780556,
           -1.2968304041813932,
@@ -901,7 +901,7 @@
         "max_abs_coefficient_error": 6.718500885449785e-05,
         "kkt_residual": 0.001806711500353035,
         "exact_zeros": 0,
-        "elapsed_seconds": 0.48695380007848144,
+        "elapsed_seconds": 0.4780484000220895,
         "theta": [
           -0.04432572063737662,
           -1.3013586495380969,
@@ -926,7 +926,7 @@
         "max_abs_coefficient_error": 0.0003020862152079214,
         "kkt_residual": 0.0006583056702388697,
         "exact_zeros": 0,
-        "elapsed_seconds": 0.481311299954541,
+        "elapsed_seconds": 0.4925568000180647,
         "theta": [
           -0.044101574653591685,
           -1.301381961085896,
@@ -951,7 +951,7 @@
         "max_abs_coefficient_error": 0.0005010463787541453,
         "kkt_residual": 0.002064264514840095,
         "exact_zeros": 0,
-        "elapsed_seconds": 0.48367340001277626,
+        "elapsed_seconds": 0.47050070005934685,
         "theta": [
           -0.044713071067472854,
           -1.3013383231280262,
@@ -976,7 +976,7 @@
         "max_abs_coefficient_error": 0.001058564720628069,
         "kkt_residual": 0.0054568366663972365,
         "exact_zeros": 0,
-        "elapsed_seconds": 0.5113721999805421,
+        "elapsed_seconds": 0.49344729993026704,
         "theta": [
           -0.04375817277053249,
           -1.3013912506833036,
@@ -1001,7 +1001,7 @@
         "max_abs_coefficient_error": 0.0013390200786220774,
         "kkt_residual": 0.010113589996728435,
         "exact_zeros": 0,
-        "elapsed_seconds": 0.4873577000107616,
+        "elapsed_seconds": 0.4544885999057442,
         "theta": [
           -0.04494459267727936,
           -1.302693462904418,
@@ -1026,7 +1026,7 @@
         "max_abs_coefficient_error": 0.0053655631227378375,
         "kkt_residual": 0.04036671281258683,
         "exact_zeros": 0,
-        "elapsed_seconds": 0.475869599962607,
+        "elapsed_seconds": 0.4476871999213472,
         "theta": [
           -0.04133733378896356,
           -1.2981993791976238,
@@ -1051,7 +1051,7 @@
         "max_abs_coefficient_error": 0.006430473605859355,
         "kkt_residual": 0.030763223523711577,
         "exact_zeros": 0,
-        "elapsed_seconds": 0.474770599976182,
+        "elapsed_seconds": 0.4637426999397576,
         "theta": [
           -0.0417134301543249,
           -1.2996658588950085,
@@ -1079,7 +1079,7 @@
       "max_abs_coefficient_error": 0.34108196558682446,
       "kkt_residual": 0.002075960620448014,
       "exact_zeros": 0,
-      "elapsed_seconds": 0.21892450004816055,
+      "elapsed_seconds": 0.22375559993088245,
       "theta": [
         -0.04251312605381268,
         -1.2218633803845542,
@@ -1105,7 +1105,7 @@
       "max_abs_coefficient_error": 0.007585976162987951,
       "kkt_residual": 0.0011180074580819715,
       "exact_zeros": 0,
-      "elapsed_seconds": 0.26376610004808754,
+      "elapsed_seconds": 0.258883300004527,
       "theta": [
         -0.04429189470214139,
         -1.299647664193796,
@@ -1131,7 +1131,7 @@
       "max_abs_coefficient_error": 0.4137034829128903,
       "kkt_residual": 0.0010240399144377484,
       "exact_zeros": 0,
-      "elapsed_seconds": 0.31027509993873537,
+      "elapsed_seconds": 0.29415570001583546,
       "theta": [
         -0.042410265874440634,
         -1.2113710805089581,
@@ -1157,7 +1157,7 @@
       "max_abs_coefficient_error": 0.1837835787258888,
       "kkt_residual": 0.0034136538981470407,
       "exact_zeros": 0,
-      "elapsed_seconds": 0.36685730004683137,
+      "elapsed_seconds": 0.3601581999100745,
       "theta": [
         -0.04321445714491755,
         -1.2584464841400558,
@@ -1183,7 +1183,7 @@
       "max_abs_coefficient_error": 6.718500885449785e-05,
       "kkt_residual": 0.001806711500353035,
       "exact_zeros": 0,
-      "elapsed_seconds": 0.48695380007848144,
+      "elapsed_seconds": 0.4780484000220895,
       "theta": [
         -0.04432572063737662,
         -1.3013586495380969,

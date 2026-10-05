@@ -10,9 +10,8 @@ Produces
 Degree 6 (kappa ~ 2e3) is the main test case; degree 10 (kappa ~ 3e6) shows where all
 first-order methods stall.
 
-LLM-assisted (code level 2): plotting code generated with Claude (Claude Code, October 2026).
-OpenAI Codex added a separate Ridge learning-rate scan on the identical grid and budget,
-5 October 2026, to improve the fairness of the comparison.
+LLM-assisted (code level 4): generated with Claude (Claude Code, October 2026); OpenAI Codex
+added the separate Ridge learning-rate scan, 5 October 2026.
 """
 
 import time
@@ -22,9 +21,8 @@ import matplotlib.pyplot as plt
 
 from optimizers import OPTIMIZERS, RMSprop, gradient_descent, hessian, make_gradient
 from plot_style import (GREY, DOUBLE, OPTIMIZER_COLORS, OPTIMIZER_LABELS, OPTIMIZER_MARKERS,
-                        save, set_style)
-from regression import Scaler, ols_parameters, polynomial_features, ridge_parameters
-from settings import main_split, save_results
+                        save, save_results, set_style)
+from regression import Scaler, main_split, ols_parameters, polynomial_features, ridge_parameters
 
 set_style()
 results = {}

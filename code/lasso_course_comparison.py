@@ -16,8 +16,8 @@ from time import perf_counter
 import numpy as np
 
 from optimizers import OPTIMIZERS, cost_lasso, grad_lasso, grad_ols, hessian
-from regression import Scaler, lasso_sklearn_parameters, mse, polynomial_features
-from settings import main_split, save_results
+from plot_style import save_results
+from regression import Scaler, lasso_sklearn_parameters, main_split, mse, polynomial_features
 
 DEGREE = 10
 LAM = 1e-3
@@ -104,7 +104,7 @@ def main():
 
     old_path = Path(__file__).resolve().parents[1] / "results" / "part_g.json"
     old = json.loads(old_path.read_text(encoding="utf-8"))
-    # Codex cleanup: the same reference is now stored without the unused convergence experiment.
+    # the reference must be the one stored by part_g_lasso.py
     ref_difference = float(np.max(np.abs(reference - np.asarray(old["reference_lasso_theta"]))))
     ref_kkt = kkt_residual(reference, X, y, LAM)
     assert ref_difference < 1e-10, "Reference differs from the existing part-g experiment."
@@ -116,7 +116,7 @@ def main():
     results = {
         "setup": {
             "degree": DEGREE, "lambda": LAM, "n_train": len(y),
-            "n_test": len(y_test), "seed_and_split": "settings.main_split defaults: seed2026, n100, sigma0.1, test fraction0.2",
+            "n_test": len(y_test), "seed_and_split": "regression.main_split defaults: seed2026, n100, sigma0.1, test fraction0.2",
             "iterations_per_candidate": N_ITER, "initial_theta": "zero",
             "subgradient_at_zero": 0.0, "lipschitz_L": L,
             "base_rates": BASE_RATES.tolist(), "actual_rates": rates.tolist(),

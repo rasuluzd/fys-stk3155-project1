@@ -10,12 +10,12 @@ Produces
 
 Run part_c_bias_variance.py first (its results are read for the comparison).
 
-LLM-assisted (code level 2): plotting code generated with Claude (Claude Code, October 2026);
-docstrings edited with OpenAI Codex, 5 October 2026.
+LLM-assisted (code level 3): the OLS and Ridge cross-validation was written by the author. Claude
+(Claude Code, October 2026) added the own-k-fold check, the reshuffles, the one-SE rule, the
+leakage check and the figure (marked inline).
 """
 
 import json
-import time
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -24,10 +24,10 @@ from sklearn.model_selection import KFold, cross_val_score
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import PolynomialFeatures, StandardScaler
 
-from plot_style import BLUES, COLORS, GREY, INK, DOUBLE, METHOD_COLORS, RESULTS_DIR, save, set_style
-from regression import PolynomialRegression, make_data
+from plot_style import (BLUES, COLORS, GREY, INK, DOUBLE, METHOD_COLORS, RESULTS_DIR, save,
+                        save_results, set_style)
+from regression import N_POINTS, NOISE, SEED, PolynomialRegression, make_data
 from resampling import kfold_cv_mse
-from settings import N_POINTS, NOISE, SEED, save_results
 
 set_style()
 results = {}
@@ -64,11 +64,11 @@ for k in (5, 10):
     scores = np.array([cv_scores(ols_pipe(int(p)), k) for p in degrees])   # (degrees, folds)
     mean, se = scores.mean(1), scores.std(1, ddof=1) / np.sqrt(k)
     i = np.argmin(mean)
-    one_se = int(degrees[np.where(mean <= mean[i] + se[i])[0][0]])        # simplest within 1 SE
+    one_se = int(degrees[np.where(mean <= mean[i] + se[i])[0][0]])        # simplest within 1 SE (LLM-assisted, Claude)
     ols[k] = {"mean": mean, "se": se, "best_degree": int(degrees[i]), "best_mse": mean[i],
               "best_se": se[i], "one_se_degree": one_se}
 
-# own k-fold code with the same folds as Scikit-Learn
+# LLM-assisted (Claude): own k-fold code with the same folds as Scikit-Learn
 check = {}
 for k in (5, 10):
     folds = list(KFold(n_splits=k, shuffle=True, random_state=SEED).split(x))
@@ -83,7 +83,7 @@ for k in (5, 10):
     ref = cv_scores(ridge_pipe(10, len(x) * (k - 1) // k * lam), k)
     check[k]["max_relative_difference_ridge"] = np.max(np.abs(ours - ref) / ref)
 
-# variability of the selected degree when the folds are reshuffled
+# LLM-assisted (Claude): variability of the selected degree when the folds are reshuffled
 reshuffle = {}
 for k in (5, 10):
     picks = []
@@ -93,7 +93,7 @@ for k in (5, 10):
     reshuffle[k] = {"selected_degrees": picks, "median": float(np.median(picks)),
                     "min": min(picks), "max": max(picks)}
 
-# leakage check: standardise with statistics from all data before CV (wrong) vs inside folds
+# LLM-assisted (Claude): leakage check, standardise with statistics from all data before CV (wrong) vs inside folds
 leak = {}
 Xall = PolynomialFeatures(12, include_bias=False).fit_transform(X1)
 Xall_std = StandardScaler().fit_transform(Xall)
@@ -115,20 +115,16 @@ leak["ridge_degree12_relative_difference"] = rel
 # 2) Ridge: 10-fold CV over (degree, lambda), alpha = n_train_fold * lambda
 # ------------------------------------------------------------------------------------------
 lams = np.logspace(-10, 0, 21)
-t0 = time.perf_counter()
 ridge = {}
 for k in (5, 10):
     n_fold = len(x) * (k - 1) // k
     cv = np.empty((len(degrees), len(lams)))
-    se = np.empty_like(cv)
     for a, p in enumerate(degrees):
         for b, lam in enumerate(lams):
-            s = cv_scores(ridge_pipe(int(p), n_fold * lam), k)
-            cv[a, b], se[a, b] = s.mean(), s.std(ddof=1) / np.sqrt(k)
+            cv[a, b] = cv_scores(ridge_pipe(int(p), n_fold * lam), k).mean()
     a, b = np.unravel_index(np.argmin(cv), cv.shape)
-    ridge[k] = {"cv": cv, "se": se, "best_degree": int(degrees[a]), "best_lambda": lams[b],
-                "best_mse": cv[a, b], "best_se": se[a, b]}
-results["ridge_time_s"] = time.perf_counter() - t0
+    ridge[k] = {"cv": cv, "best_degree": int(degrees[a]), "best_lambda": lams[b],
+                "best_mse": cv[a, b]}
 results.update({"degrees": degrees, "lambdas": lams, "ols": ols, "own_vs_sklearn": check,
                 "reshuffle": reshuffle, "leakage": leak, "ridge": ridge,
                 "ols_svd_relative_cutoff": 1e-15})
@@ -183,7 +179,6 @@ for k in (5, 10):
     print(f"OLS k={k}: best degree {ols[k]['best_degree']} CV {ols[k]['best_mse']:.4g} +- {ols[k]['best_se']:.2g}, "
           f"one-SE degree {ols[k]['one_se_degree']}; reshuffles {reshuffle[k]}")
     print(f"Ridge k={k}: best (p, lam) = ({ridge[k]['best_degree']}, {ridge[k]['best_lambda']:.2g}) "
-          f"CV {ridge[k]['best_mse']:.4g} +- {ridge[k]['best_se']:.2g}")
+          f"CV {ridge[k]['best_mse']:.4g}")
 print("own vs sklearn:", check)
 print("leakage:", leak)
-print("ridge grid time", results["ridge_time_s"])

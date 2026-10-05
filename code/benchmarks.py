@@ -19,9 +19,10 @@ from sklearn.preprocessing import PolynomialFeatures, StandardScaler
 
 from optimizers import (AUTOGRAD_GRADIENTS, ANALYTICAL_GRADIENTS, GD, gradient_descent,
                         grad_ols, hessian, make_gradient, stochastic_gradient_descent)
-from regression import PolynomialRegression, Scaler, polynomial_features, ridge_parameters, runge
+from plot_style import save_results
+from regression import (PolynomialRegression, Scaler, main_split, polynomial_features,
+                        ridge_parameters, runge)
 from resampling import bootstrap_bias_variance, kfold_cv_mse
-from settings import main_split, save_results
 
 x_tr, x_te, y_tr, y_te = main_split()
 x_grid = np.linspace(-1, 1, 501)
@@ -76,8 +77,7 @@ th_sgd, _ = stochastic_gradient_descent(grad_ols, Xs, yc, 0.0, np.zeros(6), GD(e
 out["sgd_full_batch_vs_gd_max_abs"] = np.max(np.abs(th_gd - th_sgd))
 
 # own k-fold cross-validation against cross_val_score with the same folds
-from regression import make_data
-from settings import N_POINTS, NOISE, SEED
+from regression import N_POINTS, NOISE, SEED, make_data
 x, y = make_data(N_POINTS, NOISE, SEED)
 rel = []
 for k in (5, 10):

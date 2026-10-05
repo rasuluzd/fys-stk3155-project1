@@ -1,8 +1,8 @@
 """Part g: Autograd's subgradient convention and fixed-budget OLS/Ridge/Lasso
 comparisons. Writes results/part_g.json. lasso_course_comparison.py compares
 all five taught updates and supplies the report's Lasso table.
-LLM-assisted (code level 2): OpenAI Codex removed optional proximal solvers and their
-unreported experiments and edited the docstrings, 5 October 2026.
+LLM-assisted (code level 1): written by the author; docstrings edited with OpenAI Codex,
+5 October 2026.
 """
 
 
@@ -11,9 +11,9 @@ import autograd.numpy as anp
 from autograd import grad
 
 from optimizers import Adam, GD, gradient_descent, hessian, make_gradient
-from regression import (Scaler, lasso_sklearn_parameters, mse, ols_parameters, polynomial_features,
-                        ridge_parameters)
-from settings import main_split, save_results
+from plot_style import save_results
+from regression import (Scaler, lasso_sklearn_parameters, main_split, mse, ols_parameters,
+                        polynomial_features, ridge_parameters)
 
 results = {}
 x_train, x_test, y_train, y_test = main_split()

@@ -4,16 +4,16 @@ Scaling is fitted within each fold. Lasso uses warm-start coordinate descent
 with alpha=lambda/2; every candidate must pass dual-gap and stationarity checks.
 All degrees are refitted once to preserve the documented grid/refit audit.
 Writes results/part_i.json.
-LLM-assisted (code level 2): OpenAI Codex added the Lasso convergence checks, removed
-unreported one-SE selections, bootstrap repetition and plots and edited the docstrings,
-5 October 2026.
+LLM-assisted (code level 4): generated with Claude (Claude Code, October 2026); OpenAI Codex
+added the Lasso convergence checks, 5 October 2026.
 """
 
 import numpy as np
 from sklearn.model_selection import KFold
 
-from regression import Scaler, checked_lasso_path, make_data, polynomial_features, runge
-from settings import N_POINTS, NOISE, SEED, save_results
+from plot_style import save_results
+from regression import (N_POINTS, NOISE, SEED, Scaler, checked_lasso_path, make_data,
+                        polynomial_features, runge)
 
 results = {}
 degrees = np.arange(1, 21)

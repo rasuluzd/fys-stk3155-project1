@@ -12,8 +12,8 @@ Produces
                       (b) the five update rules with M = 10
   results/part_h.json
 
-LLM-assisted (code level 2): plotting code generated with Claude (Claude Code, October 2026);
-docstrings edited with OpenAI Codex, 5 October 2026.
+LLM-assisted (code level 4): generated with Claude (Claude Code, October 2026); docstrings
+edited with OpenAI Codex, 5 October 2026.
 """
 
 import time
@@ -23,9 +23,8 @@ import matplotlib.pyplot as plt
 
 from optimizers import OPTIMIZERS, cost_ols, grad_ols, hessian, stochastic_gradient_descent
 from plot_style import (GREY, INK, DOUBLE, OPTIMIZER_COLORS, OPTIMIZER_LABELS, ordered_colors, save,
-                        set_style)
-from regression import Scaler, ols_parameters, polynomial_features
-from settings import NOISE, main_split, save_results
+                        save_results, set_style)
+from regression import NOISE, Scaler, main_split, ols_parameters, polynomial_features
 
 set_style()
 results = {}

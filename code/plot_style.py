@@ -1,5 +1,6 @@
 """
-Common figure style, colours and output folders, so that all figures in the report look alike.
+Common figure style, colours and output folders, so that all figures in the report look alike,
+and save_results, which stores the numbers quoted in the report in results/<name>.json.
 
 Figures are made for a two-column REVTeX article: SINGLE = one column (3.4 in), DOUBLE = full
 page width (7.0 in). Colours are a colour-blind-checked categorical palette used in a fixed order,
@@ -11,8 +12,10 @@ LLM-assisted
 Tool: Claude (Anthropic, Claude Code), October 2026. Role: generated this style module (code level 4).
 """
 
+import json
 from pathlib import Path
 
+import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from cycler import cycler
@@ -29,7 +32,6 @@ DOUBLE = 7.0
 
 # categorical slots, always used in this order
 COLORS = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300", "#4a3aa7", "#e34948"]
-MARKERS = ["o", "s", "^", "D", "v", "P", "X", "*"]
 GREY = "#898781"
 INK = "#0b0b0b"
 
@@ -117,3 +119,31 @@ def save(fig, name):
         Path(preview).mkdir(parents=True, exist_ok=True)
         fig.savefig(Path(preview) / f"{name}.png", dpi=170)
     plt.close(fig)
+
+
+def _to_builtin(obj):
+    """Convert numpy types recursively into JSON-serializable Python types."""
+    if isinstance(obj, dict):
+        return {str(k): _to_builtin(v) for k, v in obj.items()}
+    if isinstance(obj, (list, tuple)):
+        return [_to_builtin(v) for v in obj]
+    if isinstance(obj, np.ndarray):
+        return _to_builtin(obj.tolist())
+    if isinstance(obj, (np.floating,)):
+        return float(obj)
+    if isinstance(obj, (np.integer,)):
+        return int(obj)
+    if isinstance(obj, (np.bool_,)):
+        return bool(obj)
+    return obj
+
+
+def save_results(name, results):
+    """Write a dictionary of results to results/<name>.json (numpy types converted).
+
+    LLM-assisted: generated with Claude (Claude Code, October 2026).
+    """
+    path = RESULTS_DIR / f"{name}.json"
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(_to_builtin(results), f, indent=2)
+    return path

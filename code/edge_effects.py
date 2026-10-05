@@ -28,9 +28,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import KFold
 
-from plot_style import COLORS, GREY, INK, METHOD_COLORS, RESULTS_DIR, SINGLE, ordered_colors, save, set_style
-from regression import PolynomialRegression, make_data, runge
-from settings import N_POINTS, NOISE, SEED, main_split, save_results
+from plot_style import (COLORS, GREY, INK, METHOD_COLORS, RESULTS_DIR, SINGLE, ordered_colors, save,
+                        save_results, set_style)
+from regression import N_POINTS, NOISE, SEED, PolynomialRegression, main_split, make_data, runge
 
 set_style()
 stored = {}

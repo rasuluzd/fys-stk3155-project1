@@ -1,6 +1,7 @@
 """
-Polynomial regression on Runge's function: data, design matrix, scaling, closed-form OLS and
-Ridge, a scikit-learn Lasso reference, error metrics and an estimator class.
+Polynomial regression on Runge's function: data and the main train/test split, design matrix,
+scaling, closed-form OLS and Ridge, a scikit-learn Lasso reference, error metrics and an
+estimator class.
 
 Costs are normalised with 1/n:
     OLS   C = (1/n) ||y - X theta||^2
@@ -12,9 +13,8 @@ intercept is the training mean of y (lecture notes, Sec. 3.13).
 
 LLM-assisted
 ------------
-Code level 2. The numerical code was written by the author. Docstrings were added with Claude and
-OpenAI Codex and shortened with Claude Opus 5.5 (October 2026). checked_lasso_path was generated
-by OpenAI Codex on 5 October 2026.
+Code level 4. Generated with Claude (Claude Code, October 2026); checked_lasso_path by OpenAI
+Codex (5 October 2026). Tested and checked by the author.
 Verification: tests/test_regression.py compares every closed-form result with scikit-learn.
 """
 
@@ -23,6 +23,7 @@ import numpy as np
 from sklearn.base import BaseEstimator, RegressorMixin
 from sklearn.exceptions import ConvergenceWarning
 from sklearn.linear_model import Lasso, lasso_path
+from sklearn.model_selection import train_test_split
 
 
 # ----------------------------------------------------------------------------------------------
@@ -42,6 +43,22 @@ def make_data(n, noise=0.1, seed=None, uniform=True):
         x = np.linspace(-1.0, 1.0, n)
     y = runge(x) + noise * rng.standard_normal(n)
     return x, y
+
+
+# the main data set of the report
+SEED = 2026          # seed used for the main data set and all splits
+N_POINTS = 100       # number of data points in the main data set
+NOISE = 0.1          # standard deviation sigma of the Gaussian noise
+TEST_SIZE = 0.2      # 80/20 train/test split
+
+
+def main_split(n=N_POINTS, noise=NOISE, seed=SEED):
+    """The main data set of the report: x ~ U[-1, 1], y = f(x) + N(0, noise^2), 80/20 split.
+
+    LLM-assisted: generated with Claude (Claude Code, October 2026).
+    """
+    x, y = make_data(n, noise, seed)
+    return train_test_split(x, y, test_size=TEST_SIZE, random_state=seed)
 
 
 def polynomial_features(x, degree):

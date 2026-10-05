@@ -12,18 +12,17 @@ Because we know how the data are generated, the expectation over training sets c
 exactly (up to Monte Carlo noise) by drawing many fresh training sets. This lets us check what the
 bootstrap actually estimates.
 
-LLM-assisted (code level 2): plotting code generated with Claude (Claude Code, October 2026);
-docstrings edited with OpenAI Codex, 5 October 2026.
+LLM-assisted (code level 3): experiments written by the author; script structure and plotting
+code by Claude (Claude Code, October 2026), which also removed unused output on 5 October.
 """
 
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 
-from plot_style import COLORS, GREY, INK, DOUBLE, SINGLE, save, set_style
-from regression import PolynomialRegression, make_data, mse, runge
+from plot_style import COLORS, GREY, INK, DOUBLE, SINGLE, save, save_results, set_style
+from regression import NOISE, SEED, TEST_SIZE, PolynomialRegression, make_data, mse, runge
 from resampling import bootstrap_bias_variance
-from settings import NOISE, SEED, TEST_SIZE, save_results
 
 set_style()
 results = {}
@@ -49,8 +48,7 @@ med_test = np.median(test_curves, 0)
 results["train_test"] = {"degrees": degrees, "mean_train": mean_train, "mean_test": mean_test,
                          "median_test": med_test,
                          "best_degree_mean": int(degrees[np.argmin(mean_test)]),
-                         "best_degree_median": int(degrees[np.argmin(med_test)]),
-                         "expected_train_ols_theory": NOISE**2 * (1 - (degrees + 1) / n_train)}
+                         "best_degree_median": int(degrees[np.argmin(med_test)])}
 
 # LLM-assisted (Claude, Claude Code, October 2026): plotting code for this figure.
 fig, ax = plt.subplots(figsize=(SINGLE, 2.5))
@@ -62,7 +60,7 @@ ax.semilogy(degrees, mean_test, color=COLORS[1], lw=2.0, label="Test error (mean
 ax.semilogy(degrees, med_test, color=COLORS[1], lw=1.2, ls="--", label="Test error (median)")
 ax.axhline(NOISE**2, color=GREY, lw=0.9, ls=":")
 ax.text(16.6, NOISE**2 * 1.08, r"$\sigma^2$", color=GREY, fontsize=7)
-ax.set_ylim(4e-3, 0.4)
+ax.set_ylim(1.5e-3, 0.4)  # room for the legend below the training curves
 ax.set_xlabel("Model complexity (polynomial degree $p$)")
 ax.set_ylabel("MSE")
 ax.text(0.02, 0.97, "High bias\nLow variance", transform=ax.transAxes, va="top", fontsize=6.5, color=INK)
@@ -100,14 +98,8 @@ def analyse(n):
         out["bias2_mc"].append(np.mean((f_te - preds.mean(axis=1)) ** 2))
         out["error_mc"].append(np.mean(np.mean((y_te[:, None] - preds) ** 2, axis=1)))
     out = {k: np.array(v) for k, v in out.items()}
-    out["test_points_outside_training_range"] = int(np.sum((x_te < x_tr.min()) | (x_te > x_tr.max())))
-    out["training_range"] = [x_tr.min(), x_tr.max()]
-    out["noise_realised"] = np.mean((y_te - f_te) ** 2)
-    out["identity_max_abs"] = np.max(np.abs(out["error"] - out["bias2"] - out["variance"]))
     out["best_degree"] = int(degrees[np.argmin(out["error"])])
     out["best_degree_mc"] = int(degrees[np.argmin(out["error_mc"])])
-    cross = np.where(out["variance"] > out["bias2_true"])[0]
-    out["first_degree_variance_exceeds_true_bias"] = int(degrees[cross[0]]) if len(cross) else None
     return out
 
 
@@ -143,9 +135,4 @@ print("Hastie: best degree mean", results["train_test"]["best_degree_mean"], "me
       results["train_test"]["best_degree_median"])
 for n in (100, 1000):
     o = results[f"n={n}"]
-    k = o["best_degree"]
-    print(f"n={n}: best degree {k} (MC {o['best_degree_mc']}), error {o['error'][k]:.4g}, bias2 {o['bias2'][k]:.4g}, "
-          f"bias2_true {o['bias2_true'][k]:.4g}, var {o['variance'][k]:.4g}, var_mc {o['variance_mc'][k]:.4g}, "
-          f"noise {o['noise_realised']:.4g}, identity {o['identity_max_abs']:.2e}, crossover {o['first_degree_variance_exceeds_true_bias']}")
-    print("   var/var_mc ratio by degree:", np.array2string(o["variance"] / o["variance_mc"], precision=2))
-    print("   bias2 - bias2_true:", np.array2string(o["bias2"] - o["bias2_true"], precision=4))
+    print(f"n={n}: best degree bootstrap {o['best_degree']}, fresh sets {o['best_degree_mc']}")
