@@ -105,7 +105,8 @@ def main():
 
     old_path = Path(__file__).resolve().parents[1] / "results" / "part_g.json"
     old = json.loads(old_path.read_text(encoding="utf-8"))
-    ref_difference = float(np.max(np.abs(reference - np.asarray(old["convergence"]["reference_theta"]))))
+    # Codex cleanup: the same reference is now stored without the unused convergence experiment.
+    ref_difference = float(np.max(np.abs(reference - np.asarray(old["reference_lasso_theta"]))))
     ref_kkt = kkt_residual(reference, X, y, LAM)
     assert ref_difference < 1e-10, "Reference differs from the existing part-g experiment."
     assert ref_kkt < 1e-9, "Coordinate-descent reference fails the KKT check."

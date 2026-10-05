@@ -19,7 +19,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 
-from plot_style import COLORS, GREY, INK, DOUBLE, SINGLE, METHOD_COLORS, save, set_style
+from plot_style import COLORS, GREY, INK, DOUBLE, SINGLE, save, set_style
 from regression import PolynomialRegression, make_data, mse, runge
 from resampling import bootstrap_bias_variance
 from settings import NOISE, SEED, TEST_SIZE, save_results

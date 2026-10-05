@@ -4,7 +4,6 @@
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \usepackage{amsmath,amssymb}
-\usepackage{bm}
 \usepackage{graphicx}
 \usepackage{xcolor}
 \usepackage[colorlinks=true,linkcolor=blue!55!black,citecolor=blue!55!black,urlcolor=blue!55!black]{hyperref}
@@ -23,9 +22,6 @@
 \setcounter{totalnumber}{5}
 
 \newcommand{\E}{\mathbb{E}}
-\newcommand{\vtheta}{\bm{\theta}}
-\newcommand{\vX}{\bm{X}}
-\newcommand{\vy}{\bm{y}}
 \newcommand{\MSE}{\mathrm{MSE}}
 
 \begin{document}
@@ -138,7 +134,7 @@ SGD reshuffles the training observations each epoch and applies the same update 
 
 The repository separates \texttt{regression.py}, \texttt{resampling.py} and \texttt{optimizers.py}; task scripts write JSON results and PDF figures. The numerical work uses NumPy, scikit-learn and Matplotlib \cite{Harris2020,Pedregosa2011,Hunter2007}. The README lists dependencies, all scripts and reproduction commands. Numerical claims below identify their saved results in source comments.
 
-The 26 tests compare custom routines with closed-form or library answers. Benchmark prediction differences were $7.6\times10^{-14}$ for OLS and zero to reported precision for Ridge. Relative analytical/AD gradient disagreement was $1.6\times10^{-15}$. Full-batch SGD agreed with GD within $2.2\times10^{-16}$; custom CV matched scikit-learn when folds and preprocessing matched. The OLS library reference uses the same relative singular-value cutoff, $10^{-15}$, as the custom pseudoinverse.
+The 25 tests compare custom routines with closed-form or library answers. Benchmark prediction differences were $7.6\times10^{-14}$ for OLS and zero to reported precision for Ridge. Relative analytical/AD gradient disagreement was $1.6\times10^{-15}$. Full-batch SGD agreed with GD within $2.2\times10^{-16}$; custom CV matched scikit-learn when folds and preprocessing matched. The OLS library reference uses the same relative singular-value cutoff, $10^{-15}$, as the custom pseudoinverse.
 
 All iterative comparisons start at zero. Unless stated otherwise, convergence means relative coefficient error $r=\|\theta-\widehat\theta\|/\|\widehat\theta\|<10^{-6}$. This measures agreement with a known solution; it is distinct from test error. Verification scope and environment are recorded in \texttt{results/verification\_audit.json}.
 
@@ -299,7 +295,7 @@ Table~\ref{tab:final} favors degree-12 OLS at $\sigma=0.1$. Ridge's CV score dif
 
 Regularization mainly reduced variance here. In 150 independent degree-15 fits with 80 observations, OLS squared bias and variance were 0.00654 and 0.21098. At $\lambda=3.16\times10^{-4}$, Ridge gave 0.00670 and 0.00349, while Lasso gave 0.00487 and 0.00363. These known-function calculations explain the effect of the penalties; they did not select the models in the table. Degree selection controls OLS complexity; Ridge damps unstable directions; Lasso also removes coefficients. None changes the observation noise.
 
-The Lasso search has a numerical limitation: 338 of 3080 fold/refit models reached their iteration limit. Stricter checks of the four originally selected Lasso models changed CV scores by at most 0.045\%, but did not rerank every candidate. The small score differences and this limitation prevent a strong general ranking of the estimators.
+The Lasso search has a numerical limitation: 338 of 3080 fold/refit models reached their iteration limit. Stricter checks of the two minimum-CV Lasso selections changed CV scores by at most 0.045\%, but did not rerank every candidate. The small score differences and this limitation prevent a strong general ranking of the estimators.
 
 \begin{table*}[tb]
 \caption{Minimum ten-fold CV MSEs at two noise levels. OLS and nearly unregularized Ridge are indistinguishable at $\sigma=0.1$; Ridge has the lowest observed CV score at $\sigma=0.3$. Uncertainties are descriptive fold standard errors. Test MSE uses 2000 independent observations.}\label{tab:final}
@@ -333,10 +329,10 @@ The original implementation and report structure are attributed to Claude throug
 Using the course levels \cite{LLMGuidelines2026}, the abstract, introduction, methods, implementation, results, conclusions, captions and this appendix each have text level 3 (generative). Prompts requested answers to parts a--i, course-based explanations and a shorter report. Revisions corrected normalization and intercept wording, qualified numerical claims and removed optional analysis. The recorded automated checks were performed by Codex; they do not establish the author's personal review.
 
 \subsection{Code}
-Every file listed in Table~\ref{tab:llm_code} has code level 4 (substantial generation). Claude generated the original files. Codex added course references and function-level tags, corrected the OLS reference cutoff and generated the four additional experiment scripts. The original Claude prompts are not recorded in this audit; Codex prompts requested missing assignment comparisons and verification. Unused exploratory methods remain in the repository, outside this shortened report.
+Every file listed in Table~\ref{tab:llm_code} has code level 4 (substantial generation). Claude generated the original files. Codex added course references and function-level tags, corrected the OLS reference cutoff and generated the four additional experiment scripts. The original Claude prompts are not recorded in this audit; Codex prompts requested missing assignment comparisons and verification. Codex subsequently removed unreported exploratory code and duplicate figures and simplified the reproduction command.
 
 \begin{table*}[tb]
-\caption{File-level LLM declaration: every listed file is level 4. C denotes original Claude generation with later Codex review/documentation; O denotes Codex generation. Paths are relative to \texttt{code/}.}\label{tab:llm_code}
+\caption{File-level LLM declaration: every listed file is level 4. C denotes original Claude generation with later Codex review and edits; O denotes Codex generation. Paths are relative to \texttt{code/}.}\label{tab:llm_code}
 \small
 \begin{tabular}{lc|lc}
 File & Origin & File & Origin \\ \hline

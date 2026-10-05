@@ -1,7 +1,7 @@
 """Selected gradient and optimizer checks against known reference answers.
 
 All five update rules are tested on one degree-three Ridge problem. Separate
-tests check AD gradients, the plain-GD stability bound, proximal Lasso and
+tests check AD gradients, the plain-GD stability bound and
 full-batch/mini-batch SGD. These cases do not establish convergence on every
 degree, dataset or learning rate. Codex clarified this scope on 5 October 2026;
 no executable test statements changed.
@@ -15,9 +15,9 @@ from autograd import grad
 import pytest
 
 from optimizers import (ANALYTICAL_GRADIENTS, AUTOGRAD_GRADIENTS, OPTIMIZERS, GD, Adam,
-                        gradient_descent, grad_ols, grad_ridge, make_gradient, max_learning_rate,
+                        gradient_descent, grad_ols, make_gradient, max_learning_rate,
                         stochastic_gradient_descent)
-from regression import (Scaler, lasso_sklearn_parameters, make_data, ols_parameters,
+from regression import (Scaler, make_data, ols_parameters,
                         polynomial_features, ridge_parameters)
 
 x, y = make_data(80, noise=0.1, seed=3)
@@ -76,19 +76,6 @@ def test_all_optimizers_reach_ridge_closed_form(name, eta):
     theta, info = gradient_descent(make_gradient("ridge", X, yc, lam), np.zeros(3),
                                    OPTIMIZERS[name](eta), 200000, theta_ref=theta_ridge, tol=1e-5)
     assert info["converged"], (name, info["errors"][-1])
-
-
-def test_ista_lasso_matches_sklearn():
-    """LLM-assisted: Claude generated the original implementation, as recorded
-    in the module declaration. Codex added this function-level attribution
-    on 5 October 2026; this tag does not certify the student's own review.
-    """
-    lam = 5e-3
-    ref = lasso_sklearn_parameters(X, yc, lam)
-    eta = 0.9 * max_learning_rate(X) / 2  # 1/L for the smooth part
-    theta, _ = gradient_descent(make_gradient("ols", X, yc), np.zeros(3), GD(eta), 200000,
-                                prox_lam=lam)
-    assert np.allclose(theta, ref, atol=1e-6)
 
 
 def test_sgd_with_full_batch_equals_gd():

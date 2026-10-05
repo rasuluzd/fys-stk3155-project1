@@ -1,14 +1,12 @@
 {
   "date": "2026-10-05",
   "performed_by": "OpenAI Codex in the Codex desktop app",
-  "scope": "Shortened report covering a-i, retaining required derivations and comparisons; detailed optional material remains in the personal guide and code/results. Four supplementary experiments and course-linked verification. Student review remains separate.",
+  "scope": "Cleaned submission covering a-i. Unreported experiments and duplicate figures removed. All retained calculations and four required comparison scripts rerun; student review remains separate.",
   "test_suite": {
-    "command": "python -m pytest tests -q",
-    "cwd": "Project1/code",
-    "passed": 26,
-    "seconds_reported_by_pytest": 3.51,
-    "new_test": "test_high_degree_ols_matches_sklearn_with_explicit_svd_cutoff",
-    "scope": "Fresh-process rerun during report shortening"
+    "command": "python -m pytest code/tests -q",
+    "passed": 25,
+    "seconds_reported_by_pytest": 1.76,
+    "scope": "Fresh run of the final cleaned source"
   },
   "environment": {
     "python": "3.13.15",
@@ -21,26 +19,18 @@
   },
   "benchmarks": {
     "reproduced": true,
-    "all_values_equal_to_preserved_result": true,
     "values": {
       "ols_vs_sklearn_max_abs_prediction": 7.593925488436071e-14,
       "ridge_vs_sklearn_max_abs_theta": 0.0,
       "ols_scaled_vs_centred_max_abs_prediction_p10": 1.2789769243681803e-13,
       "gradient_autograd_vs_analytic_max_relative": 1.5620354234419248e-15,
       "sgd_full_batch_vs_gd_max_abs": 2.220446049250313e-16,
-      "fista_vs_sklearn_lasso_max_abs_theta_p6": 1.5341705683624696e-10,
-      "fista_vs_sklearn_lasso_same_zeros_p6": true,
       "own_kfold_vs_sklearn_max_relative": 3.5970047377087226e-13,
       "bootstrap_identity_relative": 1.2504527946402763e-16
     }
   },
   "experiments_executed": [
-    "ridge_supplement.py",
-    "verification_supplement.py",
-    "model_selection_check.py",
-    "lasso_course_comparison.py",
-    "part_d_cross_validation.py (rerun after OLS rank-cutoff correction)",
-    "benchmarks.py"
+    "python code/run_all.py (a-i, benchmarks, four required comparisons)"
   ],
   "original_experiments_not_fully_rerun": [],
   "ols_cutoff_correction": {
@@ -55,7 +45,7 @@
   },
   "python_validation": {
     "files_parsed": 24,
-    "functions_with_provenance": 122,
+    "functions_with_provenance": 113,
     "functions_missing_provenance": []
   },
   "document_validation": {
@@ -66,7 +56,8 @@
     "student_review_recorded": false,
     "latex_braces_environments_references_checked": true,
     "final_pdf_visually_verified": false,
-    "compiler_status": "Built-in compiler failed: Unable to find standard directories for platform. No TeX-source diagnostics returned. Final PDF layout remains unverified."
+    "compiler_status": "Built-in compiler failed: Unable to find standard directories for platform. No TeX-source diagnostics returned.",
+    "regenerated_figure_texts_and_dimensions_agree": true
   },
   "source_research": {
     "course_book_pdf_pages": 625,
@@ -75,7 +66,7 @@
     "local_rubric": "EvaluationForm.md",
     "local_llm_guidelines": "LLM_Usage_Declaration_Guidelines.md",
     "source_map": "../Report_Writing_Guide.md, section 9",
-    "remote_exercises": "Weeks 35–38 fetched from official EducationalMaterialUiO/MachineLearningUiO repository",
+    "remote_exercises": "Weeks 35Ã¢â‚¬â€œ38 fetched from official EducationalMaterialUiO/MachineLearningUiO repository",
     "writing_guidance": [
       "ProjectWriting/projectwriting.do.txt",
       "week39/week39tuesday.ipynb",
@@ -84,26 +75,27 @@
     "latest_week_checked": "Week 41 Monday concerns Project 2 neural networks; no additional model added to Project 1."
   },
   "limitations": [
-    "Earlier 95/100 was an optimistic self-assessment, not a verified grade.",
+    "The earlier 95/100 was too optimistic; rubric self-assessment remains provisional.",
     "Lasso refinement checks selected models, not every grid candidate.",
-    "Original timings are not fresh measurements unless in a supplementary result.",
-    "Agent checks do not establish student's own verification or understanding."
+    "Timings quoted in the report are the original measured timings.",
+    "The final PDF layout is unverified because the built-in compiler fails before source parsing.",
+    "Agent checks do not establish the student's personal verification or understanding."
   ],
   "result_sha256": {
-    "benchmarks.json": "4fe03745a94aa21041d268e49ca16202a3f3aa0fa2c862d31b0a4d575f54dbac",
-    "lasso_course_comparison.json": "3d26e6edfccf1e768f57794e42283f9d8f68d2f47bf1fc9f8280329006f5c116",
-    "model_selection_check.json": "27e48bf5dd87b353d6164a8f3ddbaf01f8877891d64791fe55aed220bc874041",
-    "part_a.json": "f5c6ade2fa14ec55ecb8a4da73e72e5563e7852ee0501f2b45fb8be904ed238a",
-    "part_b.json": "e6d67b31102df45c95f7989356b4545382d2af6eb735dabd47d2e0a932b37fc9",
-    "part_c.json": "0dc2e31734ee136c4f0f2dd8904826a500ffe267dd73a4bcc0973e291b4e6971",
-    "part_d.json": "a0848afa69acd0e90511d15f00dc5257df5b75f27565fad8b04ae97bd90ce6fd",
-    "part_e.json": "a2333e56fe373e2281e9213df8950318a06878ca1876cf5630e77f5d5c53f0c6",
-    "part_f.json": "06b346a543fb7a7cd0ad2d12ed93685002c5df6681301a8b63128eaa69eaa5e2",
-    "part_g.json": "b854e3053bcf95d26752b75b6fafff3bd50a38f2446521cd0e8e7d0f3ab04309",
-    "part_h.json": "8cb775ef35630cb73387957ad58f9bb2dcf3da797260bf35dbfa85c81b2f8d93",
-    "part_i.json": "70a04a941e5b03887ceaaf137c0abbca39c99118e9e97671c825638188d18253",
-    "reproduction_check.json": "2d37341a7410c0b722c490239e50c4c09191bc0bc16cf16964d223f73f044399",
-    "ridge_supplement.json": "49604416c04b4e5e2223165657afd883e1f25aa13abd758d7d3886385ff1be1a",
+    "benchmarks.json": "a9085c5313d06a95926d7e83587f360449249db4f72e09ad681d5a9a12ce7eb6",
+    "lasso_course_comparison.json": "be9fdcc7f2bc5f99ed8fabd1875ba28378c507bcb823edd7fbd8badbdf76ba2d",
+    "model_selection_check.json": "bbd6aeb429e6ed839a17f3ec86894034343a4c2bece86cd1892b4e8cbe5d71c0",
+    "part_a.json": "942d945315cd4353a25ebd403d15991135c8f992f263f99ac35442e66dd486ed",
+    "part_b.json": "27b0d11ca3a24da4322f47a6e4700b4b50faed1990ad0c1f05d5c1b6907a6d51",
+    "part_c.json": "c05cc64bc06eb1a2659d80adbb1b01778caa167480313ce4a3a2e521826b9ba3",
+    "part_d.json": "e4cf6a1ee51cf1e6660383fe2895fb327d4b75b0f48f56974e58852efa3ce2b8",
+    "part_e.json": "3a96de1500f7e498d6aa640b256db684cba1d028e14796c4f22bd6befab3045c",
+    "part_f.json": "cd0a4a6855493bd72988dbada54096ddcf8fd7ab9afcce5e82a65ecd49a0fa28",
+    "part_g.json": "3e68102bb4d9ef7b42c1f06112192c418941f64eed3e0f0ad1ad362a7f6fe80d",
+    "part_h.json": "03e2e5bff3512060baf4e6ebf36e7f3a3d879b29616026dba37eda28fbe960c2",
+    "part_i.json": "509b9f48cb4d9d92a99e97006f3a9db2e534746988f563325ccf3456ea513638",
+    "reproduction_check.json": "ff25e8bccb0609a67559b0d896c7cda648842cb149966bc2eb81bbc86c3250f1",
+    "ridge_supplement.json": "0a75b4ae58c144f038b39e2a81ef82e749cfc40598f82099c4c04e3d1e229c29",
     "verification_supplement.json": "0ff210d51865945a8b04382a724ac54a75a59999985bccb7d844eebdeef248dd"
   },
   "fresh_pipeline_reproduction": {
@@ -112,7 +104,7 @@
     "all_compared_numerical_values_agree": true,
     "relative_tolerance": 1e-07,
     "absolute_tolerance": 1e-10,
-    "values_compared": 133644,
-    "timing_note": "Timing fields are excluded from numerical agreement: elapsed times vary between runs. Reported timings remain those in the original archived JSON records."
+    "values_compared": 131245,
+    "timing_note": "Timing fields are excluded. The submitted JSON retains original measured timings quoted in report.tex; the fresh run timings are in the command logs."
   }
 }

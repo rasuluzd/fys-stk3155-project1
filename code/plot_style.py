@@ -19,9 +19,9 @@ from cycler import cycler
 from matplotlib.colors import LinearSegmentedColormap
 
 ROOT = Path(__file__).resolve().parent.parent
-FIG_DIR = ROOT / "figures"
+FIG_DIR = ROOT / "report" / "figures"
 RESULTS_DIR = ROOT / "results"
-FIG_DIR.mkdir(exist_ok=True)
+FIG_DIR.mkdir(parents=True, exist_ok=True)
 RESULTS_DIR.mkdir(exist_ok=True)
 
 SINGLE = 3.4
@@ -108,7 +108,7 @@ def ordered_colors(k, light=0.25, dark=1.0, base=None):
 
 
 def save(fig, name):
-    """Save a figure as PDF in the figures/ folder and close it.
+    """Save a figure as PDF in the report/figures/ folder and close it.
 
     If the environment variable PREVIEW_DIR is set, a PNG copy is written there as well
     (handy for a quick look without a PDF viewer).

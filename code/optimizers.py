@@ -31,10 +31,8 @@ Course connections (concepts and checked equations, not a copying history)
   placement of epsilon outside the square root match that Tuesday listing.
 * Batches/epochs/schedules: book 4.7.8-4.7.9; week38 Exercise 4, Tuesday
   Case 2. This driver reshuffles without replacement each epoch.
-* Lasso subgradients: book 3.9 and 4.14.7; Project 1 part g. ISTA and FISTA
-  are optional solver extensions, with FISTA from Beck and Teboulle (2009).
-  The Hessian-tuned momentum and spectral-filter experiments in part e are
-  additional analysis, not prerequisites for understanding the basic loop.
+* Lasso subgradients: book 3.9 and 4.14.7; Project 1 part g.
+  Codex removed unused proximal solvers on 5 October 2026.
 
 Differences to explain when comparing with the lecture listings
 --------------------------------------------------------------
@@ -53,7 +51,7 @@ OpenAI Codex reviewed the course mapping and improved documentation on
 5 October 2026 without changing executable statements. Assistance tags
 do not certify that the student has personally reviewed the code.
 Tests check analytical/AD agreement, all five update rules on one small
-Ridge case, ISTA against sklearn Lasso, and selected GD/SGD properties.
+Ridge case and selected GD/SGD properties.
 The experiment scripts supply further comparisons; these checks do not
 prove convergence of every optimizer for every objective or learning rate.
 """
@@ -138,7 +136,7 @@ def grad_lasso(theta, X, y, lam):
 
     Book 3.9 and 4.14.7 / Project 1 part g. Zero is a valid subgradient
     of abs at zero, not an ordinary derivative. A fixed subgradient step
-    does not guarantee exactly zero fitted coefficients; compare ISTA.
+    does not guarantee exactly zero fitted coefficients.
 
     LLM-assisted: original implementation attributed to Claude; documentation
     reviewed with OpenAI Codex on 5 October 2026. See module provenance.
@@ -399,18 +397,6 @@ class Adam(GD):
 OPTIMIZERS = {"gd": GD, "momentum": Momentum, "adagrad": AdaGrad, "rmsprop": RMSprop, "adam": Adam}
 
 
-def soft_threshold(z, t):
-    """Shrink each coordinate toward zero by nonnegative t, clipping small ones to zero.
-
-    This is the proximal map of t*||theta||_1. ISTA uses t=eta*lam after
-    an ordinary gradient step on the smooth MSE term; Project 1 part g.
-
-    LLM-assisted: original implementation attributed to Claude; documentation
-    reviewed with OpenAI Codex on 5 October 2026. See module provenance.
-    """
-    return np.sign(z) * np.maximum(np.abs(z) - t, 0.0)
-
-
 # ----------------------------------------------------------------------------------------------
 # Drivers
 # ----------------------------------------------------------------------------------------------
@@ -427,7 +413,7 @@ def _relative_error(theta, theta_ref):
 
 
 def gradient_descent(gradient, theta0, optimizer, n_iter, theta_ref=None, tol=None,
-                     prox_lam=None, record_every=1):
+                     record_every=1):
     """Run the full-batch loop with a chosen gradient and update rule.
 
     Course connection: week37 Tuesday Case 1 and week38 Exercise 2.
@@ -442,8 +428,6 @@ def gradient_descent(gradient, theta0, optimizer, n_iter, theta_ref=None, tol=No
     n_iter : maximum number of updates
     theta_ref : optional nonzero reference coefficients used to measure error
     tol : stop at relative coefficient error < tol; requires theta_ref
-    prox_lam : optional L1 penalty for ISTA; use only plain GD and the
-               smooth MSE gradient, otherwise the penalty is counted twice
     record_every : retain a relative-error sample every this many updates
 
     Returns
@@ -466,8 +450,6 @@ def gradient_descent(gradient, theta0, optimizer, n_iter, theta_ref=None, tol=No
     for k in range(1, n_iter + 1):
         step = optimizer.update(gradient(theta), optimizer.eta)
         theta = theta - step
-        if prox_lam is not None:
-            theta = soft_threshold(theta, optimizer.eta * prox_lam)
         if not np.all(np.isfinite(theta)) or np.abs(theta).max() > 1e12:
             diverged = True
             break
@@ -480,44 +462,6 @@ def gradient_descent(gradient, theta0, optimizer, n_iter, theta_ref=None, tol=No
                 break
     return theta, {"errors": np.array(errors), "iterations": k,
                    "converged": converged, "diverged": diverged}
-
-
-def fista(gradient_smooth, theta0, eta, lam, n_iter, theta_ref=None, tol=None):
-    """Optional accelerated proximal Lasso solver: Beck and Teboulle (2009).
-
-    The required part-g subgradient methods are also available above;
-    FISTA is an additional comparison. gradient_smooth must be the MSE
-    gradient only. Use eta <= 1/L, where L is its largest Hessian eigenvalue.
-    Take a smooth gradient step from the extrapolated z, soft-threshold it
-    by eta*lam, then update z with weight (t_old-1)/t_new. This varying
-    weight differs from the fixed gamma in Momentum.
-
-    theta_ref/tol measure relative coefficient error as in gradient_descent.
-    Objective values need not decrease monotonically. This implementation
-    does not check nonfinite iterates: the returned diverged=False is a
-    compatibility field, not evidence of a performed divergence test.
-
-    LLM-assisted: original implementation attributed to Claude; documentation
-    reviewed with OpenAI Codex on 5 October 2026. See module provenance.
-    """
-    theta = np.array(theta0, dtype=float)
-    z, t = theta.copy(), 1.0
-    errors = []
-    converged = False
-    k = 0
-    for k in range(1, n_iter + 1):
-        theta_new = soft_threshold(z - eta * gradient_smooth(z), eta * lam)
-        t_new = 0.5 * (1.0 + np.sqrt(1.0 + 4.0 * t * t))
-        z = theta_new + ((t - 1.0) / t_new) * (theta_new - theta)
-        theta, t = theta_new, t_new
-        if theta_ref is not None:
-            err = _relative_error(theta, theta_ref)
-            errors.append(err)
-            if tol is not None and err < tol:
-                converged = True
-                break
-    return theta, {"errors": np.array(errors), "iterations": k, "converged": converged,
-                   "diverged": False}
 
 
 def inverse_time_schedule(t0, t1):
@@ -534,7 +478,7 @@ def inverse_time_schedule(t0, t1):
 
 
 def stochastic_gradient_descent(grad_fn, X, y, lam, theta0, optimizer, n_epochs, batch_size,
-                                schedule=None, seed=None, theta_ref=None, prox_lam=None,
+                                schedule=None, seed=None, theta_ref=None,
                                 callback=None):
     """Run the same update rules on reshuffled mini-batches, once per epoch.
 
@@ -552,8 +496,6 @@ def stochastic_gradient_descent(grad_fn, X, y, lam, theta0, optimizer, n_epochs,
                indices 0, 1, ... . To express decay in epochs, multiply its
                time scale by ceil(n/batch_size).
     theta_ref : optional nonzero reference; relative error is recorded per epoch
-    prox_lam : optional plain-GD Lasso threshold; grad_fn must then be the
-               smooth MSE gradient with lam=0, not the Lasso subgradient
     callback : optional scalar diagnostic evaluated after every epoch
 
     State is reset only at entry and persists across epochs. This driver
@@ -580,8 +522,6 @@ def stochastic_gradient_descent(grad_fn, X, y, lam, theta0, optimizer, n_epochs,
             eta = optimizer.eta if schedule is None else schedule(t)
             g = grad_fn(theta, X[idx], y[idx], lam)
             theta = theta - optimizer.update(g, eta)
-            if prox_lam is not None:
-                theta = soft_threshold(theta, eta * prox_lam)
             t += 1
         if not np.all(np.isfinite(theta)) or np.abs(theta).max() > 1e12:
             diverged = True

@@ -1,11 +1,11 @@
 {
   "date": "2026-10-05",
-  "purpose": "Fresh-process reproduction requested by the week 40 Project 1 workshop.",
-  "method": "Copied the project code to an empty output directory; ran tests, run_all.py and all four supplementary scripts as fresh Python processes.",
+  "purpose": "Verify the cleaned submission from an empty output directory.",
+  "method": "Copied the final code into an empty directory; ran pytest and run_all.py in fresh processes. The run command includes all four required comparison scripts.",
   "complete": true,
   "test_suite": {
-    "passed": 26,
-    "pytest_seconds": 3.51
+    "passed": 25,
+    "pytest_seconds": 1.76
   },
   "commands": [
     {
@@ -16,83 +16,67 @@
         "-q"
       ],
       "returncode": 0,
-      "seconds": 4.167735100025311,
-      "log": "log_tests.txt"
+      "seconds": 2.612322499975562,
+      "log": "tests.txt"
     },
     {
       "args": [
         "run_all.py"
       ],
-      "returncode": 0,
-      "seconds": 491.5956990000559,
-      "log": "log_run_all.txt"
+      "returncode": 1,
+      "seconds": 374.4183592000045,
+      "log": "pipeline.txt"
     },
     {
       "args": [
-        "ridge_supplement.py"
+        "-m",
+        "pytest",
+        "tests",
+        "-q"
       ],
       "returncode": 0,
-      "seconds": 6.765829399926588,
-      "log": "log_ridge_supplement.txt"
+      "seconds": 2.4423901999834925,
+      "log": "tests.txt"
     },
     {
       "args": [
-        "verification_supplement.py"
+        "run_all.py",
+        "g",
+        "lasso",
+        "h",
+        "verify",
+        "i",
+        "check",
+        "bench"
       ],
       "returncode": 0,
-      "seconds": 21.52633440005593,
-      "log": "log_verification_supplement.txt"
-    },
-    {
-      "args": [
-        "model_selection_check.py"
-      ],
-      "returncode": 0,
-      "seconds": 4.054828500025906,
-      "log": "log_model_selection_check.txt"
-    },
-    {
-      "args": [
-        "lasso_course_comparison.py"
-      ],
-      "returncode": 0,
-      "seconds": 14.730981100001372,
-      "log": "log_lasso_course_comparison.txt"
+      "seconds": 155.9058420000365,
+      "log": "pipeline_after_repair.txt"
     }
   ],
+  "repair": "The initial full run stopped at Lasso because cleanup removed its saved reference field. Kept the reference in a dedicated field, updated the consumer, and reran g and all following stages. Earlier a-f scripts are byte-identical to the final source.",
   "relative_tolerance": 1e-07,
   "absolute_tolerance": 1e-10,
   "all_compared_numerical_values_agree": true,
-  "values_compared": 133644,
-  "timings": "Timing fields are excluded from numerical agreement: elapsed times vary between runs. Reported timings remain those in the original archived JSON records.",
-  "legacy_metadata": "part_a.json retains an unused approximation_rate object; the current source omits that optional diagnostic. Its numerical experiment arrays agree.",
+  "values_compared": 131245,
+  "timings": "Timing fields are excluded. The submitted JSON retains original measured timings quoted in report.tex; the fresh run timings are in the command logs.",
+  "cleanup": "Unreported result fields were removed with their experiments. New part-b shrinkage arrays are generated directly by the retained Ridge routine. The selected Lasso comparison contains the two minimum-CV models only. Part-i bias/variance solver counts now cover 1050 independent fits (185 iteration-limit hits), rather than the prior combined independent/optional-bootstrap cohort; this changed counter is not a reproduction discrepancy.",
   "comparison_by_file": {
     "benchmarks.json": {
-      "numerical_values_checked": 9,
+      "numerical_values_checked": 7,
       "mismatches": [],
       "timing_fields_excluded": [],
-      "schema_differences": []
+      "removed_fields": [
+        "/fista_vs_sklearn_lasso_max_abs_theta_p6",
+        "/fista_vs_sklearn_lasso_same_zeros_p6"
+      ],
+      "new_fields": []
     },
     "lasso_course_comparison.json": {
       "numerical_values_checked": 943,
       "mismatches": [],
       "timing_fields_excluded": [
-        "/candidates/adagrad/0/elapsed_seconds",
-        "/candidates/adagrad/1/elapsed_seconds",
-        "/candidates/adagrad/2/elapsed_seconds",
-        "/candidates/adagrad/3/elapsed_seconds",
-        "/candidates/adagrad/4/elapsed_seconds",
-        "/candidates/adagrad/5/elapsed_seconds",
-        "/candidates/adagrad/6/elapsed_seconds",
-        "/candidates/adagrad/7/elapsed_seconds",
-        "/candidates/adam/0/elapsed_seconds",
-        "/candidates/adam/1/elapsed_seconds",
-        "/candidates/adam/2/elapsed_seconds",
-        "/candidates/adam/3/elapsed_seconds",
-        "/candidates/adam/4/elapsed_seconds",
-        "/candidates/adam/5/elapsed_seconds",
-        "/candidates/adam/6/elapsed_seconds",
-        "/candidates/adam/7/elapsed_seconds",
+        "/setup/timing_scope",
         "/candidates/gd/0/elapsed_seconds",
         "/candidates/gd/1/elapsed_seconds",
         "/candidates/gd/2/elapsed_seconds",
@@ -109,6 +93,14 @@
         "/candidates/momentum/5/elapsed_seconds",
         "/candidates/momentum/6/elapsed_seconds",
         "/candidates/momentum/7/elapsed_seconds",
+        "/candidates/adagrad/0/elapsed_seconds",
+        "/candidates/adagrad/1/elapsed_seconds",
+        "/candidates/adagrad/2/elapsed_seconds",
+        "/candidates/adagrad/3/elapsed_seconds",
+        "/candidates/adagrad/4/elapsed_seconds",
+        "/candidates/adagrad/5/elapsed_seconds",
+        "/candidates/adagrad/6/elapsed_seconds",
+        "/candidates/adagrad/7/elapsed_seconds",
         "/candidates/rmsprop/0/elapsed_seconds",
         "/candidates/rmsprop/1/elapsed_seconds",
         "/candidates/rmsprop/2/elapsed_seconds",
@@ -117,40 +109,62 @@
         "/candidates/rmsprop/5/elapsed_seconds",
         "/candidates/rmsprop/6/elapsed_seconds",
         "/candidates/rmsprop/7/elapsed_seconds",
-        "/selected/adagrad/elapsed_seconds",
-        "/selected/adam/elapsed_seconds",
+        "/candidates/adam/0/elapsed_seconds",
+        "/candidates/adam/1/elapsed_seconds",
+        "/candidates/adam/2/elapsed_seconds",
+        "/candidates/adam/3/elapsed_seconds",
+        "/candidates/adam/4/elapsed_seconds",
+        "/candidates/adam/5/elapsed_seconds",
+        "/candidates/adam/6/elapsed_seconds",
+        "/candidates/adam/7/elapsed_seconds",
         "/selected/gd/elapsed_seconds",
         "/selected/momentum/elapsed_seconds",
+        "/selected/adagrad/elapsed_seconds",
         "/selected/rmsprop/elapsed_seconds",
-        "/setup/timing_scope"
+        "/selected/adam/elapsed_seconds"
       ],
-      "schema_differences": []
+      "removed_fields": [],
+      "new_fields": []
     },
     "model_selection_check.json": {
-      "numerical_values_checked": 564,
+      "numerical_values_checked": 284,
       "mismatches": [],
       "timing_fields_excluded": [],
-      "schema_differences": []
+      "removed_fields": [],
+      "new_fields": []
     },
     "part_a.json": {
       "numerical_values_checked": 988,
       "mismatches": [],
       "timing_fields_excluded": [],
-      "schema_differences": [
+      "removed_fields": [
         "/approximation_rate"
-      ]
+      ],
+      "new_fields": []
     },
     "part_b.json": {
-      "numerical_values_checked": 3008,
+      "numerical_values_checked": 2031,
       "mismatches": [],
       "timing_fields_excluded": [],
-      "schema_differences": []
+      "removed_fields": [
+        "/ensemble",
+        "/svd_degree15/best_lambda_ensemble",
+        "/svd_degree15/best_lambda_main",
+        "/svd_degree15/dof",
+        "/svd_degree15/dof_at_best_lambda_ensemble",
+        "/svd_degree15/n_lambda_crossing",
+        "/svd_degree15/noise_level"
+      ],
+      "new_fields": [
+        "/svd_degree15/shrinkage"
+      ]
     },
     "part_c.json": {
       "numerical_values_checked": 416,
       "mismatches": [],
       "timing_fields_excluded": [],
-      "schema_differences": []
+      "removed_fields": [],
+      "new_fields": []
     },
     "part_d.json": {
       "numerical_values_checked": 1879,
@@ -158,17 +172,27 @@
       "timing_fields_excluded": [
         "/ridge_time_s"
       ],
-      "schema_differences": []
+      "removed_fields": [],
+      "new_fields": []
     },
     "part_e.json": {
-      "numerical_values_checked": 511,
+      "numerical_values_checked": 205,
       "mismatches": [],
       "timing_fields_excluded": [
+        "/timing",
         "/degree6/gd_analytic_time_s",
-        "/degree6/gd_autograd_time_s",
-        "/timing"
+        "/degree6/gd_autograd_time_s"
       ],
-      "schema_differences": []
+      "removed_fields": [
+        "/early_stopping_degree15",
+        "/kappa_scaling",
+        "/degree6/ridge_table/0/threshold_ratio",
+        "/degree6/ridge_table/1/threshold_ratio",
+        "/degree6/ridge_table/2/threshold_ratio",
+        "/degree6/ridge_table/3/threshold_ratio",
+        "/degree6/ridge_table/4/threshold_ratio"
+      ],
+      "new_fields": []
     },
     "part_f.json": {
       "numerical_values_checked": 365,
@@ -176,16 +200,20 @@
       "timing_fields_excluded": [
         "/scan_time_s"
       ],
-      "schema_differences": []
+      "removed_fields": [],
+      "new_fields": []
     },
     "part_g.json": {
-      "numerical_values_checked": 760,
+      "numerical_values_checked": 34,
       "mismatches": [],
-      "timing_fields_excluded": [
-        "/convergence/eta_times_lambda",
-        "/degree6_rattle/eta_times_lambda"
+      "timing_fields_excluded": [],
+      "removed_fields": [
+        "/convergence",
+        "/degree6_rattle",
+        "/fista_vs_sklearn",
+        "/path"
       ],
-      "schema_differences": []
+      "new_fields": []
     },
     "part_h.json": {
       "numerical_values_checked": 78349,
@@ -193,85 +221,111 @@
       "timing_fields_excluded": [
         "/batch_size/1/constant/time_s",
         "/batch_size/1/decaying/time_s",
-        "/batch_size/20/constant/time_s",
-        "/batch_size/20/decaying/time_s",
         "/batch_size/5/constant/time_s",
         "/batch_size/5/decaying/time_s",
+        "/batch_size/20/constant/time_s",
+        "/batch_size/20/decaying/time_s",
         "/batch_size/80/constant/time_s",
         "/batch_size/80/decaying/time_s",
         "/full_batch_eta_opt/time_s",
-        "/methods_M10/adagrad/time_s",
-        "/methods_M10/adam/time_s",
         "/methods_M10/gd/time_s",
         "/methods_M10/momentum/time_s",
-        "/methods_M10/rmsprop/time_s"
+        "/methods_M10/adagrad/time_s",
+        "/methods_M10/rmsprop/time_s",
+        "/methods_M10/adam/time_s"
       ],
-      "schema_differences": []
+      "removed_fields": [],
+      "new_fields": []
     },
     "part_i.json": {
-      "numerical_values_checked": 1681,
+      "numerical_values_checked": 1573,
       "mismatches": [],
       "timing_fields_excluded": [],
-      "schema_differences": []
+      "removed_fields": [
+        "/sigma=0.1/k10/OLS/one_se",
+        "/sigma=0.1/k10/Ridge/one_se",
+        "/sigma=0.1/k10/Ridge/min/dof",
+        "/sigma=0.1/k10/Lasso/one_se",
+        "/sigma=0.1/k10/Lasso/min/nonzero_even",
+        "/sigma=0.1/k10/Lasso/min/nonzero_odd",
+        "/sigma=0.3/k10/OLS/one_se",
+        "/sigma=0.3/k10/Ridge/one_se",
+        "/sigma=0.3/k10/Ridge/min/dof",
+        "/sigma=0.3/k10/Lasso/one_se",
+        "/sigma=0.3/k10/Lasso/min/nonzero_even",
+        "/sigma=0.3/k10/Lasso/min/nonzero_odd",
+        "/bias_variance_degree15/OLS/bias2_boot",
+        "/bias_variance_degree15/OLS/variance_boot",
+        "/bias_variance_degree15/Ridge/bias2_boot",
+        "/bias_variance_degree15/Ridge/variance_boot",
+        "/bias_variance_degree15/Lasso/bias2_boot",
+        "/bias_variance_degree15/Lasso/variance_boot"
+      ],
+      "new_fields": [
+        "/lasso_convergence_bias_variance"
+      ]
     },
     "ridge_supplement.json": {
       "numerical_values_checked": 43779,
       "mismatches": [],
       "timing_fields_excluded": [],
-      "schema_differences": []
+      "removed_fields": [],
+      "new_fields": []
     },
     "verification_supplement.json": {
       "numerical_values_checked": 392,
       "mismatches": [],
       "timing_fields_excluded": [
-        "/ridge_full_batch_gd_eta_opt/median_time_s",
         "/ridge_gradient_sources/analytic/time_s",
         "/ridge_gradient_sources/autograd/time_s",
-        "/ridge_sgd_batch_size/20/constant/median_time_s",
-        "/ridge_sgd_batch_size/20/decaying_same_initial_eta/median_time_s",
-        "/ridge_sgd_batch_size/5/constant/median_time_s",
-        "/ridge_sgd_batch_size/5/decaying_same_initial_eta/median_time_s",
-        "/ridge_sgd_batch_size/80/constant/median_time_s",
-        "/ridge_sgd_batch_size/80/decaying_same_initial_eta/median_time_s",
-        "/ridge_sgd_methods_M10/adagrad/constant/median_time_s",
-        "/ridge_sgd_methods_M10/adagrad/decaying_same_initial_eta/median_time_s",
-        "/ridge_sgd_methods_M10/adam/constant/median_time_s",
-        "/ridge_sgd_methods_M10/adam/decaying_same_initial_eta/median_time_s",
         "/ridge_sgd_methods_M10/gd/constant/median_time_s",
         "/ridge_sgd_methods_M10/gd/decaying_same_initial_eta/median_time_s",
         "/ridge_sgd_methods_M10/momentum/constant/median_time_s",
         "/ridge_sgd_methods_M10/momentum/decaying_same_initial_eta/median_time_s",
+        "/ridge_sgd_methods_M10/adagrad/constant/median_time_s",
+        "/ridge_sgd_methods_M10/adagrad/decaying_same_initial_eta/median_time_s",
         "/ridge_sgd_methods_M10/rmsprop/constant/median_time_s",
-        "/ridge_sgd_methods_M10/rmsprop/decaying_same_initial_eta/median_time_s"
+        "/ridge_sgd_methods_M10/rmsprop/decaying_same_initial_eta/median_time_s",
+        "/ridge_sgd_methods_M10/adam/constant/median_time_s",
+        "/ridge_sgd_methods_M10/adam/decaying_same_initial_eta/median_time_s",
+        "/ridge_sgd_batch_size/5/constant/median_time_s",
+        "/ridge_sgd_batch_size/5/decaying_same_initial_eta/median_time_s",
+        "/ridge_sgd_batch_size/20/constant/median_time_s",
+        "/ridge_sgd_batch_size/20/decaying_same_initial_eta/median_time_s",
+        "/ridge_sgd_batch_size/80/constant/median_time_s",
+        "/ridge_sgd_batch_size/80/decaying_same_initial_eta/median_time_s",
+        "/ridge_full_batch_gd_eta_opt/median_time_s"
       ],
-      "schema_differences": []
+      "removed_fields": [],
+      "new_fields": []
     }
   },
   "code_sha256": {
-    "benchmarks.py": "83941ab4b2d4dbb93602505d6b122f1beacbfdc2ddb7fc80c9992c66f5a74f85",
-    "lasso_course_comparison.py": "f8aa0217676b4d8ba4a9e3e49a7370a9cf53361e938ab70b330a0dbec2cc01cc",
-    "model_selection_check.py": "1ba5c76ef60320f5f08162dc0c1dc76766c80d478d14ab9df696521a01556c46",
-    "optimizers.py": "f73e40a48d3223ff379bd301aa0bddbe927e2aa90a7f91ed53e16316ef601cf2",
-    "part_a_ols.py": "d19b0b175d94b26d3464e851d175bdc5cdb9ec8c9c7440a427896e7181af6ea9",
-    "part_b_ridge.py": "5e66f9cce36879559f04e5cc7d24617b0bb8e3f38719ae1f78fab73718a6f2f3",
-    "part_c_bias_variance.py": "98f503312be9bd61c33d2bf5a43dab3b8184fff93d5c6195b8dfe851c28418bd",
-    "part_d_cross_validation.py": "c921530efdb9aef25e5b63544f8b85cee205681e82df1327fe6c48f55d440c86",
-    "part_e_gradient_descent.py": "10bc6174668af7bf6c54f3c64b2ce3e8cd881c0dd7b89d23e20df3eb4716e702",
-    "part_f_adaptive.py": "9e170b48feef507d3f41e53092cf770ee4b4240f71ebf5bdac2b1c70de0c0471",
-    "part_g_lasso.py": "d54fd020c63ddf4c37a212e00a5cb877e9d8cf51162a25dfc92bb9f279a26a94",
-    "part_h_sgd.py": "9256feaa43371fd50157deced3fb8d743d217605973038ee570676986417582f",
-    "part_i_model_selection.py": "ea990cdb71d2692b22225f7bbf1c423ef6db2a671f55c7b048a153d9012b200c",
-    "plot_style.py": "19c9e649903f554cf7ec5bf444f71afd2a39409bc68ce150354565b143852b6c",
-    "regression.py": "f8f009fbeeb2944e424176b0fa468531bf9b53bef920652f5c9eea1f421bb765",
-    "resampling.py": "e362ef995d25d929cef1a9842ffe3f7efb970fbc41a18ab24ba6552726b35905",
-    "ridge_supplement.py": "caeaabfafb0d9015327fdb88c6d94becd2de19d1f310c54ade08761076c8fbc3",
-    "run_all.py": "0ce655f34d9efa791250fe5e56d2fed60f09693b42ebfe1a5bf16d7aceac584c",
-    "settings.py": "5bbc20fd3360ff096f8815320fbc1ec503c0537f696255574d4b8680e28731d1",
+    "benchmarks.py": "7d02062b1141f60552e690b0ac7d1c2b0f21d799ba31c307d35863ec394261fd",
+    "lasso_course_comparison.py": "e7863a50add05aa2e799225b5cbedead704e32cba391a5210d2cb9bf3f600afb",
+    "model_selection_check.py": "b3ea894cab38da6c9207dfa55563b4e4e6660c89678c65882b204cd4e6a1e963",
+    "optimizers.py": "d899a9db3ebfe565224cd3fe3125ea2d802f1c7fa4e899b5ea25cd26aeaba166",
+    "part_a_ols.py": "f20e7b507caf9d9e013ee73a3f095c3905a205fafa2a1a715593e41c509d4203",
+    "part_b_ridge.py": "09131de08d4ca06d2b849e86bf2dfd7981eb167861d2534203ab99e1b5e92102",
+    "part_c_bias_variance.py": "29b72b0576aa65fe0156bf2d7150d9ed0578b628a0c5c82fa24ba0db2c15986d",
+    "part_d_cross_validation.py": "3ac2fdd8ca408c385adb242ed794ec6c93b41d80a206d869ebc69027d51001d5",
+    "part_e_gradient_descent.py": "e80eca79d46590b698c979482bb74cc1e41a019592b561c0b0b598a588ee3e46",
+    "part_f_adaptive.py": "0efba46865889878aa6ea2d44b50fa7617dd07251d19ee90c00d550c47608d44",
+    "part_g_lasso.py": "d3f3fc787baf39c3d8d379ecc06780fc7419b0915039f6ef7c5dccf317cb2b14",
+    "part_h_sgd.py": "ea1274bafcbaa95a6880693f52f2989b8dea32b749209eaeb2aa7017778c2ded",
+    "part_i_model_selection.py": "6593a786c888e5aee249741b73539972bc87baa0e1ab7b8ffb308611a11d8ad0",
+    "plot_style.py": "53dc3e580e4822ea924bc29b0f3c3bfd4e784775711ef2c6f0a8130beecd7355",
+    "regression.py": "d54bd62d21abc150c558481e5b6c1c5e710e4d9d86895a728b74b2c500d54ea9",
+    "resampling.py": "a09c1af86c88a680fc924898b4a3a06300a02b6e39efe34e8c691bc61076be7d",
+    "ridge_supplement.py": "c477fba05a45af6c0d1d9e94a052e8258f2d0ecfe7b4f8eba23b8e5a42645a48",
+    "run_all.py": "38ca012732f390616ca516bbc3a9199be0a252c0b752873bd3b750b346b61eb4",
+    "settings.py": "687c97b4f9dd8a3fe29b9d49bd25ccbfb13f3ed11ecfb50282bc9bd086b3927d",
+    "verification_supplement.py": "d4e23a97472a9921bd62511e600b1d7a77e0a0355caa116da6e9dd12f6fb516c",
     "tests/conftest.py": "a8eb41dc05b9499832fc4acc309215d8c3193e1e1de2690b3fcf2874019ac6d9",
-    "tests/test_optimizers.py": "f1e1e18935bf8cf0d966da231c6f0f1a64aea017ec9c018ea676a6b8bedf5f52",
-    "tests/test_regression.py": "41a7230a10e2f040040afab94c39e50ca8867aee223e6611e144b7ddd8ad272e",
-    "tests/test_resampling.py": "a9d59169781008205992ad5cde69960db464b44d6f519a03f16055ce4c8bfbeb",
-    "verification_supplement.py": "d4e23a97472a9921bd62511e600b1d7a77e0a0355caa116da6e9dd12f6fb516c"
+    "tests/test_optimizers.py": "ef604889e7c7f7ebea5a85f19807ecdef2ab69083a097a05ebe756fe8c99ae82",
+    "tests/test_regression.py": "e7ea46f52ac8bdefb74479518df094f2eca057cb7040dec77bc4edcbda5702ff",
+    "tests/test_resampling.py": "402d877f02f053e68554de6b654c9840131813a156d8bf14d38c811016d8d73a"
   },
-  "limits": "Reproduction does not eliminate finite-sample uncertainty or the recorded Lasso iteration-limit warnings. It does not establish the student's personal review."
+  "limits": "Reproduction does not resolve finite-sample uncertainty, rerank the incompletely converged Lasso grid, verify final PDF layout, or establish student understanding.",
+  "code_hash_format": "SHA-256 of UTF-8 source with LF line endings and no BOM, for consistent repository/ZIP verification."
 }

@@ -1,23 +1,17 @@
-"""
-Part a): ordinary least squares for Runge's function.
+"""Part a: OLS degree, coefficient, scaling, sample-size and noise comparisons.
 
-Produces
-  figures/a_fits.pdf         data, true function and OLS fits of increasing degree
-  figures/a_mse_r2.pdf       train/test MSE and R^2 against polynomial degree (main data set)
-  figures/a_coefficients.pdf parameters theta_j against degree, and ||theta|| against degree
-  figures/a_ensemble.pdf     median test MSE against degree for several n and noise levels
-  results/part_a.json        all numbers quoted in the report
-
-LLM-assisted: written with Claude (Anthropic, Claude Code; original model label unverified), October 2026.
+Writes results/part_a.json and report/figures/a_mse_r2.pdf and a_coefficients.pdf.
+The sample-size/noise simulations supply the numerical discussion, without extra plots.
+LLM-assisted: original Claude implementation; Codex removed unreported plots, 5 October 2026.
 """
 
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 
-from plot_style import COLORS, GREY, INK, DOUBLE, SINGLE, METHOD_COLORS, ordered_colors, save, set_style
-from regression import PolynomialRegression, Scaler, make_data, mse, polynomial_features, r2, runge
-from settings import MAX_DEGREE, NOISE, SEED, TEST_SIZE, main_split, save_results
+from plot_style import COLORS, GREY, DOUBLE, METHOD_COLORS, save, set_style
+from regression import PolynomialRegression, Scaler, make_data, mse, polynomial_features, r2
+from settings import MAX_DEGREE, NOISE, TEST_SIZE, main_split, save_results
 
 set_style()
 results = {}
@@ -63,23 +57,6 @@ for ax, lab in zip((ax1, ax2), ("(a)", "(b)")):
     ax.text(0.02, 0.96, lab, transform=ax.transAxes, va="top", fontweight="bold")
 fig.tight_layout()
 save(fig, "a_mse_r2")
-
-# ------------------------------------------------------------------------------------------
-# 2) Fits of increasing degree
-# ------------------------------------------------------------------------------------------
-fig, ax = plt.subplots(figsize=(SINGLE, 2.4))
-ax.plot(x_train, y_train, "o", ms=2.6, color=GREY, alpha=0.8, label="Training data")
-ax.plot(x_test, y_test, "x", ms=3.2, color=INK, label="Test data")
-ax.plot(x_grid, runge(x_grid), color=INK, lw=1.0, label="$f(x)$")
-for p, c, ls in zip((2, 6, 15), (COLORS[0], COLORS[1], COLORS[2]), ("--", "-", "-.")):
-    model = PolynomialRegression(p, "ols").fit(x_train, y_train)
-    ax.plot(x_grid, model.predict(x_grid), ls, color=c, lw=1.2, label=f"OLS, $p={p}$")
-ax.set_ylim(-0.5, 1.75)
-ax.set_xlabel("$x$")
-ax.set_ylabel("$y$")
-ax.legend(ncol=3, fontsize=5.5, loc="upper center", columnspacing=0.8, handlelength=1.6)
-fig.tight_layout()
-save(fig, "a_fits")
 
 # ------------------------------------------------------------------------------------------
 # 3) Parameters against degree
@@ -164,41 +141,14 @@ def ensemble(n, noise, reps=R):
 
 
 ens = {}
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(DOUBLE, 2.4))
-n_values = (50, 100, 500, 1000)
-for c, n in zip(ordered_colors(len(n_values), 0.35, 1.0), n_values):
-    tr, te = ensemble(n, NOISE)
-    med, q1, q3 = np.median(te, 0), np.quantile(te, 0.25, 0), np.quantile(te, 0.75, 0)
-    ax1.semilogy(deg_ens, med, "-o", ms=2.5, color=c, label=f"$n={n}$")
-    ax1.fill_between(deg_ens, q1, q3, color=c, alpha=0.15, lw=0)
-    ens[f"n={n},sigma={NOISE}"] = {"median": med, "q1": q1, "q3": q3,
-                                   "best_degree_median": int(deg_ens[np.argmin(med)]),
-                                   "mean": te.mean(0), "train_median": np.median(tr, 0)}
-ax1.axhline(NOISE**2, color=GREY, lw=0.9, ls=":")
-ax1.set_ylim(5e-3, 2.0)
-ax1.set_xlabel("Polynomial degree $p$")
-ax1.set_ylabel("Test MSE (median of 200 data sets)")
-ax1.legend(title=rf"$\sigma={NOISE}$", fontsize=6, title_fontsize=6)
-
-noise_values = (0.0, 0.05, 0.1, 0.3)
-for c, s in zip(ordered_colors(len(noise_values), 0.35, 1.0), noise_values):
-    tr, te = ensemble(100, s)
-    med, q1, q3 = np.median(te, 0), np.quantile(te, 0.25, 0), np.quantile(te, 0.75, 0)
-    ax2.semilogy(deg_ens, med, "-o", ms=2.5, color=c, label=rf"$\sigma={s}$")
-    ax2.fill_between(deg_ens, q1, q3, color=c, alpha=0.15, lw=0)
-    ens[f"n=100,sigma={s}"] = {"median": med, "q1": q1, "q3": q3,
-                               "best_degree_median": int(deg_ens[np.argmin(med)]),
-                               "mean": te.mean(0), "train_median": np.median(tr, 0)}
-# Codex, 5 October 2026: keep this figure focused on the sample-size and
-# noise comparisons requested in part a, without an external approximation-rate model.
-ax2.set_xlabel("Polynomial degree $p$")
-ax2.set_ylabel("Test MSE (median of 200 data sets)")
-ax2.legend(title="$n=100$", fontsize=6, title_fontsize=6, ncol=1)
-for ax, lab in zip((ax1, ax2), ("(a)", "(b)")):
-    ax.set_xticks(deg_ens[1::3])
-    ax.text(0.97, 0.96, lab, transform=ax.transAxes, va="top", ha="right", fontweight="bold")
-fig.tight_layout()
-save(fig, "a_ensemble")
+scenarios = [(n, NOISE) for n in (50, 100, 500, 1000)] + [(100, s) for s in (0.0, 0.05, 0.3)]
+for n, noise in scenarios:
+    tr, te = ensemble(n, noise)
+    med = np.median(te, axis=0)
+    ens[f"n={n},sigma={noise}"] = {
+        "median": med, "q1": np.quantile(te, 0.25, axis=0), "q3": np.quantile(te, 0.75, axis=0),
+        "best_degree_median": int(deg_ens[np.argmin(med)]),
+        "mean": te.mean(axis=0), "train_median": np.median(tr, axis=0)}
 results["ensemble"] = ens
 
 save_results("part_a", results)

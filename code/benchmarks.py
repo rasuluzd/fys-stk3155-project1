@@ -1,5 +1,5 @@
 """
-Benchmarks quoted in Table II of the report: our code against closed-form results and
+Implementation benchmarks quoted in the report: our code against closed-form results and
 Scikit-Learn. (The same checks, with tolerances, are in tests/.)
 
 Writes results/benchmarks.json.
@@ -10,22 +10,19 @@ Codex correction, 5 October 2026: set the sklearn OLS reference cutoff to
 1e-15 so dense least squares matches the custom pseudoinverse convention.
 """
 
-import warnings
 
 import numpy as np
-from sklearn.exceptions import ConvergenceWarning
-from sklearn.linear_model import Lasso, LinearRegression, Ridge
+from sklearn.linear_model import LinearRegression, Ridge
 from sklearn.model_selection import KFold, cross_val_score
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import PolynomialFeatures, StandardScaler
 
-from optimizers import (AUTOGRAD_GRADIENTS, ANALYTICAL_GRADIENTS, GD, fista, gradient_descent,
+from optimizers import (AUTOGRAD_GRADIENTS, ANALYTICAL_GRADIENTS, GD, gradient_descent,
                         grad_ols, hessian, make_gradient, stochastic_gradient_descent)
 from regression import PolynomialRegression, Scaler, polynomial_features, ridge_parameters, runge
 from resampling import bootstrap_bias_variance, kfold_cv_mse
 from settings import main_split, save_results
 
-warnings.filterwarnings("ignore", category=ConvergenceWarning)
 x_tr, x_te, y_tr, y_te = main_split()
 x_grid = np.linspace(-1, 1, 501)
 out = {}
@@ -77,17 +74,6 @@ eta = 0.9 * 2 / np.linalg.eigvalsh(hessian(Xs)).max()
 th_gd, _ = gradient_descent(make_gradient("ols", Xs, yc), np.zeros(6), GD(eta), 500)
 th_sgd, _ = stochastic_gradient_descent(grad_ols, Xs, yc, 0.0, np.zeros(6), GD(eta), 500, len(yc), seed=3)
 out["sgd_full_batch_vs_gd_max_abs"] = np.max(np.abs(th_gd - th_sgd))
-
-# our FISTA Lasso against Scikit-Learn's coordinate descent (degree 6, three lambdas)
-diffs, same = [], []
-L = np.linalg.eigvalsh(hessian(Xs)).max()
-for lam in (1e-1, 1e-2, 1e-3):
-    ref = Lasso(alpha=lam / 2, fit_intercept=False, max_iter=2_000_000, tol=1e-12).fit(Xs, yc).coef_
-    th, _ = fista(make_gradient("ols", Xs, yc), np.zeros(6), 1 / L, lam, 1_000_000, theta_ref=ref, tol=1e-10)
-    diffs.append(np.max(np.abs(th - ref)))
-    same.append(bool(np.all((th == 0) == (ref == 0))))
-out["fista_vs_sklearn_lasso_max_abs_theta_p6"] = max(diffs)
-out["fista_vs_sklearn_lasso_same_zeros_p6"] = all(same)
 
 # own k-fold cross-validation against cross_val_score with the same folds
 from regression import make_data

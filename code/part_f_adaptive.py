@@ -19,7 +19,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from optimizers import OPTIMIZERS, RMSprop, gradient_descent, hessian, make_gradient
-from plot_style import (GREY, INK, DOUBLE, OPTIMIZER_COLORS, OPTIMIZER_LABELS, OPTIMIZER_MARKERS,
+from plot_style import (GREY, DOUBLE, OPTIMIZER_COLORS, OPTIMIZER_LABELS, OPTIMIZER_MARKERS,
                         save, set_style)
 from regression import Scaler, ols_parameters, polynomial_features, ridge_parameters
 from settings import main_split, save_results

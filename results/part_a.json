@@ -1153,10 +1153,5 @@
         0.06717981213355889
       ]
     }
-  },
-  "approximation_rate": {
-    "rho": 1.219803902718557,
-    "expected_log_slope_per_degree": -0.39738022069848283,
-    "fitted_log_slope_noise_free_even_degrees": -0.3601516705586746
   }
 }

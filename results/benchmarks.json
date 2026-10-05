@@ -4,8 +4,6 @@
   "ols_scaled_vs_centred_max_abs_prediction_p10": 1.2789769243681803e-13,
   "gradient_autograd_vs_analytic_max_relative": 1.5620354234419248e-15,
   "sgd_full_batch_vs_gd_max_abs": 2.220446049250313e-16,
-  "fista_vs_sklearn_lasso_max_abs_theta_p6": 1.5341705683624696e-10,
-  "fista_vs_sklearn_lasso_same_zeros_p6": true,
   "own_kfold_vs_sklearn_max_relative": 3.5970047377087226e-13,
   "bootstrap_identity_relative": 1.2504527946402763e-16
 }
