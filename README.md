@@ -6,7 +6,7 @@ This project fits Runge's function, `f(x) = 1 / (1 + 25*x**2)` on `[-1, 1]`, wit
 
 Author: Rasul Ruslanovitsj Øzdber, Department of Physics, University of Oslo.
 
-The full report draft covers parts a–i and includes equations, results, discussion, course-source mapping and an LLM declaration. The substantive report text and code have extensive declared LLM contributions. The author must understand and endorse the submitted version; automated verification does not establish personal review.
+The shortened report covers parts a–i with nine figures, five tables and a compact LLM appendix. It retains the required derivation, comparisons and numerical limitations. Optional proximal-solver and spectral early-stopping discussions are kept out of the report; their earlier code and results remain available here. Text and code have extensive declared LLM contributions.
 
 ## Contents
 
@@ -31,7 +31,7 @@ The full report draft covers parts a–i and includes equations, results, discus
 | `code/part_g_lasso.py` | Lasso subgradient GD/Adam and additional ISTA/FISTA comparisons |
 | `code/part_h_sgd.py` | Batch size, epochs, schedules and SGD update rules |
 | `code/part_i_model_selection.py` | Final OLS/Ridge/Lasso selection and regularization bias–variance analysis |
-| `code/benchmarks.py` | Reference comparisons reported in the benchmark table |
+| `code/benchmarks.py` | Reference comparisons summarized in the implementation section |
 | `code/run_all.py` | Original a–i experiments and benchmarks; copies their figures into `report/figures/` |
 
 Four supplements complete additional checks and comparisons:
@@ -40,7 +40,7 @@ Four supplements complete additional checks and comparisons:
 |---|---|---|
 | `code/ridge_supplement.py` | `results/ridge_supplement.json` | Ridge MSE/R², coefficient paths and paired sample-size/noise experiments |
 | `code/verification_supplement.py` | `results/verification_supplement.json` | Analytical/AD Ridge GD and Ridge SGD comparisons |
-| `code/model_selection_check.py` | `results/model_selection_check.json` | Stricter solves and KKT checks for the four reported Lasso selections |
+| `code/model_selection_check.py` | `results/model_selection_check.json` | Stricter solves for the original minimum-CV and one-SE Lasso selections; the shorter report retains the minimum-CV choices |
 | `code/lasso_course_comparison.py` | `results/lasso_course_comparison.json` | All five taught update rules applied to the same degree-10 Lasso problem |
 
 The last supplement supplies the report's five-method Lasso table. Each method starts at zero and runs 40,000 updates at each of eight fixed rates: seven logarithmically spaced rates from `1e-4` to `1e-1`, plus `1/L`. The rate is selected by mean training objective gap over the final 200 updates. The reported coefficients are the last iterate; test MSE is evaluated after selection. Its JSON records every candidate, the reference, selected rates, objective and coefficient errors, KKT residuals, exact zeros and timings. This is a fixed-budget comparison on one dataset, degree and penalty, not a universal optimizer ranking.
@@ -64,7 +64,7 @@ For a subset of the original experiments, use, for example, `python run_all.py a
 
 Fixed seeds specify data, folds and shuffle order. Timings and small floating-point differences depend on the system and libraries. The audited environment is Python 3.13.15, NumPy 2.5.2, SciPy 1.18.1, scikit-learn 1.9.0, Matplotlib 3.11.1, Autograd 1.9.1 and pytest 9.1.1. The sklearn version is pinned because the high-degree OLS comparison explicitly sets its relative rank cutoff to `1e-15`, matching the custom pseudoinverse.
 
-The October 5, 2026 verification ran all 26 tests successfully, reproduced the benchmarks, reran part d after the OLS cutoff correction, and executed all four supplements. The new Lasso supplement additionally reproduces the saved part-g reference exactly and checks its KKT residual. Other original a–i experiments were inspected through their implementations and saved results rather than all rerun. The ensemble figure for part a was rebuilt from saved results after removing an external approximation-theory reference curve; its numerical results were preserved. See `results/verification_audit.json` and the individual result files for recorded evidence. The stricter Lasso check verifies the reported selections; it does not rerank the entire original CV grid.
+On October 5, 2026, a fresh-process run in an empty output directory passed all 26 tests, reran the complete a–i pipeline and benchmarks, and ran all four supplements. All compared numerical values reproduced the saved records within relative tolerance `1e-7` and absolute tolerance `1e-10`; elapsed-time fields were excluded because timings vary. The report retains the original measured timings. See `results/reproduction_check.json` for commands, per-file comparisons and code hashes, and `results/verification_audit.json` for the wider audit. This rerun preserves the reported Lasso iteration-limit warnings; the stricter check verifies selected scores without reranking the entire grid.
 
 ## Building and reading the report
 
@@ -78,9 +78,11 @@ If this repository is private, the assessor needs access to the submitted reposi
 
 The central algorithms follow the course's polynomial design matrices, train-only scaling, SVD, resampling and gradient-update procedures. Core-module documentation identifies the relevant book sections and exercises. Runge data, seeds, grids and stopping budgets are stated experimental choices; the project does not claim to reproduce the numerical answers from different classroom datasets.
 
-Small estimator and optimizer classes organize operations shown as functions and state dictionaries in the weekly notebooks. The mathematics uses mean squared loss: Ridge therefore has `n*lambda` in the linear system, while sklearn Lasso uses `alpha=lambda/2`. All penalties apply to standardized slopes and leave the intercept unpenalized. The report states the reference-based optimizer stopping criterion and the adaptation of one-SE selection to a joint degree/penalty search.
+Small estimator and optimizer classes organize operations shown as functions and state dictionaries in the weekly notebooks. The mathematics uses mean squared loss: Ridge therefore has `n*lambda` in the linear system, while sklearn Lasso uses `alpha=lambda/2`. All penalties apply to standardized slopes and leave the intercept unpenalized. The report states the reference-based optimizer stopping criterion. The final model table uses minimum CV error; extra one-SE comparisons remain in the saved results.
 
-Effective degrees of freedom, one-SE selection and momentum are covered in the course. Soft thresholding and coordinate descent are also taught, but the extra ISTA/FISTA implementations and detailed GD/Ridge spectral-filter comparison are identified as extensions. Validation-based early stopping is taught; selecting a checkpoint against the known Runge function is instead an oracle diagnostic. The report keeps that comparison in an appendix.
+The report follows the [assignment](https://github.com/EducationalMaterialUiO/MachineLearningUiO/blob/main/doc/Projects/2026/Project1/Project1.pdf), [writing guide](https://github.com/EducationalMaterialUiO/MachineLearningUiO/blob/main/doc/Projects/ProjectWriting/projectwriting.do.txt), [grading form](https://github.com/EducationalMaterialUiO/MachineLearningUiO/blob/main/doc/Projects/EvaluationGrading/EvaluationForm.md), [week 39 writing workshop](https://github.com/EducationalMaterialUiO/MachineLearningUiO/blob/main/doc/WeeklyMaterial/week39/week39tuesday.ipynb), and [week 40 project workshop](https://github.com/EducationalMaterialUiO/MachineLearningUiO/blob/main/doc/WeeklyMaterial/week40/week40tuesday.pdf), checked on October 5. It uses a 147-word abstract, a short introduction identifying custom/library work, results organized around findings, a compact final CV table, and a three-paragraph conclusion. Week 41 moves on to neural networks for Project 2 and adds no such model requirement to this report.
+
+The extra ISTA/FISTA implementations, detailed GD/Ridge spectral-filter comparison and known-function early-stopping diagnostic are exploratory material in the code/results, outside the shortened report. The main report uses the taught gradient updates and the library coordinate-descent Lasso reference.
 
 ## Use of AI/LLM tools
 

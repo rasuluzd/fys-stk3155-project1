@@ -1,13 +1,14 @@
 {
   "date": "2026-10-05",
   "performed_by": "OpenAI Codex in the Codex desktop app",
-  "scope": "Completed generated report draft covering a-i, personal worked solution guide, four supplementary experiments, course-linked source review and targeted corrections. Student review remains separate.",
+  "scope": "Shortened report covering a-i, retaining required derivations and comparisons; detailed optional material remains in the personal guide and code/results. Four supplementary experiments and course-linked verification. Student review remains separate.",
   "test_suite": {
     "command": "python -m pytest tests -q",
     "cwd": "Project1/code",
     "passed": 26,
-    "seconds_reported_by_pytest": 7.95,
-    "new_test": "test_high_degree_ols_matches_sklearn_with_explicit_svd_cutoff"
+    "seconds_reported_by_pytest": 3.51,
+    "new_test": "test_high_degree_ols_matches_sklearn_with_explicit_svd_cutoff",
+    "scope": "Fresh-process rerun during report shortening"
   },
   "environment": {
     "python": "3.13.15",
@@ -41,16 +42,7 @@
     "part_d_cross_validation.py (rerun after OLS rank-cutoff correction)",
     "benchmarks.py"
   ],
-  "original_experiments_not_fully_rerun": [
-    "a",
-    "b",
-    "c",
-    "e",
-    "f",
-    "g",
-    "h",
-    "i"
-  ],
+  "original_experiments_not_fully_rerun": [],
   "ols_cutoff_correction": {
     "sklearn_version": "1.9.0",
     "explicit_relative_cutoff": 1e-15,
@@ -67,8 +59,8 @@
     "functions_missing_provenance": []
   },
   "document_validation": {
-    "main_figure_references_resolve": 18,
-    "bibliography_entries": 28,
+    "main_figure_references_resolve": 9,
+    "bibliography_entries": 9,
     "todo_calls_remaining": 0,
     "final_prose_completed": true,
     "student_review_recorded": false,
@@ -83,10 +75,16 @@
     "local_rubric": "EvaluationForm.md",
     "local_llm_guidelines": "LLM_Usage_Declaration_Guidelines.md",
     "source_map": "../Report_Writing_Guide.md, section 9",
-    "remote_exercises": "Weeks 35–38 fetched from official EducationalMaterialUiO/MachineLearningUiO repository"
+    "remote_exercises": "Weeks 35–38 fetched from official EducationalMaterialUiO/MachineLearningUiO repository",
+    "writing_guidance": [
+      "ProjectWriting/projectwriting.do.txt",
+      "week39/week39tuesday.ipynb",
+      "week40/week40tuesday.pdf"
+    ],
+    "latest_week_checked": "Week 41 Monday concerns Project 2 neural networks; no additional model added to Project 1."
   },
   "limitations": [
-    "No guaranteed grade; the 95/100 self-assessment is conditional content readiness.",
+    "Earlier 95/100 was an optimistic self-assessment, not a verified grade.",
     "Lasso refinement checks selected models, not every grid candidate.",
     "Original timings are not fresh measurements unless in a supplementary result.",
     "Agent checks do not establish student's own verification or understanding."
@@ -104,7 +102,17 @@
     "part_g.json": "b854e3053bcf95d26752b75b6fafff3bd50a38f2446521cd0e8e7d0f3ab04309",
     "part_h.json": "8cb775ef35630cb73387957ad58f9bb2dcf3da797260bf35dbfa85c81b2f8d93",
     "part_i.json": "70a04a941e5b03887ceaaf137c0abbca39c99118e9e97671c825638188d18253",
+    "reproduction_check.json": "2d37341a7410c0b722c490239e50c4c09191bc0bc16cf16964d223f73f044399",
     "ridge_supplement.json": "49604416c04b4e5e2223165657afd883e1f25aa13abd758d7d3886385ff1be1a",
     "verification_supplement.json": "0ff210d51865945a8b04382a724ac54a75a59999985bccb7d844eebdeef248dd"
+  },
+  "fresh_pipeline_reproduction": {
+    "record": "reproduction_check.json",
+    "all_a_to_i_and_four_supplements_executed": true,
+    "all_compared_numerical_values_agree": true,
+    "relative_tolerance": 1e-07,
+    "absolute_tolerance": 1e-10,
+    "values_compared": 133644,
+    "timing_note": "Timing fields are excluded from numerical agreement: elapsed times vary between runs. Reported timings remain those in the original archived JSON records."
   }
 }
