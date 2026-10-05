@@ -1,81 +1,47 @@
 {
   "date": "2026-10-05",
-  "purpose": "Verify the cleaned submission from an empty output directory.",
-  "method": "Copied the final code into an empty directory; ran pytest and run_all.py in fresh processes. The run command includes all four required comparison scripts.",
   "complete": true,
-  "test_suite": {
-    "passed": 25,
-    "pytest_seconds": 1.76
-  },
+  "purpose": "Reproduce the revised numerical submission from an empty output directory.",
+  "method": "Copied all final Python sources; ran pytest and all 14 run_all stages in fresh processes.",
   "commands": [
     {
       "args": [
         "-m",
         "pytest",
-        "tests",
+        "code/tests",
         "-q"
       ],
       "returncode": 0,
-      "seconds": 2.612322499975562,
+      "seconds": 11.939288900000975,
       "log": "tests.txt"
     },
     {
       "args": [
-        "run_all.py"
+        "-u",
+        "code/run_all.py"
       ],
-      "returncode": 1,
-      "seconds": 374.4183592000045,
+      "returncode": 0,
+      "seconds": 1574.2055246999953,
       "log": "pipeline.txt"
-    },
-    {
-      "args": [
-        "-m",
-        "pytest",
-        "tests",
-        "-q"
-      ],
-      "returncode": 0,
-      "seconds": 2.4423901999834925,
-      "log": "tests.txt"
-    },
-    {
-      "args": [
-        "run_all.py",
-        "g",
-        "lasso",
-        "h",
-        "verify",
-        "i",
-        "check",
-        "bench"
-      ],
-      "returncode": 0,
-      "seconds": 155.9058420000365,
-      "log": "pipeline_after_repair.txt"
     }
   ],
-  "repair": "The initial full run stopped at Lasso because cleanup removed its saved reference field. Kept the reference in a dedicated field, updated the consumer, and reran g and all following stages. Earlier a-f scripts are byte-identical to the final source.",
+  "test_suite": {
+    "passed": 27,
+    "pytest_seconds": 9.15
+  },
   "relative_tolerance": 1e-07,
   "absolute_tolerance": 1e-10,
   "all_compared_numerical_values_agree": true,
-  "values_compared": 131245,
-  "timings": "Timing fields are excluded. The submitted JSON retains original measured timings quoted in report.tex; the fresh run timings are in the command logs.",
-  "cleanup": "Unreported result fields were removed with their experiments. New part-b shrinkage arrays are generated directly by the retained Ridge routine. The selected Lasso comparison contains the two minimum-CV models only. Part-i bias/variance solver counts now cover 1050 independent fits (185 iteration-limit hits), rather than the prior combined independent/optional-bootstrap cohort; this changed counter is not a reproduction discrepancy.",
+  "values_compared": 132222,
   "comparison_by_file": {
     "benchmarks.json": {
-      "numerical_values_checked": 7,
-      "mismatches": [],
-      "timing_fields_excluded": [],
-      "removed_fields": [
-        "/fista_vs_sklearn_lasso_max_abs_theta_p6",
-        "/fista_vs_sklearn_lasso_same_zeros_p6"
-      ],
-      "new_fields": []
+      "values_checked": 7,
+      "excluded_timings": [],
+      "mismatches": []
     },
     "lasso_course_comparison.json": {
-      "numerical_values_checked": 943,
-      "mismatches": [],
-      "timing_fields_excluded": [
+      "values_checked": 943,
+      "excluded_timings": [
         "/setup/timing_scope",
         "/candidates/gd/0/elapsed_seconds",
         "/candidates/gd/1/elapsed_seconds",
@@ -123,102 +89,59 @@
         "/selected/rmsprop/elapsed_seconds",
         "/selected/adam/elapsed_seconds"
       ],
-      "removed_fields": [],
-      "new_fields": []
+      "mismatches": []
     },
     "model_selection_check.json": {
-      "numerical_values_checked": 284,
-      "mismatches": [],
-      "timing_fields_excluded": [],
-      "removed_fields": [],
-      "new_fields": []
+      "values_checked": 862,
+      "excluded_timings": [],
+      "mismatches": []
     },
     "part_a.json": {
-      "numerical_values_checked": 988,
-      "mismatches": [],
-      "timing_fields_excluded": [],
-      "removed_fields": [
-        "/approximation_rate"
-      ],
-      "new_fields": []
+      "values_checked": 988,
+      "excluded_timings": [],
+      "mismatches": []
     },
     "part_b.json": {
-      "numerical_values_checked": 2031,
-      "mismatches": [],
-      "timing_fields_excluded": [],
-      "removed_fields": [
-        "/ensemble",
-        "/svd_degree15/best_lambda_ensemble",
-        "/svd_degree15/best_lambda_main",
-        "/svd_degree15/dof",
-        "/svd_degree15/dof_at_best_lambda_ensemble",
-        "/svd_degree15/n_lambda_crossing",
-        "/svd_degree15/noise_level"
-      ],
-      "new_fields": [
-        "/svd_degree15/shrinkage"
-      ]
+      "values_checked": 2091,
+      "excluded_timings": [],
+      "mismatches": []
     },
     "part_c.json": {
-      "numerical_values_checked": 416,
-      "mismatches": [],
-      "timing_fields_excluded": [],
-      "removed_fields": [],
-      "new_fields": []
+      "values_checked": 416,
+      "excluded_timings": [],
+      "mismatches": []
     },
     "part_d.json": {
-      "numerical_values_checked": 1879,
-      "mismatches": [],
-      "timing_fields_excluded": [
+      "values_checked": 1879,
+      "excluded_timings": [
         "/ridge_time_s"
       ],
-      "removed_fields": [],
-      "new_fields": []
+      "mismatches": []
     },
     "part_e.json": {
-      "numerical_values_checked": 205,
-      "mismatches": [],
-      "timing_fields_excluded": [
+      "values_checked": 205,
+      "excluded_timings": [
         "/timing",
         "/degree6/gd_analytic_time_s",
         "/degree6/gd_autograd_time_s"
       ],
-      "removed_fields": [
-        "/early_stopping_degree15",
-        "/kappa_scaling",
-        "/degree6/ridge_table/0/threshold_ratio",
-        "/degree6/ridge_table/1/threshold_ratio",
-        "/degree6/ridge_table/2/threshold_ratio",
-        "/degree6/ridge_table/3/threshold_ratio",
-        "/degree6/ridge_table/4/threshold_ratio"
-      ],
-      "new_fields": []
+      "mismatches": []
     },
     "part_f.json": {
-      "numerical_values_checked": 365,
-      "mismatches": [],
-      "timing_fields_excluded": [
+      "values_checked": 686,
+      "excluded_timings": [
         "/scan_time_s"
       ],
-      "removed_fields": [],
-      "new_fields": []
+      "mismatches": []
     },
     "part_g.json": {
-      "numerical_values_checked": 34,
-      "mismatches": [],
-      "timing_fields_excluded": [],
-      "removed_fields": [
-        "/convergence",
-        "/degree6_rattle",
-        "/fista_vs_sklearn",
-        "/path"
-      ],
-      "new_fields": []
+      "values_checked": 34,
+      "excluded_timings": [],
+      "mismatches": []
     },
     "part_h.json": {
-      "numerical_values_checked": 78349,
-      "mismatches": [],
-      "timing_fields_excluded": [
+      "values_checked": 78349,
+      "excluded_timings": [
         "/batch_size/1/constant/time_s",
         "/batch_size/1/decaying/time_s",
         "/batch_size/5/constant/time_s",
@@ -234,48 +157,21 @@
         "/methods_M10/rmsprop/time_s",
         "/methods_M10/adam/time_s"
       ],
-      "removed_fields": [],
-      "new_fields": []
+      "mismatches": []
     },
     "part_i.json": {
-      "numerical_values_checked": 1573,
-      "mismatches": [],
-      "timing_fields_excluded": [],
-      "removed_fields": [
-        "/sigma=0.1/k10/OLS/one_se",
-        "/sigma=0.1/k10/Ridge/one_se",
-        "/sigma=0.1/k10/Ridge/min/dof",
-        "/sigma=0.1/k10/Lasso/one_se",
-        "/sigma=0.1/k10/Lasso/min/nonzero_even",
-        "/sigma=0.1/k10/Lasso/min/nonzero_odd",
-        "/sigma=0.3/k10/OLS/one_se",
-        "/sigma=0.3/k10/Ridge/one_se",
-        "/sigma=0.3/k10/Ridge/min/dof",
-        "/sigma=0.3/k10/Lasso/one_se",
-        "/sigma=0.3/k10/Lasso/min/nonzero_even",
-        "/sigma=0.3/k10/Lasso/min/nonzero_odd",
-        "/bias_variance_degree15/OLS/bias2_boot",
-        "/bias_variance_degree15/OLS/variance_boot",
-        "/bias_variance_degree15/Ridge/bias2_boot",
-        "/bias_variance_degree15/Ridge/variance_boot",
-        "/bias_variance_degree15/Lasso/bias2_boot",
-        "/bias_variance_degree15/Lasso/variance_boot"
-      ],
-      "new_fields": [
-        "/lasso_convergence_bias_variance"
-      ]
+      "values_checked": 1591,
+      "excluded_timings": [],
+      "mismatches": []
     },
     "ridge_supplement.json": {
-      "numerical_values_checked": 43779,
-      "mismatches": [],
-      "timing_fields_excluded": [],
-      "removed_fields": [],
-      "new_fields": []
+      "values_checked": 43779,
+      "excluded_timings": [],
+      "mismatches": []
     },
     "verification_supplement.json": {
-      "numerical_values_checked": 392,
-      "mismatches": [],
-      "timing_fields_excluded": [
+      "values_checked": 392,
+      "excluded_timings": [
         "/ridge_gradient_sources/analytic/time_s",
         "/ridge_gradient_sources/autograd/time_s",
         "/ridge_sgd_methods_M10/gd/constant/median_time_s",
@@ -296,36 +192,37 @@
         "/ridge_sgd_batch_size/80/decaying_same_initial_eta/median_time_s",
         "/ridge_full_batch_gd_eta_opt/median_time_s"
       ],
-      "removed_fields": [],
-      "new_fields": []
+      "mismatches": []
     }
   },
   "code_sha256": {
     "benchmarks.py": "7d02062b1141f60552e690b0ac7d1c2b0f21d799ba31c307d35863ec394261fd",
     "lasso_course_comparison.py": "e7863a50add05aa2e799225b5cbedead704e32cba391a5210d2cb9bf3f600afb",
-    "model_selection_check.py": "b3ea894cab38da6c9207dfa55563b4e4e6660c89678c65882b204cd4e6a1e963",
+    "model_selection_check.py": "0bbe1a1a8ccb58db4bc255669505a9d703533b9d3e5e7687c329612c5f270c9f",
     "optimizers.py": "d899a9db3ebfe565224cd3fe3125ea2d802f1c7fa4e899b5ea25cd26aeaba166",
     "part_a_ols.py": "f20e7b507caf9d9e013ee73a3f095c3905a205fafa2a1a715593e41c509d4203",
     "part_b_ridge.py": "09131de08d4ca06d2b849e86bf2dfd7981eb167861d2534203ab99e1b5e92102",
     "part_c_bias_variance.py": "29b72b0576aa65fe0156bf2d7150d9ed0578b628a0c5c82fa24ba0db2c15986d",
     "part_d_cross_validation.py": "3ac2fdd8ca408c385adb242ed794ec6c93b41d80a206d869ebc69027d51001d5",
     "part_e_gradient_descent.py": "e80eca79d46590b698c979482bb74cc1e41a019592b561c0b0b598a588ee3e46",
-    "part_f_adaptive.py": "0efba46865889878aa6ea2d44b50fa7617dd07251d19ee90c00d550c47608d44",
+    "part_f_adaptive.py": "299e298e0f739eea469df9e6b8919a4f87ff51660b7dabdd6e58d6032e5e895a",
     "part_g_lasso.py": "d3f3fc787baf39c3d8d379ecc06780fc7419b0915039f6ef7c5dccf317cb2b14",
     "part_h_sgd.py": "ea1274bafcbaa95a6880693f52f2989b8dea32b749209eaeb2aa7017778c2ded",
-    "part_i_model_selection.py": "6593a786c888e5aee249741b73539972bc87baa0e1ab7b8ffb308611a11d8ad0",
+    "part_i_model_selection.py": "d8716878ac50804b5f6cfdee20a33bdb19be91538409aead065793a34644404c",
     "plot_style.py": "53dc3e580e4822ea924bc29b0f3c3bfd4e784775711ef2c6f0a8130beecd7355",
-    "regression.py": "d54bd62d21abc150c558481e5b6c1c5e710e4d9d86895a728b74b2c500d54ea9",
+    "regression.py": "eb15d8967d4fc5a572463e053b7561b4f4e6361a85a28b6311adc63b80ed2844",
     "resampling.py": "a09c1af86c88a680fc924898b4a3a06300a02b6e39efe34e8c691bc61076be7d",
     "ridge_supplement.py": "c477fba05a45af6c0d1d9e94a052e8258f2d0ecfe7b4f8eba23b8e5a42645a48",
     "run_all.py": "38ca012732f390616ca516bbc3a9199be0a252c0b752873bd3b750b346b61eb4",
     "settings.py": "687c97b4f9dd8a3fe29b9d49bd25ccbfb13f3ed11ecfb50282bc9bd086b3927d",
-    "verification_supplement.py": "d4e23a97472a9921bd62511e600b1d7a77e0a0355caa116da6e9dd12f6fb516c",
     "tests/conftest.py": "a8eb41dc05b9499832fc4acc309215d8c3193e1e1de2690b3fcf2874019ac6d9",
     "tests/test_optimizers.py": "ef604889e7c7f7ebea5a85f19807ecdef2ab69083a097a05ebe756fe8c99ae82",
-    "tests/test_regression.py": "e7ea46f52ac8bdefb74479518df094f2eca057cb7040dec77bc4edcbda5702ff",
-    "tests/test_resampling.py": "402d877f02f053e68554de6b654c9840131813a156d8bf14d38c811016d8d73a"
+    "tests/test_regression.py": "141562ac506c72f7a7f606a4d6368270d0205f57e971e4f0dffb23fd6df43836",
+    "tests/test_resampling.py": "402d877f02f053e68554de6b654c9840131813a156d8bf14d38c811016d8d73a",
+    "verification_supplement.py": "d4e23a97472a9921bd62511e600b1d7a77e0a0355caa116da6e9dd12f6fb516c"
   },
-  "limits": "Reproduction does not resolve finite-sample uncertainty, rerank the incompletely converged Lasso grid, verify final PDF layout, or establish student understanding.",
-  "code_hash_format": "SHA-256 of UTF-8 source with LF line endings and no BOM, for consistent repository/ZIP verification."
+  "source_hash_encoding": "UTF-8 text with LF line endings",
+  "timings": "Timing fields excluded; the report retains the original archived measured timings.",
+  "figures": "All nine regenerated figure texts and page dimensions match.",
+  "limits": "Numerical reproduction does not establish student understanding or verify the final compiled report layout."
 }

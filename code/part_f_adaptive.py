@@ -11,6 +11,8 @@ Degree 6 (kappa ~ 2e3) is the main test case; degree 10 (kappa ~ 3e6) shows wher
 first-order methods stall.
 
 LLM-assisted: written with Claude (Anthropic, Claude Code; original model label unverified), October 2026.
+Codex added a separate Ridge learning-rate scan on the identical grid and budget,
+5 October 2026, to improve the fairness of the comparison.
 """
 
 import time
@@ -130,16 +132,27 @@ _, inf = gradient_descent(make_gradient("ols", X, y), np.zeros(6), DecayingRMSpr
 curves["rmsprop_decay"] = (eta_rms, inf["errors"])
 results["rmsprop_decay"] = {"eta0": eta_rms, "t1": 100, "final_error": inf["errors"][-1]}
 
-# Ridge (lambda = 1e-3) with the same learning rates
+# Ridge (lambda = 1e-3), tuned separately on the same grid and budget.
 lam = 1e-3
 theta_ridge = ridge_parameters(X, y, lam)
 ridge = {}
+ridge_scan = {}
 for m in METHODS:
-    eta = scan[m]["best_eta"] or curves[m][0]
-    _, inf = run(m, eta, X, y, lam, theta_ridge)
-    ridge[m] = {"eta": eta, "iterations": inf["iterations"] if inf["converged"] else None,
-                "final_error": inf["errors"][-1]}
-results["ridge_degree6"] = {"lambda": lam, "runs": ridge}
+    its, final = [], []
+    for eta in etas:
+        _, inf = run(m, eta, X, y, lam, theta_ridge)
+        its.append(inf["iterations"] if inf["converged"] else np.nan)
+        final.append(np.nan if inf["diverged"] else inf["errors"][-1])
+    its = np.array(its)
+    ok = np.isfinite(its)
+    best = int(np.nanargmin(its)) if ok.any() else int(np.nanargmin(final))
+    ridge[m] = {"eta": etas[best], "iterations": its[best] if ok.any() else None,
+                "final_error": final[best]}
+    ridge_scan[m] = {"iterations": its, "final_error": final,
+                     "converging_eta_range": [etas[ok].min(), etas[ok].max()] if ok.any() else None,
+                     "n_converging": int(ok.sum())}
+    print(f"Ridge {m}: {ridge[m]}", flush=True)
+results["ridge_degree6"] = {"lambda": lam, "etas": etas, "scan": ridge_scan, "runs": ridge}
 
 # ------------------------------------------------------------------------------------------
 # 2) Degree 10: small scan, best relative error after 50 000 iterations

@@ -4,7 +4,7 @@
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \usepackage{amsmath,amssymb}
-\usepackage{graphicx}
+\usepackage[final]{graphicx}
 \usepackage{xcolor}
 \usepackage[colorlinks=true,linkcolor=blue!55!black,citecolor=blue!55!black,urlcolor=blue!55!black]{hyperref}
 
@@ -38,9 +38,9 @@ Polynomial regression provides a simple setting for studying how model complexit
 \section{Introduction}\label{sec:intro}
 \emph{The abstract and this section contain LLM-generated text; see Appendix~\ref{app:llm}.}
 
-Polynomial models are easy to fit, but increasing their degree can amplify noise instead of improving prediction. Runge's function has a sharp central peak and a known target, making it useful for separating fitting error from noise. We studied this problem using OLS, Ridge and Lasso, following Project~1 and the regression and resampling chapters of the course notes \cite{Project1_2026,HjorthJensen2026}.
+Regression estimates a relation from observations whose errors can hide its structure. Polynomial models are easy to fit, but increasing their degree can amplify noise instead of improving prediction. Runge's function has a sharp central peak and a known target, so we can measure approximation error and training-set variation separately. Following Project~1, we asked when regularization improves prediction, whether bootstrap and cross-validation agree on complexity, and how efficiently gradient methods recover a reference solution \cite{Project1_2026,HjorthJensen2026}.
 
-The project code implements OLS/Ridge, bootstrap and the gradient update rules. Scikit-learn supplies reference estimators and cross-validation; Autograd supplies automatic derivatives. We compared the effect of degree, noise, sample size, penalty and optimizer. Sections~\ref{sec:theory} and \ref{sec:implementation} describe the methods and checks. Section~\ref{sec:results} answers parts a--i, and Section~\ref{sec:conclusion} discusses the findings. The code, settings and saved results are at \url{https://github.com/rasuluzd/fys-stk3155-project1}.
+The project code implements OLS/Ridge, bootstrap and the gradient update rules. Scikit-learn supplies reference estimators and cross-validation; Autograd supplies automatic derivatives. We varied degree, noise, sample size, penalty and optimizer, distinguishing prediction accuracy from coefficient convergence. Sections~\ref{sec:theory} and \ref{sec:implementation} describe the methods and checks. Section~\ref{sec:results} answers parts a--i, and Section~\ref{sec:conclusion} discusses the findings. The code, settings and saved results are at \url{https://github.com/rasuluzd/fys-stk3155-project1}.
 
 \section{Theory and methods}\label{sec:theory}
 \emph{LLM-generated text; see Appendix~\ref{app:llm}.}
@@ -84,6 +84,8 @@ q_j=\frac{d_j^2}{d_j^2+n\lambda}.
 \end{equation}
 Small singular values are damped most strongly, reducing variance at the cost of bias \cite[Secs.~3.3 and 3.8]{HjorthJensen2026}. Lasso can set slopes to zero, but has no corresponding general closed form \cite[Sec.~3.9]{HjorthJensen2026}. Our mean-loss convention requires scikit-learn parameters $\alpha=n\lambda$ for Ridge and $\alpha=\lambda/2$ for Lasso.
 
+Library Lasso fits are accepted only if the dual gap for the half-loss objective and the largest stationarity residual are each at most $10^{-7}$ \cite{SklearnLasso}. For the data-term gradient $g$, stationarity requires $g_j+\lambda\operatorname{sign}(\theta_j)=0$ on nonzero slopes and $|g_j|\leq\lambda$ at zero \cite[Sec.~3.9]{HjorthJensen2026}. Failed fits are continued from their current coefficients; an unresolved fit stops the experiment. These numerical checks are separate from statistical uncertainty.
+
 \subsection{Bias--variance decomposition and resampling}\label{sec:biasvar_theory}\label{sec:resampling}
 Let $g_D(x)$ be a fit from random training data $D$, and $m(x)=\E_D[g_D(x)]$. At a fixed input, an independent test response is $Y=f(x)+\varepsilon$. Adding and subtracting $m$ gives
 \[
@@ -98,7 +100,7 @@ After squaring and taking expectations, the cross terms vanish because $\E_D[m-g
 \end{equation}
 Averaging over evaluation inputs gives prediction MSE. Bias measures the mean fit's systematic error; variance measures its sensitivity to training data; $\sigma^2$ is new observation noise. The training-data expectation includes both random input locations and training noise \cite[Sec.~2.10]{HjorthJensen2026}.
 
-The bootstrap estimates training-set variation by resampling paired training observations with replacement. Each resample is fitted and predicted on the same fixed test inputs \cite[Sec.~2.11]{HjorthJensen2026}. With $B$ predictions $g_{bi}$ and their mean $\bar g_i$, the stored arrays obey
+The bootstrap estimates training-set variation by resampling paired training observations with replacement. Each resample is fitted and predicted on the same fixed test inputs \cite[Sec.~2.11]{HjorthJensen2026}, following week~36, Exercises~2--3 \cite{Exercises36}. With $B$ predictions $g_{bi}$ and their mean $\bar g_i$, the stored arrays obey
 \begin{align}
 \frac1{n_t B}\sum_{i,b}(y_i-g_{bi})^2
 ={}&\frac1{n_t}\sum_i(y_i-\bar g_i)^2\nonumber\\
@@ -119,24 +121,36 @@ The analytical gradients and Ridge Hessian are
 \nabla C_{\rm Ridge}&=\nabla C_{\rm OLS}+2\lambda\theta,\nonumber\\
 H&=\frac2nX^TX+2\lambda I.
 \end{align}
-Plain GD updates $\theta_{k+1}=\theta_k-\eta\nabla C(\theta_k)$. Each quadratic error component is multiplied by $1-\eta h_j$, so convergence requires $0<\eta<2/h_{\max}$ on a positive-definite problem. The best worst-direction rate is $2/(h_{\max}+h_{\min})$ \cite[Secs.~4.3--4.5]{HjorthJensen2026}.
+Plain GD updates $\theta_{k+1}=\theta_k-\eta\nabla C(\theta_k)$. Each quadratic error component is multiplied by $1-\eta h_j$, so convergence requires $0<\eta<2/h_{\max}$ on a positive-definite problem. The optimal constant step size is $2/(h_{\max}+h_{\min})$ \cite[Secs.~4.3--4.5]{HjorthJensen2026}; week~37, Exercise~4 connects this bound to GD and AD \cite{Exercises37}.
 
-Momentum keeps a decaying sum of previous gradients. AdaGrad divides by accumulated squared gradients; RMSprop uses a moving average instead. Adam combines moving averages of gradients and their squares, with bias correction. We used the course updates, with momentum 0.9, RMSprop decay 0.99, Adam decays 0.9 and 0.999, and denominator offset $10^{-8}$ \cite[Secs.~4.6 and 4.8--4.11]{HjorthJensen2026,HjorthJensen2026exercises}.
+Write $g_k=\nabla C(\theta_{k-1})$ and subtract the step $d_k$ from $\theta_{k-1}$. The implemented updates are
+\begin{align}
+\text{Momentum:}\quad d_k&=\beta d_{k-1}+\eta g_k,\nonumber\\
+\text{AdaGrad:}\quad a_k&=a_{k-1}+g_k^2,\nonumber\\
+\text{RMSprop:}\quad a_k&=\rho a_{k-1}+(1-\rho)g_k^2.
+\end{align}
+Both adaptive steps are $d_k=\eta g_k/(\sqrt{a_k}+\epsilon)$. AdaGrad's denominator keeps growing; RMSprop forgets old squared gradients. Adam instead uses
+\begin{align}
+m_k&=\beta_1m_{k-1}+(1-\beta_1)g_k,\nonumber\\
+v_k&=\beta_2v_{k-1}+(1-\beta_2)g_k^2,\nonumber\\
+d_k&=\eta\frac{m_k/(1-\beta_1^k)}{\sqrt{v_k/(1-\beta_2^k)}+\epsilon}.
+\end{align}
+All operations are componentwise, state starts at zero and $k=1$ on the first update. Momentum retains the previous step, while Adam corrects its initially small moving averages. We used $\beta=0.9$, $\rho=0.99$, $(\beta_1,\beta_2)=(0.9,0.999)$ and $\epsilon=10^{-8}$, outside the square root, as in week~38's Tuesday implementation \cite[Secs.~4.6 and 4.8--4.11]{HjorthJensen2026}. The comparisons follow week~37, Exercise~6 and week~38, Exercises~1--3 \cite{Exercises37,Exercises38,Week38Tuesday}.
 
 Autograd differentiates the implemented scalar cost by applying the chain rule through its operations. It uses neither symbolic simplification nor finite-difference perturbations. Reverse mode obtains all parameter derivatives in one backward pass, although overhead can dominate small problems \cite[Sec.~4.14]{HjorthJensen2026,Maclaurin2015}.
 
 For Lasso we add $\lambda\operatorname{sign}(\theta)$ to the OLS gradient and choose $\operatorname{sign}(0)=0$. This is a valid subgradient because the subdifferential of $|\theta|$ at zero is $[-1,1]$. It does not guarantee exact zeros at a finite iteration.
 
-SGD reshuffles the training observations each epoch and applies the same update rules to mini-batch gradients, dividing the data term by the actual batch size. Optimizer state persists between batches. We compared constant rates with $\eta_t=\eta_0t_1/(t+t_1)$, where $t$ counts updates from zero \cite[Sec.~4.7]{HjorthJensen2026,HjorthJensen2026week39}.
+SGD reshuffles the training observations each epoch and applies the same update rules to mini-batch gradients, dividing the data term by the actual batch size. Optimizer state persists between batches. We compared constant rates with $\eta_t=\eta_0t_1/(t+t_1)$, where $t$ counts updates from zero \cite[Sec.~4.7]{HjorthJensen2026}, as in week~38, Exercise~4 and week~39's SGD examples \cite{Exercises38,HjorthJensen2026week39}.
 
 \section{Implementation and verification}\label{sec:implementation}
 \emph{LLM-generated text; see Appendix~\ref{app:llm}.}
 
 The repository separates \texttt{regression.py}, \texttt{resampling.py} and \texttt{optimizers.py}; task scripts write JSON results and PDF figures. The numerical work uses NumPy, scikit-learn and Matplotlib \cite{Harris2020,Pedregosa2011,Hunter2007}. The README lists dependencies, all scripts and reproduction commands. Numerical claims below identify their saved results in source comments.
 
-The 25 tests compare custom routines with closed-form or library answers. Benchmark prediction differences were $7.6\times10^{-14}$ for OLS and zero to reported precision for Ridge. Relative analytical/AD gradient disagreement was $1.6\times10^{-15}$. Full-batch SGD agreed with GD within $2.2\times10^{-16}$; custom CV matched scikit-learn when folds and preprocessing matched. The OLS library reference uses the same relative singular-value cutoff, $10^{-15}$, as the custom pseudoinverse.
+The 27 tests compare custom routines with closed-form or library answers. Benchmark prediction differences were $7.6\times10^{-14}$ for OLS and zero to reported precision for Ridge. Relative analytical/AD gradient disagreement was $1.6\times10^{-15}$. Full-batch SGD agreed with GD within $2.2\times10^{-16}$; custom CV matched scikit-learn when folds and preprocessing matched. The OLS library reference uses the same relative singular-value cutoff, $10^{-15}$, as the custom pseudoinverse.
 
-All iterative comparisons start at zero. Unless stated otherwise, convergence means relative coefficient error $r=\|\theta-\widehat\theta\|/\|\widehat\theta\|<10^{-6}$. This measures agreement with a known solution; it is distinct from test error. Verification scope and environment are recorded in \texttt{results/verification\_audit.json}.
+The GD/SGD comparisons start at zero; the library Lasso penalty paths use warm starts. Unless stated otherwise, convergence means relative coefficient error $r=\|\theta-\widehat\theta\|/\|\widehat\theta\|<10^{-6}$. This measures agreement with a known solution; it is distinct from test error. Verification scope and environment are recorded in \texttt{results/verification\_audit.json}.
 
 \section{Results and discussion}\label{sec:results}
 \emph{LLM-generated text and captions; see Appendix~\ref{app:llm}.}
@@ -165,7 +179,7 @@ Ridge used degrees 1--20 and 45 penalties from $10^{-10}$ to 10. The main-split 
 
 Figures~\ref{fig:ridge_metrics} and \ref{fig:ridge_coefficients} repeat the scores and coefficient analysis at fixed penalties. Increasing $\lambda$ limits the large coefficients, but excessive shrinkage increases both training and test error. At degree 15, singular values ranged from 27.59 to $1.49\times10^{-4}$. The factors $q_j$ suppress these small, unstable directions most strongly, explaining Ridge's wider usable degree range.
 
-In 40 paired datasets per setting, degree-20 Ridge with $\lambda=10^{-7}$ reduced median test MSE from 0.236 to 0.0183 at $N=50$, $\sigma=0.1$. At $N=1000$, the values were 0.01049 for OLS and 0.01083 for Ridge. At $N=100$ without noise, Ridge gave 0.00101 against OLS's $6.17\times10^{-5}$. Shrinkage helps when variance dominates, but can add unnecessary bias when the data already constrain the fit.
+In 40 paired datasets per setting, degree-20 Ridge with $\lambda=10^{-7}$ reduced median test MSE from 0.236 to 0.0183 at $N=50$, $\sigma=0.1$. Ridge improved 38 of the 40 paired runs. At $N=1000$, the values were 0.01049 for OLS and 0.01083 for Ridge, with Ridge improving only 3 of 40 runs. At $N=100$ without noise, Ridge gave 0.00101 against OLS's $6.17\times10^{-5}$. Shrinkage helps when variance dominates, but can add unnecessary bias when the data already constrain the fit.
 
 \begin{figure*}[tb]
 \includegraphics[width=\textwidth]{ridge_supplement_metrics.pdf}
@@ -181,7 +195,7 @@ In 40 paired datasets per setting, degree-20 Ridge with $\lambda=10^{-7}$ reduce
 % Evidence: part_c.json/train_test,n=100,n=1000; part_c_bias_variance.py.
 Figure~\ref{fig:hastie} compares 100 independent training sets of 80 observations, scored on 2000 fixed noisy test observations. Mean test MSE was lowest at degree 8, at 0.01656; median MSE favored degree 12, at 0.01339. The difference reflects occasional very inaccurate high-degree fits. The average training error fell throughout.
 
-The bootstrap used 200 resamples per degree, with a reference of 400 independently generated training sets (Fig.~\ref{fig:biasvar}). With 80 training points, bootstrap error selected degree 4 and the fresh-set reference selected degree 8. At degree 8, variance estimates were 7.754 and 0.00597. Resampling can omit boundary observations, leaving a high-degree polynomial poorly constrained there. This particular bootstrap sample therefore gave a pessimistic estimate of instability.
+The bootstrap used 200 resamples per degree, with a reference of 400 independently generated training sets (Fig.~\ref{fig:biasvar}). With 80 training points, bootstrap error selected degree 4 and the fresh-set reference selected degree 8. At degree 8, variance estimates were 7.754 and 0.00597. Resampling can omit boundary observations, leaving a high-degree polynomial poorly constrained there. The bootstrap was much more pessimistic than the fresh-set reference on this data set; 400 fresh sets also cannot precisely characterize rare extreme fits.
 
 With 800 training points, the degree-12 variance estimates were much closer: $1.79\times10^{-4}$ and $1.81\times10^{-4}$. More observations reduced the variance, allowing higher degree. Using noisy $y$ instead of known $f$ raised the measured squared bias by 0.01030, close to $\sigma^2=0.01$. The finite-sample noise cross term explains the remaining difference. The curves illustrate the bias--variance trade-off, but small-sample resampling need not locate it accurately.
 
@@ -214,12 +228,12 @@ For degree-6 OLS, $h_{\max}=7.69648$ and $h_{\min}=0.00368262$, giving $\eta<0.2
 
 \subsection{f) Momentum and adaptive updates}\label{sec:res_adaptive}
 % Evidence: part_f.json/degree6,ridge_degree6,rmsprop_plateau,rmsprop_decay,degree10.
-Each method used the same data, zero initialization, 28 rates from $10^{-4}$ to $10^{0.5}$, and a budget of $10^5$ iterations. Table~\ref{tab:opt} compares iterations to $r<10^{-6}$. Momentum was fastest on this grid; Adam succeeded over the widest tested rate range. GD's grid omits $\eta_*$, explaining its larger count than in part e. AdaGrad slowed as its accumulated denominator grew.
+Each method used the same data, zero initialization, 28 rates from $10^{-4}$ to $10^{0.5}$, and a budget of $10^5$ iterations. OLS and Ridge rates were tuned separately on this same grid. Table~\ref{tab:opt} compares iterations to $r<10^{-6}$. Momentum was fastest on this grid; Adam succeeded over the widest tested rate range. GD's grid omits $\eta_*$, explaining its larger count than in part e. AdaGrad slowed as its accumulated denominator grew.
 
 Constant-rate RMSprop did not reach the target. Decay improved its error to $1.50\times10^{-5}$ after 30\,000 steps, still above the target (Fig.~\ref{fig:optimizers}). At degree 10, none of the five methods reached the target within 50\,000 steps on the separate tested grid. Adaptive coordinate scaling did not remove the strong correlations between polynomial features.
 
 \begin{table}[tb]
-\caption{Momentum needs the fewest iterations on the degree-6 rate grid. Ridge uses $\lambda=10^{-3}$ and each method's selected OLS rate. A dash means the tolerance was not reached.}\label{tab:opt}
+\caption{Momentum needs the fewest iterations on the degree-6 rate grid. Ridge uses $\lambda=10^{-3}$. OLS and Ridge were tuned separately; their best rates coincide for all four converging methods. A dash means the tolerance was not reached.}\label{tab:opt}
 \begin{ruledtabular}
 \begin{tabular}{lcrr}
 Method & $\eta$ & OLS steps & Ridge steps \\ \hline
@@ -293,9 +307,9 @@ Ten-fold CV used degrees 1--20, 21 Ridge penalties from $10^{-10}$ to 1, and sev
 
 Table~\ref{tab:final} favors degree-12 OLS at $\sigma=0.1$. Ridge's CV score differs by only $1.8\times10^{-6}$, far below the descriptive fold standard error; its selected penalty is practically zero. OLS is therefore a reasonable choice without an additional tuning parameter. At $\sigma=0.3$, Ridge has the smallest CV MSE, but the three models' differences are again small compared with fold uncertainty. Increasing noise favors lower selected degrees.
 
-Regularization mainly reduced variance here. In 150 independent degree-15 fits with 80 observations, OLS squared bias and variance were 0.00654 and 0.21098. At $\lambda=3.16\times10^{-4}$, Ridge gave 0.00670 and 0.00349, while Lasso gave 0.00487 and 0.00363. These known-function calculations explain the effect of the penalties; they did not select the models in the table. Degree selection controls OLS complexity; Ridge damps unstable directions; Lasso also removes coefficients. None changes the observation noise.
+Regularization mainly reduced variance here. In 150 independent degree-15 fits with 80 observations, OLS squared bias and variance were 0.00654 and 0.21098. At $\lambda=3.16\times10^{-4}$, Ridge gave 0.00670 and 0.00349, while Lasso gave 0.00485 and 0.00345. These known-function calculations explain the effect of the penalties; they did not select the models in the table. Degree selection controls OLS complexity; Ridge damps unstable directions; Lasso also removes coefficients. None changes the observation noise.
 
-The Lasso search has a numerical limitation: 338 of 3080 fold/refit models reached their iteration limit. Stricter checks of the two minimum-CV Lasso selections changed CV scores by at most 0.045\%, but did not rerank every candidate. The small score differences and this limitation prevent a strong general ranking of the estimators.
+All 3080 Lasso fold/refit models and 1050 independent bias--variance fits passed the stated dual-gap and stationarity checks after refinement where needed. Recomputing the entire Lasso CV grid changed neither selected degree nor penalty. A further $10^{-10}$-tolerance check of the selected fits left their reported scores unchanged at table precision. Solver error therefore does not change this selection within the checks performed. At $\sigma=0.1$, Lasso selects the weakest tested penalty, so a smaller-penalty search could change its score. The limited training sample, fold variability and declared grid bounds prevent a strong general ranking.
 
 \begin{table*}[tb]
 \caption{Minimum ten-fold CV MSEs at two noise levels. OLS and nearly unregularized Ridge are indistinguishable at $\sigma=0.1$; Ridge has the lowest observed CV score at $\sigma=0.3$. Uncertainties are descriptive fold standard errors. Test MSE uses 2000 independent observations.}\label{tab:final}
@@ -317,39 +331,46 @@ $\sigma$ & Method & Degree & $\lambda$ & CV MSE & Independent test MSE \\ \hline
 
 Increasing degree initially improved the Runge fit, but high-degree OLS became sensitive to noise and boundary coverage. Ridge reduced this instability by damping small singular directions. At the lower noise level, CV selected an OLS fit whose independent-test MSE was 0.0113, and regularization gave little further improvement. The penalties were most useful for protecting high-degree fits, rather than guaranteeing a better selected model.
 
-The small-sample bootstrap was sensitive to lost boundary points, and the preferred degree varied between fold assignments. Optimizer rankings also depended on the rate grid, tolerance and budget: momentum was fastest in the degree-six deterministic comparison, while SGD's cheaper updates incurred more overhead. The finite samples and incompletely converged Lasso candidates limit the strength of the model ranking.
+The small-sample bootstrap was sensitive to lost boundary points, and the preferred degree varied between fold assignments. Optimizer rankings also depended on the rate grid, tolerance and budget: momentum was fastest in the degree-six deterministic comparison, while SGD's cheaper updates incurred more overhead. The checked Lasso grid retained its selections after refinement, but the finite training samples and overlapping CV folds limit the strength of the model ranking.
 
-A next step is repeated outer validation, which would measure how stable the selected model is across new training samples. Fully converging the Lasso candidate grid would separate solver error from statistical differences. These two improvements would address the main uncertainties without adding more model types.
+A next step is repeated outer validation, which would measure how stable the selected model is across new training samples. Repeating the optimizer comparison on larger designs would test when mini-batches save enough computation to offset their extra updates. OLS is simple to solve, Ridge requires penalty tuning but improves conditioning, and Lasso adds sparsity with a nonsmooth optimization problem. Choosing between them should depend on predictive stability and the accuracy actually needed.
 
 \appendix
 \section{Use of AI/LLM tools}\label{app:llm}
 \subsection{Tools and text}
 The original implementation and report structure are attributed to Claude through Claude Code, October 2026; its exact model label is unverified. OpenAI Codex, accessed through the Codex desktop app on October 5, 2026, checked sources, code and results, added experiments, and drafted and shortened the report.
 
-Using the course levels \cite{LLMGuidelines2026}, the abstract, introduction, methods, implementation, results, conclusions, captions and this appendix each have text level 3 (generative). Prompts requested answers to parts a--i, course-based explanations and a shorter report. Revisions corrected normalization and intercept wording, qualified numerical claims and removed optional analysis. The recorded automated checks were performed by Codex; they do not establish the author's personal review.
+Using the course levels \cite{LLMGuidelines2026}, the abstract, introduction, methods, implementation, results, conclusions, captions and this appendix each have text level 3 (generative). The recorded prompts and revisions were:
+\begin{itemize}
+\item Abstract/introduction: summarize the project and main findings; revisions shortened the abstract and made the research questions explicit.
+\item Methods: answer parts a--i using the course material; revisions corrected penalty normalization and intercept wording and added the implemented update equations.
+\item Implementation/results/captions: fill the report using verified calculations, then shorten it; revisions tied claims to saved results, compared solver accuracy and qualified uncertainty.
+\item Conclusions: summarize findings critically; revisions added limitations and concrete next steps.
+\item Appendix: document LLM use; revisions separated tool-executed checks from the author's personal review and recorded unverified original provenance.
+\end{itemize}
+These are task summaries, not verbatim original Claude prompts. The automated checks and revisions above were performed by Codex; they do not establish the author's personal review.
 
 \subsection{Code}
-Every file listed in Table~\ref{tab:llm_code} has code level 4 (substantial generation). Claude generated the original files. Codex added course references and function-level tags, corrected the OLS reference cutoff and generated the four additional experiment scripts. The original Claude prompts are not recorded in this audit; Codex prompts requested missing assignment comparisons and verification. Codex subsequently removed unreported exploratory code and duplicate figures and simplified the reproduction command.
+Every file listed below has code level 4 (substantial generation). Claude generated the original files. Codex added course references and function-level tags, corrected the OLS reference cutoff and generated the four additional experiment scripts. The original Claude prompts are not recorded in this audit; Codex prompts requested missing assignment comparisons and verification. Codex subsequently removed unreported exploratory code and duplicate figures, simplified reproduction, and added complete-grid Lasso checks and separately tuned Ridge optimizer comparisons.
 
-\begin{table*}[tb]
-\caption{File-level LLM declaration: every listed file is level 4. C denotes original Claude generation with later Codex review and edits; O denotes Codex generation. Paths are relative to \texttt{code/}.}\label{tab:llm_code}
-\small
-\begin{tabular}{lc|lc}
-File & Origin & File & Origin \\ \hline
-\texttt{regression.py} & C & \texttt{resampling.py} & C \\
-\texttt{optimizers.py} & C & \texttt{settings.py} & C \\
-\texttt{plot\_style.py} & C & \texttt{run\_all.py} & C \\
-\texttt{part\_a\_ols.py} & C & \texttt{part\_b\_ridge.py} & C \\
-\texttt{part\_c\_bias\_variance.py} & C & \texttt{part\_d\_cross\_validation.py} & C \\
-\texttt{part\_e\_gradient\_descent.py} & C & \texttt{part\_f\_adaptive.py} & C \\
-\texttt{part\_g\_lasso.py} & C & \texttt{part\_h\_sgd.py} & C \\
-\texttt{part\_i\_model\_selection.py} & C & \texttt{benchmarks.py} & C \\
-\texttt{tests/conftest.py} & C & \texttt{tests/test\_regression.py} & C \\
-\texttt{tests/test\_optimizers.py} & C & \texttt{tests/test\_resampling.py} & C \\
-\texttt{ridge\_supplement.py} & O & \texttt{verification\_supplement.py} & O \\
-\texttt{model\_selection\_check.py} & O & \texttt{lasso\_course\_comparison.py} & O \\
-\end{tabular}
-\end{table*}
+{\small
+\noindent\textit{Claude, with later Codex review and edits:}
+\texttt{regression.py}, \texttt{resampling.py}, \texttt{optimizers.py},
+\texttt{settings.py}, \texttt{plot\_style.py}, \texttt{run\_all.py},
+\texttt{part\_a\_ols.py}, \texttt{part\_b\_ridge.py},
+\texttt{part\_c\_bias\_variance.py}, \texttt{part\_d\_cross\_validation.py},
+\texttt{part\_e\_gradient\_descent.py}, \texttt{part\_f\_adaptive.py},
+\texttt{part\_g\_lasso.py}, \texttt{part\_h\_sgd.py},
+\texttt{part\_i\_model\_selection.py}, \texttt{benchmarks.py},
+\texttt{tests/conftest.py}, \texttt{tests/test\_regression.py},
+\texttt{tests/test\_optimizers.py}, \texttt{tests/test\_resampling.py}.
 
+\noindent\textit{Codex generation:}
+\texttt{ridge\_supplement.py}, \texttt{verification\_supplement.py},
+\texttt{model\_selection\_check.py}, \texttt{lasso\_course\_comparison.py}.
+Paths are relative to \texttt{code/}.}
+
+
+\bibliographystyle{apsrev4-2}
 \bibliography{references}
 \end{document}

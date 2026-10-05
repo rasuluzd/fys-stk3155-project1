@@ -3,7 +3,7 @@
 Author: Rasul Ruslanovitsj Øzdber, Department of Physics, University of Oslo.
 Repository: https://github.com/rasuluzd/fys-stk3155-project1 (private; the assessor needs access).
 
-The report studies noisy Runge data with OLS, Ridge and Lasso, resampling, automatic differentiation and gradient optimization. It covers assignment parts a–i with nine figures and five tables. Text and code contain extensive declared LLM contributions.
+The report studies noisy Runge data with OLS, Ridge and Lasso, resampling, automatic differentiation and gradient optimization. It covers assignment parts a–i with nine figures and four result tables. Text and code contain extensive declared LLM contributions.
 
 ## Submission contents
 
@@ -15,7 +15,7 @@ The report studies noisy Runge data with OLS, Ridge and Lasso, resampling, autom
 | `results/` | Experiment data, solver diagnostics and verification records |
 | `requirements.txt` | Python dependencies |
 
-`regression.py`, `resampling.py` and `optimizers.py` implement the numerical methods. Scripts `part_a_ols.py` through `part_i_model_selection.py` handle the assignment parts. Four further scripts produce evidence quoted in the report: `ridge_supplement.py` supplies Ridge scores, coefficients and paired simulations; `verification_supplement.py` checks Ridge derivatives and SGD; `lasso_course_comparison.py` compares all five taught Lasso updates; `model_selection_check.py` refines the two selected Lasso models. `benchmarks.py` supplies the implementation comparisons. These scripts are included in the main run command.
+`regression.py`, `resampling.py` and `optimizers.py` implement the numerical methods. Scripts `part_a_ols.py` through `part_i_model_selection.py` handle the assignment parts. Four further scripts produce evidence quoted in the report: `ridge_supplement.py` supplies Ridge scores, coefficients and paired simulations; `verification_supplement.py` checks Ridge derivatives and SGD; `lasso_course_comparison.py` compares all five taught Lasso updates; `model_selection_check.py` compares the complete Lasso CV grid with the earlier loose search and further refines the selected models. `benchmarks.py` supplies the implementation comparisons. These scripts are included in the main run command.
 
 Unused proximal solvers, spectral early-stopping experiments, extra final one-SE selections, unreported plots and duplicate figure files have been removed. The one-SE OLS check discussed in part d remains.
 
@@ -33,11 +33,11 @@ The run command executes all parts and checks in dependency order and writes fig
 
 The audited environment is Python 3.13.15, NumPy 2.5.2, SciPy 1.18.1, scikit-learn 1.9.0, Matplotlib 3.11.1, Autograd 1.9.1 and pytest 9.1.1. The sklearn pin supports the explicitly matched OLS rank cutoff. See `results/reproduction_check.json` for the fresh-run checks and source hashes, and `results/verification_audit.json` for their scope. Report timings are the original measured timings and vary by system; they are excluded from numerical reproduction comparisons.
 
-The Lasso candidate grid contains iteration-limit hits. Stricter checks validate the selected scores, but do not rerank the complete grid; this limitation is stated in the report.
+Every part-i Lasso candidate must pass absolute dual-gap and stationarity-residual checks of `1e-7`. Failed paths continue from their coefficients with a tighter solver tolerance; unresolved candidates stop the experiment. All 3080 CV/full-data candidates and 1050 bias–variance fits passed. The entire grid comparison retained the selected degrees/penalties; the selected-model checks at `tol=1e-10` agreed at report table precision. Part f tunes OLS and Ridge separately on the same rate grid and budget.
 
 ## Build the report
 
-Upload the contents of `report/` to Overleaf, preserving `figures/`. Set `report.tex` as the main document, select pdfLaTeX, and use BibTeX with REVTeX 4.2. Inspect the compiled PDF before submission. The built-in editor's compiler currently fails with a platform-directory error, so final report layout has not been verified here.
+Upload the contents of `report/` to Overleaf, preserving `figures/`. Set `report.tex` as the main document, select pdfLaTeX, and use BibTeX with REVTeX 4.2. Choose **Normal** compile mode and **Recompile from scratch**. Check for actual graphs, resolved citations and a populated bibliography before submission. The second supplied PDF was reviewed on all 11 pages: all nine figures and 13 references were present, with no unresolved citations or apparent clipping. Subsequent small source edits clarify warm starts and grid bounds and replace the floating AI file table; their final layout needs a fresh PDF check. The built-in editor still fails with a platform-directory error.
 
 ## Course sources and AI use
 

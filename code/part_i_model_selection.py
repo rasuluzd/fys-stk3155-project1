@@ -1,31 +1,27 @@
 """Part i: minimum ten-fold CV selections at two noise levels, and
 degree-15 known-function bias/variance from independent training sets.
 Scaling is fitted within each fold. Lasso uses warm-start coordinate descent
-with alpha=lambda/2; iteration-limit counts are saved explicitly.
+with alpha=lambda/2; every candidate must pass dual-gap and stationarity checks.
 All degrees are refitted once to preserve the documented grid/refit audit.
-Writes results/part_i.json; model_selection_check.py refines the selected Lasso models.
+Writes results/part_i.json; model_selection_check.py checks the whole grid's sensitivity.
 LLM-assisted: original Claude implementation; Codex removed unreported one-SE
 selections, bootstrap repetition and plots, 5 October 2026.
 """
 
-import warnings
-
 import numpy as np
-from sklearn.exceptions import ConvergenceWarning
-from sklearn.linear_model import lasso_path
 from sklearn.model_selection import KFold
 
-from regression import Scaler, make_data, polynomial_features, runge
+from regression import Scaler, checked_lasso_path, make_data, polynomial_features, runge
 from settings import N_POINTS, NOISE, SEED, save_results
 
-warnings.filterwarnings("ignore", category=ConvergenceWarning)
 results = {}
 degrees = np.arange(1, 21)
 lam_ridge = np.logspace(-10, 0, 21)
 lam_lasso = np.logspace(-1, -4, 7)            # descending, for warm starts along the path
 K = 10
-MAX_SWEEPS = 100_000
-lasso_fits = {"total": 0, "hit_limit": 0}
+lasso_fits = {"total": 0, "unresolved": 0, "initial_hit_limit": 0, "refined": 0,
+              "max_dual_gap": 0.0, "max_kkt_residual": 0.0, "max_sweeps": 0,
+              "requested_solver_tol": 1e-6, "dual_gap_tolerance": 1e-7, "kkt_tolerance": 1e-7}
 
 
 def fit_paths(x_tr, y_tr, p):
@@ -42,10 +38,11 @@ def fit_paths(x_tr, y_tr, p):
     uty = U.T @ yc
     ols = ((uty / s) @ Vt)[None, :]
     ridge = ((s[None, :] / (s[None, :] ** 2 + len(yc) * lam_ridge[:, None])) * uty[None, :]) @ Vt
-    _, coefs, _, n_iter = lasso_path(Xs, yc, alphas=lam_lasso / 2, max_iter=MAX_SWEEPS, tol=1e-6,
-                                     return_n_iter=True)
-    lasso_fits["total"] += len(n_iter)
-    lasso_fits["hit_limit"] += int(np.sum(np.array(n_iter) >= MAX_SWEEPS))
+    coefs, checks = checked_lasso_path(Xs, yc, lam_lasso)
+    for key in ("total", "unresolved", "initial_hit_limit", "refined"):
+        lasso_fits[key] += checks[key]
+    for key in ("max_dual_gap", "max_kkt_residual", "max_sweeps"):
+        lasso_fits[key] = max(lasso_fits[key], checks[key])
     return sc, {"OLS": ols, "Ridge": ridge, "Lasso": coefs.T}
 
 
@@ -70,6 +67,7 @@ def cross_validate(x, y, k=K, seed=SEED):
             sc, paths = fit_paths(x[tr], y[tr], int(p))
             for m, th in paths.items():
                 err[m][f, a] = np.mean((y[va][:, None] - predict(sc, th, x[va], int(p))) ** 2, axis=0)
+        print(f"CV fold {f + 1}/{k} checked", flush=True)
     return {m: (e.mean(0), e.std(0, ddof=1) / np.sqrt(k)) for m, e in err.items()}
 
 
@@ -99,12 +97,11 @@ def select(x, y, cv, x_new, y_new):
 # ------------------------------------------------------------------------------------------
 # 1) Model selection for sigma = 0.1 (main data set) and sigma = 0.3
 # ------------------------------------------------------------------------------------------
-cv_store = {}
 for noise in (NOISE, 0.3):
+    print(f"Model selection: sigma={noise}", flush=True)
     x, y = make_data(N_POINTS, noise, SEED)
     x_new, y_new = make_data(2000, noise, SEED + 1)
     cv = cross_validate(x, y)
-    cv_store[noise] = cv
     sel = select(x, y, cv, x_new, y_new)
     results[f"sigma={noise}"] = {"k10": sel,
                                  "cv_curves_k10": {m: {"best_over_lambda": mean.min(1),
@@ -121,7 +118,9 @@ results["lasso_convergence_cv"] = dict(lasso_fits)
 P_BV, REPS = 15, 150
 x_eval = np.linspace(-1, 1, 401)
 f_eval = runge(x_eval)
-lasso_fits.update({"total": 0, "hit_limit": 0})
+for key in ("total", "unresolved", "initial_hit_limit", "refined",
+            "max_dual_gap", "max_kkt_residual", "max_sweeps"):
+    lasso_fits[key] = 0
 
 
 def decompose(pred):            # pred: (n_eval, n_lambda, n_sets)
@@ -139,6 +138,8 @@ for r in range(REPS):
     sc, paths = fit_paths(xf, yf, P_BV)
     for m in fresh:
         fresh[m].append(predict(sc, paths[m], x_eval, P_BV))
+    if (r + 1) % 25 == 0:
+        print(f"Bias/variance: {r + 1}/{REPS} training sets checked", flush=True)
 bv = {}
 for m in fresh:
     b2, var = decompose(np.stack(fresh[m], axis=2))
