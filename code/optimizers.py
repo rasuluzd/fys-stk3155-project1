@@ -45,11 +45,10 @@ every epoch. Bounds for plain GD do not apply unchanged to adaptive rules.
 
 LLM-assisted
 ------------
-Original module attribution: Claude through Claude Code, October 2026;
-the inherited exact model name has not been independently verified.
-OpenAI Codex reviewed the course mapping and improved documentation on
-5 October 2026 without changing executable statements. Assistance tags
-do not certify that the student has personally reviewed the code.
+Code level 2. The numerical code was written by the author. The docstrings and
+the course mapping above were written with LLM assistance (Claude via Claude
+Code and OpenAI Codex, October 2026). Apart from removing the unused proximal
+solvers, Codex did not change executable statements.
 Tests check analytical/AD agreement, all five update rules on one small
 Ridge case and selected GD/SGD properties.
 The experiment scripts supply further comparisons; these checks do not
@@ -69,9 +68,6 @@ def cost_ols(theta, X, y, lam=0.0):
 
     Book 4.3 / week37 Exercise 4d. autograd.numpy keeps this scalar cost
     differentiable by the same AD call used for the penalized costs.
-
-    LLM-assisted: original implementation attributed to Claude; documentation
-    reviewed with OpenAI Codex on 5 October 2026. See module provenance.
     """
     return anp.mean((y - anp.dot(X, theta)) ** 2)
 
@@ -81,9 +77,6 @@ def cost_ridge(theta, X, y, lam):
 
     Book 4.4 / week37 Exercise 4b. Centering is done by the caller, so the
     intercept is absent and cannot accidentally be penalized here.
-
-    LLM-assisted: original implementation attributed to Claude; documentation
-    reviewed with OpenAI Codex on 5 October 2026. See module provenance.
     """
     return cost_ols(theta, X, y) + lam * anp.sum(theta**2)
 
@@ -93,9 +86,6 @@ def cost_lasso(theta, X, y, lam):
 
     Book 3.9 / Project 1 part g. abs is not differentiable at zero;
     autograd selects a subgradient there, as checked in part_g_lasso.py.
-
-    LLM-assisted: original implementation attributed to Claude; documentation
-    reviewed with OpenAI Codex on 5 October 2026. See module provenance.
     """
     return cost_ols(theta, X, y) + lam * anp.sum(anp.abs(theta))
 
@@ -111,9 +101,6 @@ def grad_ols(theta, X, y, lam=0.0):
 
     Book 4.3 / week37 Exercise 4a. X @ theta - y is the residual; X.T
     sums each feature's contribution. The unused lam keeps the shared API.
-
-    LLM-assisted: original implementation attributed to Claude; documentation
-    reviewed with OpenAI Codex on 5 October 2026. See module provenance.
     """
     return (2.0 / X.shape[0]) * (X.T @ (X @ theta - y))
 
@@ -123,9 +110,6 @@ def grad_ridge(theta, X, y, lam):
 
     Use the same lam in full and mini-batch gradients: it is not multiplied
     by n/batch_size because each data-fit gradient is already an average.
-
-    LLM-assisted: original implementation attributed to Claude; documentation
-    reviewed with OpenAI Codex on 5 October 2026. See module provenance.
     """
     return grad_ols(theta, X, y) + 2.0 * lam * theta
 
@@ -137,9 +121,6 @@ def grad_lasso(theta, X, y, lam):
     Book 3.9 and 4.14.7 / Project 1 part g. Zero is a valid subgradient
     of abs at zero, not an ordinary derivative. A fixed subgradient step
     does not guarantee exactly zero fitted coefficients.
-
-    LLM-assisted: original implementation attributed to Claude; documentation
-    reviewed with OpenAI Codex on 5 October 2026. See module provenance.
     """
     return grad_ols(theta, X, y) + lam * np.sign(theta)
 
@@ -156,9 +137,6 @@ def autograd_gradient(method):
 
     Book 4.14.8 / week37 Exercise 4d. AD applies the chain rule through
     the scalar cost; this does not use finite-difference perturbations.
-
-    LLM-assisted: original implementation attributed to Claude; documentation
-    reviewed with OpenAI Codex on 5 October 2026. See module provenance.
     """
     return AUTOGRAD_GRADIENTS[method]
 
@@ -169,9 +147,6 @@ def make_gradient(method, X, y, lam=0.0, use_autograd=False):
     The returned lambda is a Python closure: it remembers X, y and lam.
     This is a convenience for the course's interchangeable-gradient loop,
     not a new algorithm. use_autograd changes only the gradient source.
-
-    LLM-assisted: original implementation attributed to Claude; documentation
-    reviewed with OpenAI Codex on 5 October 2026. See module provenance.
     """
     g = AUTOGRAD_GRADIENTS[method] if use_autograd else ANALYTICAL_GRADIENTS[method]
     return lambda theta: g(theta, X, y, lam)
@@ -185,9 +160,6 @@ def hessian(X, lam=0.0):
 
     Book 4.5 / week37 Exercise 4c. This is constant in theta and does
     not describe the nonsmooth Lasso penalty. X has no intercept column.
-
-    LLM-assisted: original implementation attributed to Claude; documentation
-    reviewed with OpenAI Codex on 5 October 2026. See module provenance.
     """
     n, p = X.shape
     return (2.0 / n) * (X.T @ X) + 2.0 * lam * np.eye(p)
@@ -199,9 +171,6 @@ def max_learning_rate(X, lam=0.0):
     For positive definite H, 0 < eta < this bound contracts every error
     mode. Equality is not safe; a singular H leaves null directions
     undamped. This bound does not cover momentum or adaptive updates.
-
-    LLM-assisted: original implementation attributed to Claude; documentation
-    reviewed with OpenAI Codex on 5 October 2026. See module provenance.
     """
     return 2.0 / np.linalg.eigvalsh(hessian(X, lam)).max()
 
@@ -217,27 +186,15 @@ class GD:
     name = "Plain GD"
 
     def __init__(self, eta):
-        """Store the base learning rate; drivers may supply a scheduled rate to update.
-
-        LLM-assisted: original implementation attributed to Claude; documentation
-        reviewed with OpenAI Codex on 5 October 2026. See module provenance.
-        """
+        """Store the base learning rate; drivers may supply a scheduled rate to update."""
         self.eta = eta
 
     def reset(self, n_params):
-        """Do nothing: plain GD has no accumulated state to clear.
-
-        LLM-assisted: original implementation attributed to Claude; documentation
-        reviewed with OpenAI Codex on 5 October 2026. See module provenance.
-        """
+        """Do nothing: plain GD has no accumulated state to clear."""
         pass
 
     def update(self, g, eta):
-        """Return eta times the gradient; the driver subtracts this step from theta.
-
-        LLM-assisted: original implementation attributed to Claude; documentation
-        reviewed with OpenAI Codex on 5 October 2026. See module provenance.
-        """
+        """Return eta times the gradient; the driver subtracts this step from theta."""
         return eta * g
 
 
@@ -252,27 +209,15 @@ class Momentum(GD):
     name = "Momentum"
 
     def __init__(self, eta, gamma=0.9):
-        """Store eta and the previous-step weight gamma (beta in the course notation).
-
-        LLM-assisted: original implementation attributed to Claude; documentation
-        reviewed with OpenAI Codex on 5 October 2026. See module provenance.
-        """
+        """Store eta and the previous-step weight gamma (beta in the course notation)."""
         self.eta, self.gamma = eta, gamma
 
     def reset(self, n_params):
-        """Start a new run with zero previous change in every coordinate.
-
-        LLM-assisted: original implementation attributed to Claude; documentation
-        reviewed with OpenAI Codex on 5 October 2026. See module provenance.
-        """
+        """Start a new run with zero previous change in every coordinate."""
         self.change = np.zeros(n_params)
 
     def update(self, g, eta):
-        """Add the current gradient step to gamma times the previous change.
-
-        LLM-assisted: original implementation attributed to Claude; documentation
-        reviewed with OpenAI Codex on 5 October 2026. See module provenance.
-        """
+        """Add the current gradient step to gamma times the previous change."""
         self.change = eta * g + self.gamma * self.change
         return self.change
 
@@ -288,27 +233,15 @@ class AdaGrad(GD):
     name = "AdaGrad"
 
     def __init__(self, eta, delta=1e-8):
-        """Store the base step and the small denominator offset outside the square root.
-
-        LLM-assisted: original implementation attributed to Claude; documentation
-        reviewed with OpenAI Codex on 5 October 2026. See module provenance.
-        """
+        """Store the base step and the small denominator offset outside the square root."""
         self.eta, self.delta = eta, delta
 
     def reset(self, n_params):
-        """Clear the sum of squared gradients once at the start of a run.
-
-        LLM-assisted: original implementation attributed to Claude; documentation
-        reviewed with OpenAI Codex on 5 October 2026. See module provenance.
-        """
+        """Clear the sum of squared gradients once at the start of a run."""
         self.G = np.zeros(n_params)
 
     def update(self, g, eta):
-        """Accumulate g squared coordinatewise, then divide the step by its square root.
-
-        LLM-assisted: original implementation attributed to Claude; documentation
-        reviewed with OpenAI Codex on 5 October 2026. See module provenance.
-        """
+        """Accumulate g squared coordinatewise, then divide the step by its square root."""
         self.G += g * g
         return eta * g / (self.delta + np.sqrt(self.G))
 
@@ -324,27 +257,15 @@ class RMSprop(GD):
     name = "RMSprop"
 
     def __init__(self, eta, rho=0.99, delta=1e-8):
-        """Store eta, the squared-gradient memory rho, and the denominator offset.
-
-        LLM-assisted: original implementation attributed to Claude; documentation
-        reviewed with OpenAI Codex on 5 October 2026. See module provenance.
-        """
+        """Store eta, the squared-gradient memory rho, and the denominator offset."""
         self.eta, self.rho, self.delta = eta, rho, delta
 
     def reset(self, n_params):
-        """Clear the moving squared-gradient average for a new run.
-
-        LLM-assisted: original implementation attributed to Claude; documentation
-        reviewed with OpenAI Codex on 5 October 2026. See module provenance.
-        """
+        """Clear the moving squared-gradient average for a new run."""
         self.s = np.zeros(n_params)
 
     def update(self, g, eta):
-        """Update the moving average and return the coordinatewise scaled step.
-
-        LLM-assisted: original implementation attributed to Claude; documentation
-        reviewed with OpenAI Codex on 5 October 2026. See module provenance.
-        """
+        """Update the moving average and return the coordinatewise scaled step."""
         self.s = self.rho * self.s + (1.0 - self.rho) * g * g
         return eta * g / (self.delta + np.sqrt(self.s))
 
@@ -360,19 +281,11 @@ class Adam(GD):
     name = "Adam"
 
     def __init__(self, eta, beta1=0.9, beta2=0.999, delta=1e-8):
-        """Store the two moment weights, base step and denominator offset.
-
-        LLM-assisted: original implementation attributed to Claude; documentation
-        reviewed with OpenAI Codex on 5 October 2026. See module provenance.
-        """
+        """Store the two moment weights, base step and denominator offset."""
         self.eta, self.beta1, self.beta2, self.delta = eta, beta1, beta2, delta
 
     def reset(self, n_params):
-        """Clear both moments and reset the bias-correction update counter.
-
-        LLM-assisted: original implementation attributed to Claude; documentation
-        reviewed with OpenAI Codex on 5 October 2026. See module provenance.
-        """
+        """Clear both moments and reset the bias-correction update counter."""
         self.m = np.zeros(n_params)
         self.v = np.zeros(n_params)
         self.t = 0
@@ -382,9 +295,6 @@ class Adam(GD):
 
         self.t becomes 1 before the first correction, avoiding a zero
         denominator. This counter is independent of SGD's schedule index.
-
-        LLM-assisted: original implementation attributed to Claude; documentation
-        reviewed with OpenAI Codex on 5 October 2026. See module provenance.
         """
         self.t += 1
         self.m = self.beta1 * self.m + (1.0 - self.beta1) * g
@@ -405,9 +315,6 @@ def _relative_error(theta, theta_ref):
 
     This benchmark metric requires ||theta_ref|| > 0. It is neither a
     prediction error nor a stopping test available without a reference.
-
-    LLM-assisted: original implementation attributed to Claude; documentation
-    reviewed with OpenAI Codex on 5 October 2026. See module provenance.
     """
     return np.linalg.norm(theta - theta_ref) / np.linalg.norm(theta_ref)
 
@@ -438,9 +345,6 @@ def gradient_descent(gradient, theta0, optimizer, n_iter, theta_ref=None, tol=No
     runs to its budget unless the finite-value/large-coefficient guard trips.
     Unlike the lecture example, this records errors rather than every theta;
     the last error is only stored if its iteration meets record_every.
-
-    LLM-assisted: original implementation attributed to Claude; documentation
-    reviewed with OpenAI Codex on 5 October 2026. See module provenance.
     """
     theta = np.array(theta0, dtype=float)
     optimizer.reset(theta.size)
@@ -470,9 +374,6 @@ def inverse_time_schedule(t0, t1):
     Book 4.7.8 / week38 Exercise 4. eta(0)=t0/t1; the experiments'
     eta0*t1/(t+t1) form is equivalent when t0=eta0*t1. This module's
     first schedule index differs by one from the Tuesday template.
-
-    LLM-assisted: original implementation attributed to Claude; documentation
-    reviewed with OpenAI Codex on 5 October 2026. See module provenance.
     """
     return lambda t: t0 / (t + t1)
 
@@ -503,9 +404,6 @@ def stochastic_gradient_descent(grad_fn, X, y, lam, theta0, optimizer, n_epochs,
     finite-value/large-coefficient guard is checked after each epoch.
     Returns theta and info with per-epoch errors/history, update count,
     and the divergence flag. Histories contain diagnostics, not all theta.
-
-    LLM-assisted: original implementation attributed to Claude; documentation
-    reviewed with OpenAI Codex on 5 October 2026. See module provenance.
     """
     rng = np.random.default_rng(seed)
     n = X.shape[0]

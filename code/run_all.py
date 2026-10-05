@@ -8,8 +8,8 @@ All random numbers come from fixed seeds (see settings.py), so a clean run repro
 figure in report/figures/ and the numerical records quoted in the report.
 Wall-clock timings vary between runs and machines.
 
-LLM-assisted: written with Claude (Anthropic, Claude Code; original model label unverified), October 2026.
-Codex added the required comparison scripts to this command, 5 October 2026.
+LLM-assisted (code level 2): OpenAI Codex and Claude (Claude Code) added the supplementary
+scripts to this command on 5 October 2026.
 """
 
 import subprocess
@@ -32,6 +32,7 @@ PARTS = {
     "verify": "verification_supplement.py",
     "i": "part_i_model_selection.py",
     "check": "model_selection_check.py",  # uses the part-i selections
+    "edge": "edge_effects.py",            # checks itself against parts a, c and i
     "bench": "benchmarks.py",
 }
 

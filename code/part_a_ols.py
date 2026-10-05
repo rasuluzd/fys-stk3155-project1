@@ -2,7 +2,8 @@
 
 Writes results/part_a.json and report/figures/a_mse_r2.pdf and a_coefficients.pdf.
 The sample-size/noise simulations supply the numerical discussion, without extra plots.
-LLM-assisted: original Claude implementation; Codex removed unreported plots, 5 October 2026.
+LLM-assisted (code level 2): plotting code generated with Claude (Claude Code, October 2026);
+OpenAI Codex removed unreported plots and edited the docstrings, 5 October 2026.
 """
 
 import numpy as np
@@ -39,6 +40,7 @@ results["main"] = {"degrees": degrees, "mse_train": mse_train, "mse_test": mse_t
                    "x_train_range": [x_train.min(), x_train.max()],
                    "x_test_range": [x_test.min(), x_test.max()]}
 
+# LLM-assisted (Claude, Claude Code, October 2026): plotting code for this figure.
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(DOUBLE, 2.3))
 ax1.semilogy(degrees, mse_train, "-o", color=COLORS[0], label="Training")
 ax1.semilogy(degrees, mse_test, "-s", color=COLORS[1], label="Test")
@@ -61,6 +63,7 @@ save(fig, "a_mse_r2")
 # ------------------------------------------------------------------------------------------
 # 3) Parameters against degree
 # ------------------------------------------------------------------------------------------
+# LLM-assisted (Claude, Claude Code, October 2026): plotting code for this figure.
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(DOUBLE, 2.3))
 for j in range(1, 7):
     vals = [thetas[p][j - 1] if p >= j else np.nan for p in degrees]
@@ -124,10 +127,7 @@ deg_ens = np.arange(1, 21)
 
 
 def ensemble(n, noise, reps=R):
-    """LLM-assisted: Claude generated the original implementation, as recorded
-    in the module declaration. Codex added this function-level attribution
-    on 5 October 2026; this tag does not certify the student's own review.
-    """
+    """Train and test MSE against degree for reps independent data sets of size n."""
     test = np.empty((reps, len(deg_ens)))
     train = np.empty_like(test)
     for r in range(reps):

@@ -4,7 +4,7 @@ Scikit-Learn. (The same checks, with tolerances, are in tests/.)
 
 Writes results/benchmarks.json.
 
-LLM-assisted: written with Claude (Anthropic, Claude Code; original model label unverified), October 2026.
+LLM-assisted (code level 4): generated with Claude (Anthropic, Claude Code), October 2026.
 
 Codex correction, 5 October 2026: set the sklearn OLS reference cutoff to
 1e-15 so dense least squares matches the custom pseudoinverse convention.

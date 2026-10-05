@@ -10,8 +10,8 @@ Produces
 Degree 6 (kappa ~ 2e3) is the main test case; degree 10 (kappa ~ 3e6) shows where all
 first-order methods stall.
 
-LLM-assisted: written with Claude (Anthropic, Claude Code; original model label unverified), October 2026.
-Codex added a separate Ridge learning-rate scan on the identical grid and budget,
+LLM-assisted (code level 2): plotting code generated with Claude (Claude Code, October 2026).
+OpenAI Codex added a separate Ridge learning-rate scan on the identical grid and budget,
 5 October 2026, to improve the fairness of the comparison.
 """
 
@@ -35,20 +35,14 @@ METHODS = ["gd", "momentum", "adagrad", "rmsprop", "adam"]
 
 
 def scaled_problem(p):
-    """LLM-assisted: Claude generated the original implementation, as recorded
-    in the module declaration. Codex added this function-level attribution
-    on 5 October 2026; this tag does not certify the student's own review.
-    """
+    """Standardized design matrix and centered targets for degree p."""
     X = polynomial_features(x_train, p)
     sc = Scaler().fit(X, y_train)
     return sc.transform(X), sc.center(y_train)
 
 
 def run(method, eta, X, y, lam, theta_star, n_iter=MAX_IT, tol=TOL):
-    """LLM-assisted: Claude generated the original implementation, as recorded
-    in the module declaration. Codex added this function-level attribution
-    on 5 October 2026; this tag does not certify the student's own review.
-    """
+    """Run one optimizer from zero until the relative coefficient error is below tol."""
     kind = "ridge" if lam > 0 else "ols"
     th, inf = gradient_descent(make_gradient(kind, X, y, lam), np.zeros(X.shape[1]),
                                OPTIMIZERS[method](eta), n_iter, theta_ref=theta_star, tol=tol)
@@ -102,26 +96,17 @@ class DecayingRMSprop(RMSprop):
     """RMSprop with eta_t = eta0 * t1 / (t + t1)."""
 
     def __init__(self, eta, t1=100.0, **kw):
-        """LLM-assisted: Claude generated the original implementation, as recorded
-        in the module declaration. Codex added this function-level attribution
-        on 5 October 2026; this tag does not certify the student's own review.
-        """
+        """Store the base rate and the decay time scale t1."""
         super().__init__(eta, **kw)
         self.t1 = t1
 
     def reset(self, n_params):
-        """LLM-assisted: Claude generated the original implementation, as recorded
-        in the module declaration. Codex added this function-level attribution
-        on 5 October 2026; this tag does not certify the student's own review.
-        """
+        """Clear the RMSprop state and the update counter."""
         super().reset(n_params)
         self.t = 0
 
     def update(self, g, eta):
-        """LLM-assisted: Claude generated the original implementation, as recorded
-        in the module declaration. Codex added this function-level attribution
-        on 5 October 2026; this tag does not certify the student's own review.
-        """
+        """RMSprop step with the decaying rate eta * t1 / (t + t1)."""
         self.t += 1
         return super().update(g, eta * self.t1 / (self.t + self.t1))
 
@@ -173,6 +158,7 @@ results["degree10"] = deg10
 # ------------------------------------------------------------------------------------------
 # Figure
 # ------------------------------------------------------------------------------------------
+# LLM-assisted (Claude, Claude Code, October 2026): plotting code for this figure.
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(DOUBLE, 2.6))
 for m in METHODS:
     ax1.loglog(etas, scan[m]["iterations"], "-" + OPTIMIZER_MARKERS[m], ms=3, color=OPTIMIZER_COLORS[m],

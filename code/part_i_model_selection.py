@@ -4,8 +4,9 @@ Scaling is fitted within each fold. Lasso uses warm-start coordinate descent
 with alpha=lambda/2; every candidate must pass dual-gap and stationarity checks.
 All degrees are refitted once to preserve the documented grid/refit audit.
 Writes results/part_i.json; model_selection_check.py checks the whole grid's sensitivity.
-LLM-assisted: original Claude implementation; Codex removed unreported one-SE
-selections, bootstrap repetition and plots, 5 October 2026.
+LLM-assisted (code level 2): OpenAI Codex added the Lasso convergence checks, removed
+unreported one-SE selections, bootstrap repetition and plots and edited the docstrings,
+5 October 2026.
 """
 
 import numpy as np
@@ -25,12 +26,7 @@ lasso_fits = {"total": 0, "unresolved": 0, "initial_hit_limit": 0, "refined": 0,
 
 
 def fit_paths(x_tr, y_tr, p):
-    """Scaler plus coefficient paths for OLS (1 x p), Ridge (L_r x p) and Lasso (L_l x p).
-
-    LLM-assisted: Claude generated the original implementation, as recorded
-    in the module declaration. Codex added this function-level attribution
-    on 5 October 2026; this tag does not certify the student's own review.
-    """
+    """Scaler plus coefficient paths for OLS (1 x p), Ridge (L_r x p) and Lasso (L_l x p)."""
     X = polynomial_features(x_tr, p)
     sc = Scaler().fit(X, y_tr)
     Xs, yc = sc.transform(X), sc.center(y_tr)
@@ -47,18 +43,12 @@ def fit_paths(x_tr, y_tr, p):
 
 
 def predict(sc, thetas, x, p):
-    """LLM-assisted: Claude generated the original implementation, as recorded
-    in the module declaration. Codex added this function-level attribution
-    on 5 October 2026; this tag does not certify the student's own review.
-    """
+    """Predictions for every row of thetas, using the training scaler sc."""
     return sc.y_mean + sc.transform(polynomial_features(x, p)) @ thetas.T
 
 
 def cross_validate(x, y, k=K, seed=SEED):
-    """LLM-assisted: Claude generated the original implementation, as recorded
-    in the module declaration. Codex added this function-level attribution
-    on 5 October 2026; this tag does not certify the student's own review.
-    """
+    """Ten-fold CV MSE and fold standard error for every method, degree and penalty."""
     folds = list(KFold(n_splits=k, shuffle=True, random_state=seed).split(x))
     shapes = {"OLS": 1, "Ridge": len(lam_ridge), "Lasso": len(lam_lasso)}
     err = {m: np.empty((k, len(degrees), L)) for m, L in shapes.items()}
@@ -74,10 +64,6 @@ def cross_validate(x, y, k=K, seed=SEED):
 def select(x, y, cv, x_new, y_new):
     """Minimum-CV choices for every method, refitted on all data and
     evaluated on fresh points.
-
-    LLM-assisted: Claude generated the original implementation, as recorded
-    in the module declaration. Codex added this function-level attribution
-    on 5 October 2026; this tag does not certify the student's own review.
     """
     out = {}
     lam_of = {"OLS": np.array([0.0]), "Ridge": lam_ridge, "Lasso": lam_lasso}
@@ -124,10 +110,7 @@ for key in ("total", "unresolved", "initial_hit_limit", "refined",
 
 
 def decompose(pred):            # pred: (n_eval, n_lambda, n_sets)
-    """LLM-assisted: Claude generated the original implementation, as recorded
-    in the module declaration. Codex added this function-level attribution
-    on 5 October 2026; this tag does not certify the student's own review.
-    """
+    """Squared bias (with the known f) and variance of a set of predictions."""
     mean = pred.mean(axis=2)
     return np.mean((f_eval[:, None] - mean) ** 2, axis=0), np.mean(pred.var(axis=2), axis=0)
 

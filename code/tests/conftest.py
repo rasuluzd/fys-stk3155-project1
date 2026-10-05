@@ -1,3 +1,4 @@
+# LLM-assisted (code level 4): generated with Claude (Claude Code, October 2026).
 import sys
 from pathlib import Path
 

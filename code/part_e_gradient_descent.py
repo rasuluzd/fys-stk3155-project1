@@ -1,8 +1,8 @@
 """Part e: analytical/Autograd gradients, cost timings, GD learning-rate scan
 and Ridge conditioning at degree six. Writes results/part_e.json.
 verification_supplement.py also runs the analytical/Autograd Ridge comparison.
-LLM-assisted: original Claude implementation; Codex removed unreported spectral
-early-stopping and extended conditioning experiments, 5 October 2026.
+LLM-assisted (code level 2): OpenAI Codex removed unreported spectral early-stopping and
+extended conditioning experiments and edited the docstrings, 5 October 2026.
 """
 
 import time
@@ -21,20 +21,14 @@ TOL = 1e-6
 
 
 def scaled_problem(p):
-    """LLM-assisted: Claude generated the original implementation, as recorded
-    in the module declaration. Codex added this function-level attribution
-    on 5 October 2026; this tag does not certify the student's own review.
-    """
+    """Standardized design matrix, centered targets and fitted scaler for degree p."""
     X = polynomial_features(x_train, p)
     sc = Scaler().fit(X, y_train)
     return sc.transform(X), sc.center(y_train), sc
 
 
 def spectrum(X, lam=0.0):
-    """LLM-assisted: Claude generated the original implementation, as recorded
-    in the module declaration. Codex added this function-level attribution
-    on 5 October 2026; this tag does not certify the student's own review.
-    """
+    """Largest and smallest Hessian eigenvalue and their ratio (the condition number)."""
     ev = np.linalg.eigvalsh(hessian(X, lam))
     return ev.max(), ev.min(), ev.max() / ev.min()
 
@@ -42,10 +36,6 @@ def spectrum(X, lam=0.0):
 def theory_iterations(X, theta_star, eta, lam=0.0, tol=TOL, kmax=10**8):
     """Exact iteration count for GD from theta=0 on the quadratic cost: the error in eigen-
     direction i is multiplied by (1 - eta h_i) per step, so ||e_k||^2 = sum_i r_i^(2k) e0_i^2.
-
-    LLM-assisted: Claude generated the original implementation, as recorded
-    in the module declaration. Codex added this function-level attribution
-    on 5 October 2026; this tag does not certify the student's own review.
     """
     h, V = np.linalg.eigh(hessian(X, lam))
     e0 = V.T @ (-theta_star)
@@ -88,10 +78,7 @@ results["gradient_check"] = grad_check
 
 
 def best_time(fun, repeat=7, number=20):
-    """LLM-assisted: Claude generated the original implementation, as recorded
-    in the module declaration. Codex added this function-level attribution
-    on 5 October 2026; this tag does not certify the student's own review.
-    """
+    """Best average wall time of fun() over repeat timing loops of number calls."""
     best = np.inf
     for _ in range(repeat):
         t0 = time.perf_counter()

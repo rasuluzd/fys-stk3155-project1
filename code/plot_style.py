@@ -8,7 +8,7 @@ that the figures can be read in black-and-white print.
 
 LLM-assisted
 ------------
-Tool: Claude (Anthropic, Claude Code; original model label unverified), October 2026. Wrote this style module.
+Tool: Claude (Anthropic, Claude Code), October 2026. Role: generated this style module (code level 4).
 """
 
 from pathlib import Path
@@ -48,10 +48,7 @@ BLUES = LinearSegmentedColormap.from_list(
 
 
 def set_style():
-    """LLM-assisted: Claude generated the original implementation, as recorded
-    in the module declaration. Codex added this function-level attribution
-    on 5 October 2026; this tag does not certify the student's own review.
-    """
+    """LLM-assisted: generated with Claude (Claude Code, October 2026)."""
     mpl.rcParams.update({
         "figure.figsize": (SINGLE, 2.5),
         "figure.dpi": 150,
@@ -93,9 +90,7 @@ def ordered_colors(k, light=0.25, dark=1.0, base=None):
     Without base the blue ramp is used; with base (a hex colour) the ramp runs from a light
     tint of that colour to a darker shade of it, so e.g. Ridge curves stay 'red'.
 
-    LLM-assisted: Claude generated the original implementation, as recorded
-    in the module declaration. Codex added this function-level attribution
-    on 5 October 2026; this tag does not certify the student's own review.
+    LLM-assisted: generated with Claude (Claude Code, October 2026).
     """
     import numpy as np
     from matplotlib.colors import to_rgb
@@ -113,9 +108,7 @@ def save(fig, name):
     If the environment variable PREVIEW_DIR is set, a PNG copy is written there as well
     (handy for a quick look without a PDF viewer).
 
-    LLM-assisted: Claude generated the original implementation, as recorded
-    in the module declaration. Codex added this function-level attribution
-    on 5 October 2026; this tag does not certify the student's own review.
+    LLM-assisted: generated with Claude (Claude Code, October 2026).
     """
     import os
     fig.savefig(FIG_DIR / f"{name}.pdf")

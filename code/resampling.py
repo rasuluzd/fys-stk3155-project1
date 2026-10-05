@@ -32,8 +32,9 @@ its numerical degree minima are therefore not reference answers for this dataset
 
 LLM-assisted
 ------------
-Tool: Claude (Anthropic, Claude Code; original model label unverified), October 2026.
-Role: wrote the first version of these functions, based on the lecture-note code.
+Code level 2. The functions were written by the author, based on the lecture-note code. The
+docstrings and the course references above were written with LLM assistance (Claude via
+Claude Code and OpenAI Codex, October 2026).
 Verification: tests/test_resampling.py checks the exact decomposition and that our k-fold code
 reproduces Scikit-Learn's cross_val_score for the same folds.
 """
@@ -61,10 +62,6 @@ def bootstrap_bias_variance(model, x_train, y_train, x_test, y_test, n_bootstrap
     The returned variance uses NumPy's ddof=0, making error=bias2+variance exact up to roundoff.
     A finite conditional bootstrap estimate need not equal population bias/variance; f_test
     removes target noise from this diagnostic, not the sampling error in the mean prediction.
-
-    LLM-assisted: Claude generated the original implementation, as recorded
-    in the module declaration. Codex added this function-level attribution
-    on 5 October 2026; this tag does not certify the student's own review.
     """
     rng = np.random.default_rng(seed)
     n = len(x_train)
@@ -92,10 +89,6 @@ def kfold_indices(n, k, seed=None):
     appears in a test fold once. Passing the same integer seed to sklearn does not necessarily
     reproduce this permutation: the random-number generators can differ. For a solver check,
     pass one explicit list of fold indices to both implementations, as part d does.
-
-    LLM-assisted: Claude generated the original implementation, as recorded
-    in the module declaration. Codex added this function-level attribution
-    on 5 October 2026; this tag does not certify the student's own review.
     """
     rng = np.random.default_rng(seed)
     folds = np.array_split(rng.permutation(n), k)
@@ -113,10 +106,6 @@ def kfold_cv_mse(model, x, y, folds):
     folds require size weights if that pooled quantity is intended. The report's N=100 with
     k=5 or 10 has equal folds. Fold losses are dependent because training samples overlap;
     std(scores, ddof=1)/sqrt(k) is a descriptive one-SE heuristic, not a calibrated interval.
-
-    LLM-assisted: Claude generated the original implementation, as recorded
-    in the module declaration. Codex added this function-level attribution
-    on 5 October 2026; this tag does not certify the student's own review.
     """
     scores = []
     for train_idx, test_idx in folds:

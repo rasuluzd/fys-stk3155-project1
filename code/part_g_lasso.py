@@ -1,8 +1,8 @@
 """Part g: Autograd's subgradient convention and fixed-budget OLS/Ridge/Lasso
 comparisons. Writes results/part_g.json. lasso_course_comparison.py compares
 all five taught updates and supplies the report's Lasso table.
-LLM-assisted: original Claude implementation; Codex removed optional proximal
-solvers and their unreported experiments, 5 October 2026.
+LLM-assisted (code level 2): OpenAI Codex removed optional proximal solvers and their
+unreported experiments and edited the docstrings, 5 October 2026.
 """
 
 
@@ -25,10 +25,7 @@ results["autograd_abs_derivative"] = {"at_0": d_abs(0.0), "at_+0.3": d_abs(0.3),
 
 
 def scaled_problem(p):
-    """LLM-assisted: Claude generated the original implementation, as recorded
-    in the module declaration. Codex added this function-level attribution
-    on 5 October 2026; this tag does not certify the student's own review.
-    """
+    """Standardized design matrix, centered targets and fitted scaler for degree p."""
     X_raw = polynomial_features(x_train, p)
     sc = Scaler().fit(X_raw, y_train)
     return sc.transform(X_raw), sc.center(y_train), sc

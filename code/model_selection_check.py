@@ -6,7 +6,7 @@ the certified rerun changes the minimum. It also refines the selected models
 at tol=1e-10, including their final independent-test predictions.
 
 LLM-assisted: Codex generated this script on 5 October 2026 and executed it
-as part of the report audit. The student should review and understand it.
+as part of the report audit.
 """
 
 import json

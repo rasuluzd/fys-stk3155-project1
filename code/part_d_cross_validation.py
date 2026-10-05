@@ -10,7 +10,8 @@ Produces
 
 Run part_c_bias_variance.py first (its results are read for the comparison).
 
-LLM-assisted: written with Claude (Anthropic, Claude Code; original model label unverified), October 2026.
+LLM-assisted (code level 2): plotting code generated with Claude (Claude Code, October 2026);
+docstrings edited with OpenAI Codex, 5 October 2026.
 """
 
 import json
@@ -36,10 +37,7 @@ degrees = np.arange(1, 21)
 
 
 def ols_pipe(p):
-    """LLM-assisted: Claude generated the original implementation, as recorded
-    in the module declaration. Codex added this function-level attribution
-    on 5 October 2026; this tag does not certify the student's own review.
-    """
+    """Scikit-learn OLS pipeline (features, standardization, fit) with the pinv rank cutoff."""
     # Codex correction, 5 October 2026: sklearn 1.9 applies tol to dense
     # least-squares rank. Match np.linalg.pinv's relative cutoff explicitly.
     return make_pipeline(PolynomialFeatures(p, include_bias=False), StandardScaler(),
@@ -47,19 +45,13 @@ def ols_pipe(p):
 
 
 def ridge_pipe(p, alpha):
-    """LLM-assisted: Claude generated the original implementation, as recorded
-    in the module declaration. Codex added this function-level attribution
-    on 5 October 2026; this tag does not certify the student's own review.
-    """
+    """Scikit-learn Ridge pipeline; alpha is the training-fold size times lambda."""
     return make_pipeline(PolynomialFeatures(p, include_bias=False), StandardScaler(),
                          Ridge(alpha=alpha, solver="svd"))
 
 
 def cv_scores(estimator, k, seed=SEED):
-    """LLM-assisted: Claude generated the original implementation, as recorded
-    in the module declaration. Codex added this function-level attribution
-    on 5 October 2026; this tag does not certify the student's own review.
-    """
+    """Fold MSEs from scikit-learn's KFold and cross_val_score."""
     kf = KFold(n_splits=k, shuffle=True, random_state=seed)
     return -cross_val_score(estimator, X1, y, cv=kf, scoring="neg_mean_squared_error")
 
@@ -149,6 +141,7 @@ with open(RESULTS_DIR / "part_c.json", encoding="utf-8") as f:
 deg_c = np.array(part_c["train_test"]["degrees"])
 boot = np.array(part_c["n=100"]["error"])
 
+# LLM-assisted (Claude, Claude Code, October 2026): plotting code for this figure.
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(DOUBLE, 2.6), gridspec_kw={"width_ratios": [1, 1.12]})
 for k, c, mk in ((5, COLORS[0], "o"), (10, COLORS[2], "s")):
     m, s = ols[k]["mean"], ols[k]["se"]

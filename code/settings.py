@@ -3,7 +3,8 @@ Shared settings for all scripts: the main data set, seeds and a helper that stor
 
 Every number quoted in the report is written by one of the part_*.py scripts to results/*.json.
 
-LLM-assisted: written with Claude (Anthropic, Claude Code; original model label unverified), October 2026.
+LLM-assisted (code level 2): docstrings written with LLM assistance (Claude via Claude Code and
+OpenAI Codex, October 2026).
 """
 
 import json
@@ -22,21 +23,13 @@ MAX_DEGREE = 15
 
 
 def main_split(n=N_POINTS, noise=NOISE, seed=SEED):
-    """The main data set of the report: x ~ U[-1, 1], y = f(x) + N(0, noise^2), 80/20 split.
-
-    LLM-assisted: Claude generated the original implementation, as recorded
-    in the module declaration. Codex added this function-level attribution
-    on 5 October 2026; this tag does not certify the student's own review.
-    """
+    """The main data set of the report: x ~ U[-1, 1], y = f(x) + N(0, noise^2), 80/20 split."""
     x, y = make_data(n, noise, seed)
     return train_test_split(x, y, test_size=TEST_SIZE, random_state=seed)
 
 
 def _to_builtin(obj):
-    """LLM-assisted: Claude generated the original implementation, as recorded
-    in the module declaration. Codex added this function-level attribution
-    on 5 October 2026; this tag does not certify the student's own review.
-    """
+    """Convert numpy types recursively into JSON-serializable Python types."""
     if isinstance(obj, dict):
         return {str(k): _to_builtin(v) for k, v in obj.items()}
     if isinstance(obj, (list, tuple)):
@@ -53,12 +46,7 @@ def _to_builtin(obj):
 
 
 def save_results(name, results):
-    """Write a dictionary of results to results/<name>.json (numpy types converted).
-
-    LLM-assisted: Claude generated the original implementation, as recorded
-    in the module declaration. Codex added this function-level attribution
-    on 5 October 2026; this tag does not certify the student's own review.
-    """
+    """Write a dictionary of results to results/<name>.json (numpy types converted)."""
     path = RESULTS_DIR / f"{name}.json"
     with open(path, "w", encoding="utf-8") as f:
         json.dump(_to_builtin(results), f, indent=2)

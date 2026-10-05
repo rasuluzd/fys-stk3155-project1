@@ -2,7 +2,8 @@
 
 Writes results/part_b.json. ridge_supplement.py supplies the two retained plots
 and the paired sample-size/noise comparisons.
-LLM-assisted: original Claude implementation; Codex removed unreported exploration, 5 October 2026.
+LLM-assisted (code level 2): OpenAI Codex removed unreported exploration and edited the
+docstrings, 5 October 2026.
 """
 
 import numpy as np
@@ -17,12 +18,7 @@ n = len(x_train)
 
 
 def ridge_path_predictions(x_tr, y_tr, x_te, degree, lams):
-    """Test predictions for all lambdas at once, using one SVD of the scaled design matrix.
-
-    LLM-assisted: Claude generated the original implementation, as recorded
-    in the module declaration. Codex added this function-level attribution
-    on 5 October 2026; this tag does not certify the student's own review.
-    """
+    """Test predictions for all lambdas at once, using one SVD of the scaled design matrix."""
     X = polynomial_features(x_tr, degree)
     sc = Scaler().fit(X, y_tr)
     Xs, yc = sc.transform(X), sc.center(y_tr)

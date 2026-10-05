@@ -6,7 +6,7 @@ full-batch/mini-batch SGD. These cases do not establish convergence on every
 degree, dataset or learning rate. Codex clarified this scope on 5 October 2026;
 no executable test statements changed.
 
-LLM-assisted: written with Claude (Anthropic, Claude Code; original model label unverified), October 2026.
+LLM-assisted (code level 4): generated with Claude (Anthropic, Claude Code), October 2026.
 """
 
 import numpy as np
@@ -29,10 +29,7 @@ rng = np.random.default_rng(0)
 
 @pytest.mark.parametrize("method", ["ols", "ridge", "lasso"])
 def test_autograd_equals_analytical_gradient(method):
-    """LLM-assisted: Claude generated the original implementation, as recorded
-    in the module declaration. Codex added this function-level attribution
-    on 5 October 2026; this tag does not certify the student's own review.
-    """
+    """LLM-assisted: generated with Claude (Claude Code, October 2026)."""
     lam = 0.01
     for _ in range(5):
         theta = rng.normal(size=X.shape[1])  # random point, almost surely no zero component
@@ -42,19 +39,13 @@ def test_autograd_equals_analytical_gradient(method):
 
 
 def test_autograd_derivative_of_abs_at_zero_is_a_subgradient():
-    """LLM-assisted: Claude generated the original implementation, as recorded
-    in the module declaration. Codex added this function-level attribution
-    on 5 October 2026; this tag does not certify the student's own review.
-    """
+    """LLM-assisted: generated with Claude (Claude Code, October 2026)."""
     d = grad(lambda t: anp.abs(t))(0.0)
     assert -1.0 <= d <= 1.0
 
 
 def test_plain_gd_converges_below_and_diverges_above_bound():
-    """LLM-assisted: Claude generated the original implementation, as recorded
-    in the module declaration. Codex added this function-level attribution
-    on 5 October 2026; this tag does not certify the student's own review.
-    """
+    """LLM-assisted: generated with Claude (Claude Code, October 2026)."""
     theta_ols = ols_parameters(X, yc)
     eta_max = max_learning_rate(X)
     _, ok = gradient_descent(make_gradient("ols", X, yc), np.zeros(3), GD(0.9 * eta_max), 20000,
@@ -67,10 +58,7 @@ def test_plain_gd_converges_below_and_diverges_above_bound():
 @pytest.mark.parametrize("name,eta", [("gd", 0.05), ("momentum", 0.05), ("adagrad", 0.5),
                                       ("rmsprop", 0.01), ("adam", 0.02)])
 def test_all_optimizers_reach_ridge_closed_form(name, eta):
-    """LLM-assisted: Claude generated the original implementation, as recorded
-    in the module declaration. Codex added this function-level attribution
-    on 5 October 2026; this tag does not certify the student's own review.
-    """
+    """LLM-assisted: generated with Claude (Claude Code, October 2026)."""
     lam = 1e-3
     theta_ridge = ridge_parameters(X, yc, lam)
     theta, info = gradient_descent(make_gradient("ridge", X, yc, lam), np.zeros(3),
@@ -79,10 +67,7 @@ def test_all_optimizers_reach_ridge_closed_form(name, eta):
 
 
 def test_sgd_with_full_batch_equals_gd():
-    """LLM-assisted: Claude generated the original implementation, as recorded
-    in the module declaration. Codex added this function-level attribution
-    on 5 October 2026; this tag does not certify the student's own review.
-    """
+    """LLM-assisted: generated with Claude (Claude Code, October 2026)."""
     eta, n_epochs = 0.05, 50
     theta_gd, _ = gradient_descent(make_gradient("ols", X, yc), np.zeros(3), GD(eta), n_epochs)
     theta_sgd, _ = stochastic_gradient_descent(grad_ols, X, yc, 0.0, np.zeros(3), GD(eta),
@@ -91,10 +76,7 @@ def test_sgd_with_full_batch_equals_gd():
 
 
 def test_sgd_adam_gets_close_to_ols():
-    """LLM-assisted: Claude generated the original implementation, as recorded
-    in the module declaration. Codex added this function-level attribution
-    on 5 October 2026; this tag does not certify the student's own review.
-    """
+    """LLM-assisted: generated with Claude (Claude Code, October 2026)."""
     theta_ols = ols_parameters(X, yc)
     theta, info = stochastic_gradient_descent(grad_ols, X, yc, 0.0, np.zeros(3), Adam(0.01),
                                               n_epochs=400, batch_size=10, seed=2,

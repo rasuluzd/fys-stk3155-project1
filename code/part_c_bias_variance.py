@@ -12,7 +12,8 @@ Because we know how the data are generated, the expectation over training sets c
 exactly (up to Monte Carlo noise) by drawing many fresh training sets. This lets us check what the
 bootstrap actually estimates.
 
-LLM-assisted: written with Claude (Anthropic, Claude Code; original model label unverified), October 2026.
+LLM-assisted (code level 2): plotting code generated with Claude (Claude Code, October 2026);
+docstrings edited with OpenAI Codex, 5 October 2026.
 """
 
 import numpy as np
@@ -51,6 +52,7 @@ results["train_test"] = {"degrees": degrees, "mean_train": mean_train, "mean_tes
                          "best_degree_median": int(degrees[np.argmin(med_test)]),
                          "expected_train_ols_theory": NOISE**2 * (1 - (degrees + 1) / n_train)}
 
+# LLM-assisted (Claude, Claude Code, October 2026): plotting code for this figure.
 fig, ax = plt.subplots(figsize=(SINGLE, 2.5))
 for r in range(40):
     ax.semilogy(degrees, train_curves[r], color=COLORS[0], alpha=0.12, lw=0.6)
@@ -78,10 +80,7 @@ B, MC = 200, 400
 
 
 def analyse(n):
-    """LLM-assisted: Claude generated the original implementation, as recorded
-    in the module declaration. Codex added this function-level attribution
-    on 5 October 2026; this tag does not certify the student's own review.
-    """
+    """Bootstrap and fresh-training-set bias-variance estimates against degree for n points."""
     x, y = make_data(n, NOISE, seed=SEED)
     x_tr, x_te, y_tr, y_te = train_test_split(x, y, test_size=TEST_SIZE, random_state=SEED)
     f_te = runge(x_te)
@@ -112,6 +111,7 @@ def analyse(n):
     return out
 
 
+# LLM-assisted (Claude, Claude Code, October 2026): plotting code for this figure.
 fig, axes = plt.subplots(1, 2, figsize=(DOUBLE, 2.75))
 for ax, n, lab, deg_max, ylim in zip(axes, (100, 1000), ("(a)", "(b)"), (14, 20),
                                      ((4e-4, 30.0), (5e-5, 0.3))):

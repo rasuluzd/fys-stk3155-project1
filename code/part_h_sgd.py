@@ -12,7 +12,8 @@ Produces
                       (b) the five update rules with M = 10
   results/part_h.json
 
-LLM-assisted: written with Claude (Anthropic, Claude Code; original model label unverified), October 2026.
+LLM-assisted (code level 2): plotting code generated with Claude (Claude Code, October 2026);
+docstrings edited with OpenAI Codex, 5 October 2026.
 """
 
 import time
@@ -48,18 +49,12 @@ results["setup"] = {"degree": P, "n_train": n, "statistical_floor": floor, "lamb
 
 
 def excess(theta):
-    """LLM-assisted: Claude generated the original implementation, as recorded
-    in the module declaration. Codex added this function-level attribution
-    on 5 October 2026; this tag does not certify the student's own review.
-    """
+    """Excess training cost C(theta) - C(theta_OLS)."""
     return cost_ols(theta, X, y) - c_ols
 
 
 def run(method, eta, M, schedule=None, epochs=EPOCHS, seed=0):
-    """LLM-assisted: Claude generated the original implementation, as recorded
-    in the module declaration. Codex added this function-level attribution
-    on 5 October 2026; this tag does not certify the student's own review.
-    """
+    """One SGD run for an update rule, batch size and schedule; records excess cost per epoch."""
     t0 = time.perf_counter()
     th, info = stochastic_gradient_descent(grad_ols, X, y, 0.0, np.zeros(P), OPTIMIZERS[method](eta),
                                            epochs, M, schedule=schedule, seed=seed, callback=excess,
@@ -69,12 +64,7 @@ def run(method, eta, M, schedule=None, epochs=EPOCHS, seed=0):
 
 
 def score(info):
-    """Tuning criterion: geometric mean of the excess cost over the last 10 % of the epochs.
-
-    LLM-assisted: Claude generated the original implementation, as recorded
-    in the module declaration. Codex added this function-level attribution
-    on 5 October 2026; this tag does not certify the student's own review.
-    """
+    """Tuning criterion: geometric mean of the excess cost over the last 10 % of the epochs."""
     h = info["history"]
     if info["diverged"] or len(h) < EPOCHS or not np.all(np.isfinite(h)):
         return np.inf
@@ -82,10 +72,7 @@ def score(info):
 
 
 def median_over_seeds(method, eta, M, schedule=None):
-    """LLM-assisted: Claude generated the original implementation, as recorded
-    in the module declaration. Codex added this function-level attribution
-    on 5 October 2026; this tag does not certify the student's own review.
-    """
+    """Median excess-cost history, final error and run time over the shuffling seeds."""
     hist, rel, times = [], [], []
     for s in SEEDS:
         _, info = run(method, eta, M, schedule, seed=s)
@@ -99,21 +86,13 @@ def median_over_seeds(method, eta, M, schedule=None):
 
 
 def epochs_below(h, level):
-    """LLM-assisted: Claude generated the original implementation, as recorded
-    in the module declaration. Codex added this function-level attribution
-    on 5 October 2026; this tag does not certify the student's own review.
-    """
+    """First epoch at which the history h falls below level, or None."""
     idx = np.where(h < level)[0]
     return int(idx[0]) + 1 if len(idx) else None
 
 
 def log_bins(h, n_bins=60):
-    """Geometric mean of h over logarithmically spaced epoch bins (for readable log-log plots).
-
-    LLM-assisted: Claude generated the original implementation, as recorded
-    in the module declaration. Codex added this function-level attribution
-    on 5 October 2026; this tag does not certify the student's own review.
-    """
+    """Geometric mean of h over logarithmically spaced epoch bins (for readable log-log plots)."""
     edges = np.unique(np.logspace(0, np.log10(len(h)), n_bins).astype(int))
     centres, values = [], []
     for a, b in zip(edges[:-1], edges[1:]):
@@ -172,6 +151,7 @@ results["methods_M10"] = methods
 # ------------------------------------------------------------------------------------------
 # Figure
 # ------------------------------------------------------------------------------------------
+# LLM-assisted (Claude, Claude Code, October 2026): plotting code for this figure.
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(DOUBLE, 2.7))
 cols = ordered_colors(4, 0.35, 1.0)
 for c, M in zip(cols, (1, 5, 20, 80)):
