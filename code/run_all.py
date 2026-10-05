@@ -29,6 +29,7 @@ PARTS = {
     "g": "part_g_lasso.py",
     "lasso": "lasso_course_comparison.py",
     "h": "part_h_sgd.py",
+    "hridge": "part_h_ridge_sgd.py",    # Ridge version of part h
     "i": "part_i_model_selection.py",
     "edge": "edge_effects.py",            # checks itself against parts a, c and i
     "bench": "benchmarks.py",

@@ -310,7 +310,7 @@ None of the gradient methods produced exact zeros, while the reference set three
 Test error is a poor measure of convergence. After 10\,000 GD steps at degree 10, OLS had a relative coefficient error of 99\% and yet a lower test MSE (0.0199) than the exact OLS solution (0.0370): stopping early acted like regularization on this split. The Adam fits for Ridge and Lasso matched their reference test MSEs to four digits. Whether an optimizer has converged must therefore be checked on the coefficients or the objective, not on the test error.
 
 \subsection{h) Stochastic gradient descent}\label{sec:res_sgd}
-% Evidence: part_h.json/setup,batch_size,methods_M10.
+% Evidence: part_h.json/setup,batch_size,methods_M10; part_h_ridge.json.
 \begin{figure*}[tb]
 \includegraphics[width=\textwidth]{h_sgd.pdf}
 \caption{Decaying rates reduce stochastic fluctuations, but can slow late progress. Degree-6 OLS uses 80 training observations, five shuffle seeds and separately tuned rates. Left: batch-size comparison. Right: five updates at batch size 10. Curves are smoothed in logarithmic epoch bins; the horizontal line is a reference scale, not a stopping guarantee.}\label{fig:sgd}
@@ -320,7 +320,9 @@ We ran SGD on degree-6 OLS for 2000 epochs with batch sizes 1, 5, 20 and 80, tun
 
 Mini-batches did not save time here. One epoch of SGD costs the same number of operations as one full gradient step \cite[Eq.~(4.38)]{HjorthJensen2026}, but with batch size 1 it consists of 80 small updates, each with its own Python overhead: 2000 epochs took 0.87~s with batch size 1 and 0.045~s with the full batch. SGD pays off for large data sets, where a single full gradient is expensive; with 80 observations it does not.
 
-Among the update rules at batch size 10, Adam reached the lowest coefficient error, 0.020 after 2000 epochs, but took about twice as long as plain SGD (0.23 against 0.12~s). For a problem of this size the SVD solution is both exact and cheapest; among the iterative methods, momentum is the better choice when high accuracy is required.
+Among the update rules at batch size 10, Adam reached the lowest coefficient error, 0.020 after 2000 epochs, but took about twice as long as plain SGD (0.23 against 0.12~s).
+
+For Ridge with $\lambda=10^{-3}$ we compared the same kind of runs with the closed-form Ridge solution of part b. The five update rules ended at relative coefficient errors between 0.0185 (Adam) and 0.0510 (momentum), and plain SGD and full-batch GD at the optimal step both reached 0.0485. The agreement is no coincidence. The flattest direction of the Ridge Hessian carries 93\% of the initial error and shrinks by the factor $(1-\eta h_{\min})^k$ after $k$ updates \cite[Eq.~(4.19)]{HjorthJensen2026}. The product $\eta k$ is about 500 in both runs, which predicts $r=0.0485$ for full-batch GD and 0.052 for SGD. The same direction explains why the training cost and the coefficient error can rank the methods differently: an error along a flat direction barely raises the cost. Full-batch GD took 0.03~s, against 0.16--0.32~s for the mini-batch runs. For both OLS and Ridge, the SVD solution of this small problem is exact and cheapest, and among the iterative methods momentum is the better choice when high accuracy is required.
 
 \subsection{i) Final model selection}\label{sec:res_final}
 % Evidence: part_i.json/grids,sigma=0.1,sigma=0.3,bias_variance_degree15,lasso_convergence_cv; edge_effects.json/part_i.
@@ -367,7 +369,7 @@ This appendix follows the course guidelines for declaring LLM use \cite{LLMGuide
 \begin{itemize}
 \item Claude (Anthropic), through Claude Code, October 2026: structured the LaTeX report and generated its tables, the plotting code and the unit tests, and located the course material relevant to each part.
 \item OpenAI Codex, Codex desktop app, 5 October 2026: reviewed code and report against the project text, added docstrings, comments and source references to the code and the LaTeX source, removed unreported material, corrected the OLS reference cutoff and generated four supplementary scripts, two of which were later removed. It did not rewrite the author's report text.
-\item Claude Opus 5.5 (Anthropic), through Claude Code, 5 October 2026: reviewed the report against the grading form and the course's writing guides, rewrote the introduction, results and conclusions, revised the abstract, added paragraphs to the methods and an algorithm summary to the implementation section, added the original references, generated the edge-effect script and figure, shortened the docstrings of the core modules, removed two of Codex's verification scripts and merged the two Ridge figures into Fig.~\ref{fig:ridge}.
+\item Claude Opus 5.5 (Anthropic), through Claude Code, 5 October 2026: reviewed the report against the grading form and the course's writing guides, rewrote the introduction, results and conclusions, revised the abstract, added paragraphs to the methods and an algorithm summary to the implementation section, added the original references, generated the edge-effect script and figure and a Ridge SGD comparison, shortened the docstrings of the core modules, removed two of Codex's verification scripts and merged the two Ridge figures into Fig.~\ref{fig:ridge}.
 \end{itemize}
 
 \subsection{Text}
@@ -396,10 +398,10 @@ Paths are relative to \texttt{code/}.
 \item Level 4: \texttt{plot\_style.py}. Generated with Claude.
 \item Level 4: \texttt{tests/}, \texttt{benchmarks.py}. Generated with Claude; three tests generated by Codex.
 \item Level 4: \texttt{ridge\_supplement.py}, \texttt{lasso\_course\_comparison.py}. Generated by Codex; the figure code of \texttt{ridge\_supplement.py} revised with Claude Opus 5.5.
-\item Level 4: \texttt{edge\_effects.py}. Generated with Claude Opus 5.5.
+\item Level 4: \texttt{edge\_effects.py}, \texttt{part\_h\_ridge\_sgd.py}. Generated with Claude Opus 5.5.
 \end{itemize}
 
-\emph{Level-4 notes.} Claude was asked for unit tests that compare each routine with closed-form or scikit-learn results and for a common figure style; Codex for the comparisons and convergence checks that the project questions required but the original scripts lacked; Claude Opus 5.5 for a script that quantifies the edge effects behind the analysis. All generated code is run by \texttt{run\_all.py}; the 27 tests pass, and \texttt{edge\_effects.py} checks its recomputed values against the stored results. Generated functions carry an \texttt{LLM-assisted} tag in their docstrings, and generated blocks in the author's scripts are identified in the module docstrings or by inline comments.
+\emph{Level-4 notes.} Claude was asked for unit tests that compare each routine with closed-form or scikit-learn results and for a common figure style; Codex for the comparisons and convergence checks that the project questions required but the original scripts lacked; Claude Opus 5.5 for two short scripts, one that quantifies the edge effects behind the analysis and one that compares SGD with the closed-form Ridge solution, both built from the existing modules. All generated code is run by \texttt{run\_all.py}; the 27 tests pass, and \texttt{edge\_effects.py} checks its recomputed values against the stored results. Generated functions carry an \texttt{LLM-assisted} tag in their docstrings, and generated blocks in the author's scripts are identified in the module docstrings or by inline comments.
 
 
 \bibliographystyle{apsrev4-2}

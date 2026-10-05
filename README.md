@@ -18,6 +18,7 @@ The report fits Runge's function from noisy data with OLS, Ridge and Lasso regre
 `regression.py`, `resampling.py` and `optimizers.py` implement the numerical methods; `part_a_ols.py` to `part_i_model_selection.py` run the assignment parts. Supplementary scripts produce further evidence quoted in the report:
 
 - `ridge_supplement.py`: Ridge errors, coefficient norms and paired simulations (part b);
+- `part_h_ridge_sgd.py`: SGD with the five update rules against the closed-form Ridge solution (part h);
 - `lasso_course_comparison.py`: all five update rules on the part-g Lasso problem;
 - `edge_effects.py`: how much of the small-sample errors comes from extrapolation at the interval edge, and the fit figure (parts a, c and i);
 - `benchmarks.py`: comparisons with closed-form results and scikit-learn.
@@ -44,4 +45,4 @@ Costs are mean losses: Ridge solves `(X^T X + n*lambda*I) theta = X^T y`, and th
 
 ## Use of LLMs
 
-The numerical code and the original report text were written by the author. Claude (through Claude Code) structured the LaTeX report and generated its tables, the plotting code, the plotting style module, the unit tests and `benchmarks.py`. OpenAI Codex (5 October 2026) added docstrings, comments and source references, removed unreported material, corrected the OLS reference cutoff and generated four supplementary scripts, two of which were later removed. Claude Opus 5.5 (5 October 2026) rewrote the abstract, introduction, results and conclusions, drafted paragraphs in the methods and implementation sections, added references, generated `edge_effects.py`, merged the two Ridge figures, shortened the docstrings of the core modules and removed two of Codex's verification scripts. The report's appendix gives the level for every section and file, consistent with the `LLM-assisted` tags in the code.
+The numerical code and the original report text were written by the author. Claude (through Claude Code) structured the LaTeX report and generated its tables, the plotting code, the plotting style module, the unit tests and `benchmarks.py`. OpenAI Codex (5 October 2026) added docstrings, comments and source references, removed unreported material, corrected the OLS reference cutoff and generated four supplementary scripts, two of which were later removed. Claude Opus 5.5 (5 October 2026) rewrote the abstract, introduction, results and conclusions, drafted paragraphs in the methods and implementation sections, added references, generated `edge_effects.py` and `part_h_ridge_sgd.py`, merged the two Ridge figures, shortened the docstrings of the core modules and removed two of Codex's verification scripts. The report's appendix gives the level for every section and file, consistent with the `LLM-assisted` tags in the code.
