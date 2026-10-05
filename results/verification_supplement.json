@@ -1,0 +1,562 @@
+{
+  "provenance": "Supplemental experiment generated and executed with OpenAI Codex, 5 October 2026.",
+  "setup": {
+    "degree": 6,
+    "lambda": 0.001,
+    "n_train": 80,
+    "epochs": 2000,
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "reference_cost": 0.02869554609684675,
+    "reference_test_mse": 0.02551837738906317,
+    "hessian_min": 0.005682617785166664,
+    "hessian_max": 7.698475114645241,
+    "eta_opt_quadratic": 0.25960008471543405,
+    "stopping_criterion_gd": "relative parameter error < 1e-6",
+    "selection_sgd": "minimum geometric mean excess penalized training cost over final 200 epochs, seed 0",
+    "limits": "Small-grid supplement on the original 80/20 split. Test MSE is descriptive only, never used to tune. Timing includes diagnostics and is machine-dependent."
+  },
+  "ridge_gradient_sources": {
+    "analytic": {
+      "iterations": 9309,
+      "converged": true,
+      "final_relative_error": 9.992606548450226e-07,
+      "time_s": 0.16725140006747097
+    },
+    "autograd": {
+      "iterations": 9309,
+      "converged": true,
+      "final_relative_error": 9.992606548710867e-07,
+      "time_s": 1.9038381000282243
+    },
+    "max_abs_parameter_difference": 3.3306690738754696e-16
+  },
+  "ridge_sgd_methods_M10": {
+    "gd": {
+      "eta_grid": [
+        0.0001,
+        0.00031622776601683794,
+        0.001,
+        0.0031622776601683794,
+        0.01,
+        0.03162277660168379,
+        0.1,
+        0.31622776601683794,
+        1.0
+      ],
+      "tail_cost_scores": [
+        0.024667934454902847,
+        0.012668655959646231,
+        0.007616980695556684,
+        0.004956221573585588,
+        0.0014286753242555715,
+        6.969833627355368e-05,
+        0.0005061097073424281,
+        null,
+        null
+      ],
+      "constant": {
+        "eta0": 0.03162277660168379,
+        "decay_t1_epochs": null,
+        "updates_per_epoch": 8,
+        "total_updates": 16000,
+        "sample_gradient_evaluations": 160000,
+        "median_excess_cost_checkpoints": {
+          "1": 0.03765626837057555,
+          "10": 0.019085076821531207,
+          "100": 0.006609057259577725,
+          "500": 0.001889885633650043,
+          "1000": 0.00046911300221457244,
+          "2000": 8.721566865048727e-05
+        },
+        "median_final_relative_error": 0.04850197981596011,
+        "median_excess_cost": 8.721566865048727e-05,
+        "median_test_mse": 0.027149120634903028,
+        "median_prediction_rmse_to_reference": 0.011353194883021302,
+        "median_time_s": 0.15271669998764992
+      },
+      "decaying_same_initial_eta": {
+        "eta0": 0.03162277660168379,
+        "decay_t1_epochs": 250,
+        "updates_per_epoch": 8,
+        "total_updates": 16000,
+        "sample_gradient_evaluations": 160000,
+        "median_excess_cost_checkpoints": {
+          "1": 0.037665357831840024,
+          "10": 0.019305908366165924,
+          "100": 0.006973199857261202,
+          "500": 0.0037829696265348524,
+          "1000": 0.002562787075100225,
+          "2000": 0.0016581261002799295
+        },
+        "median_final_relative_error": 0.41924372485948463,
+        "median_excess_cost": 0.0016581261002799295,
+        "median_test_mse": 0.0411858324506028,
+        "median_prediction_rmse_to_reference": 0.06864826694205654,
+        "median_time_s": 0.15622979996260256
+      }
+    },
+    "momentum": {
+      "eta_grid": [
+        0.0001,
+        0.00031622776601683794,
+        0.001,
+        0.0031622776601683794,
+        0.01,
+        0.03162277660168379,
+        0.1,
+        0.31622776601683794,
+        1.0
+      ],
+      "tail_cost_scores": [
+        0.007617364056706443,
+        0.004963092113412608,
+        0.0014439586737352147,
+        4.700790914362575e-05,
+        7.012745301483504e-05,
+        0.0022871862847597194,
+        null,
+        null,
+        null
+      ],
+      "constant": {
+        "eta0": 0.0031622776601683794,
+        "decay_t1_epochs": null,
+        "updates_per_epoch": 8,
+        "total_updates": 16000,
+        "sample_gradient_evaluations": 160000,
+        "median_excess_cost_checkpoints": {
+          "1": 0.04508709972632745,
+          "10": 0.019932562548380942,
+          "100": 0.006643669437132068,
+          "500": 0.0019418044458182765,
+          "1000": 0.00045152409194952267,
+          "2000": 3.5193022678816493e-05
+        },
+        "median_final_relative_error": 0.051006874096070645,
+        "median_excess_cost": 3.5193022678816493e-05,
+        "median_test_mse": 0.02695377165774885,
+        "median_prediction_rmse_to_reference": 0.009273904473757477,
+        "median_time_s": 0.1861665000906214
+      },
+      "decaying_same_initial_eta": {
+        "eta0": 0.0031622776601683794,
+        "decay_t1_epochs": 250,
+        "updates_per_epoch": 8,
+        "total_updates": 16000,
+        "sample_gradient_evaluations": 160000,
+        "median_excess_cost_checkpoints": {
+          "1": 0.04510085411162894,
+          "10": 0.020137279325419876,
+          "100": 0.0070002712183926084,
+          "500": 0.0038072981270865537,
+          "1000": 0.0025862316607027265,
+          "2000": 0.0016744974990227125
+        },
+        "median_final_relative_error": 0.4212887051298189,
+        "median_excess_cost": 0.0016744974990227125,
+        "median_test_mse": 0.04124698516394484,
+        "median_prediction_rmse_to_reference": 0.06887540008730028,
+        "median_time_s": 0.20317820005584508
+      }
+    },
+    "adagrad": {
+      "eta_grid": [
+        0.0001,
+        0.00031622776601683794,
+        0.001,
+        0.0031622776601683794,
+        0.01,
+        0.03162277660168379,
+        0.1,
+        0.31622776601683794,
+        1.0
+      ],
+      "tail_cost_scores": [
+        0.050793122416971176,
+        0.038408983860180705,
+        0.027833308868399288,
+        0.01223779669124599,
+        0.007101283198609333,
+        0.0036220072728320243,
+        0.0004909319735109451,
+        3.772166906877936e-05,
+        0.0002649239126930192
+      ],
+      "constant": {
+        "eta0": 0.31622776601683794,
+        "decay_t1_epochs": null,
+        "updates_per_epoch": 8,
+        "total_updates": 16000,
+        "sample_gradient_evaluations": 160000,
+        "median_excess_cost_checkpoints": {
+          "1": 0.03660982694928924,
+          "10": 0.01128105267391995,
+          "100": 0.004469845451227698,
+          "500": 0.0006232870784879559,
+          "1000": 0.00021919410148991958,
+          "2000": 6.550365464765354e-05
+        },
+        "median_final_relative_error": 0.02067361795305424,
+        "median_excess_cost": 6.550365464765354e-05,
+        "median_test_mse": 0.026352236889364694,
+        "median_prediction_rmse_to_reference": 0.008194115536282229,
+        "median_time_s": 0.20043089997489005
+      },
+      "decaying_same_initial_eta": {
+        "eta0": 0.31622776601683794,
+        "decay_t1_epochs": 250,
+        "updates_per_epoch": 8,
+        "total_updates": 16000,
+        "sample_gradient_evaluations": 160000,
+        "median_excess_cost_checkpoints": {
+          "1": 0.03659834427476931,
+          "10": 0.011413239519347442,
+          "100": 0.004829286556942213,
+          "500": 0.0018065074299058008,
+          "1000": 0.0010932184502796816,
+          "2000": 0.0006874998730069908
+        },
+        "median_final_relative_error": 0.27059746112522853,
+        "median_excess_cost": 0.0006874998730069908,
+        "median_test_mse": 0.03485965102581651,
+        "median_prediction_rmse_to_reference": 0.04585755328008964,
+        "median_time_s": 0.1963010000763461
+      }
+    },
+    "rmsprop": {
+      "eta_grid": [
+        0.0001,
+        0.00031622776601683794,
+        0.001,
+        0.0031622776601683794,
+        0.01,
+        0.03162277660168379,
+        0.1,
+        0.31622776601683794,
+        1.0
+      ],
+      "tail_cost_scores": [
+        0.007937730301775294,
+        0.005035655923933103,
+        0.0010969948555182743,
+        8.912926081285965e-05,
+        0.0006048729513031094,
+        0.0033774150103967676,
+        0.01224564346750714,
+        0.06531334800612942,
+        0.275351395261586
+      ],
+      "constant": {
+        "eta0": 0.0031622776601683794,
+        "decay_t1_epochs": null,
+        "updates_per_epoch": 8,
+        "total_updates": 16000,
+        "sample_gradient_evaluations": 160000,
+        "median_excess_cost_checkpoints": {
+          "1": 0.04031406254389734,
+          "10": 0.019749769421909324,
+          "100": 0.006877918490763701,
+          "500": 0.001812371784362686,
+          "1000": 0.00038872604616463705,
+          "2000": 0.00022194556406476829
+        },
+        "median_final_relative_error": 0.021826101367953973,
+        "median_excess_cost": 0.00022194556406476829,
+        "median_test_mse": 0.02627803015777826,
+        "median_prediction_rmse_to_reference": 0.014409592609791008,
+        "median_time_s": 0.20173899992369115
+      },
+      "decaying_same_initial_eta": {
+        "eta0": 0.0031622776601683794,
+        "decay_t1_epochs": 250,
+        "updates_per_epoch": 8,
+        "total_updates": 16000,
+        "sample_gradient_evaluations": 160000,
+        "median_excess_cost_checkpoints": {
+          "1": 0.04029290389009581,
+          "10": 0.019951816266920334,
+          "100": 0.007205847898431966,
+          "500": 0.0037862602347445047,
+          "1000": 0.0023643046211277788,
+          "2000": 0.0013210569292915024
+        },
+        "median_final_relative_error": 0.37475348548125353,
+        "median_excess_cost": 0.0013210569292915024,
+        "median_test_mse": 0.03928075727462099,
+        "median_prediction_rmse_to_reference": 0.06218332569273765,
+        "median_time_s": 0.20527679997030646
+      }
+    },
+    "adam": {
+      "eta_grid": [
+        0.0001,
+        0.00031622776601683794,
+        0.001,
+        0.0031622776601683794,
+        0.01,
+        0.03162277660168379,
+        0.1,
+        0.31622776601683794,
+        1.0
+      ],
+      "tail_cost_scores": [
+        0.008100787448082408,
+        0.005193517923401883,
+        0.0011469581601032976,
+        3.0119756459172304e-05,
+        0.00010984791350695001,
+        0.0011303260983464905,
+        0.007956466883101703,
+        0.025066041537806193,
+        0.05577228378204128
+      ],
+      "constant": {
+        "eta0": 0.0031622776601683794,
+        "decay_t1_epochs": null,
+        "updates_per_epoch": 8,
+        "total_updates": 16000,
+        "sample_gradient_evaluations": 160000,
+        "median_excess_cost_checkpoints": {
+          "1": 0.049905730943345106,
+          "10": 0.02934045982674118,
+          "100": 0.007347874042937307,
+          "500": 0.0019457925265673331,
+          "1000": 0.00026850510354099397,
+          "2000": 8.905162261617361e-06
+        },
+        "median_final_relative_error": 0.01845820458700424,
+        "median_excess_cost": 8.905162261617361e-06,
+        "median_test_mse": 0.025772242369259846,
+        "median_prediction_rmse_to_reference": 0.003970784425490793,
+        "median_time_s": 0.29730569990351796
+      },
+      "decaying_same_initial_eta": {
+        "eta0": 0.0031622776601683794,
+        "decay_t1_epochs": 250,
+        "updates_per_epoch": 8,
+        "total_updates": 16000,
+        "sample_gradient_evaluations": 160000,
+        "median_excess_cost_checkpoints": {
+          "1": 0.04992486328335917,
+          "10": 0.029537537060814054,
+          "100": 0.007746193354912129,
+          "500": 0.0040541374216942865,
+          "1000": 0.002553472871124278,
+          "2000": 0.0014254885731126675
+        },
+        "median_final_relative_error": 0.3892534029225334,
+        "median_excess_cost": 0.0014254885731126675,
+        "median_test_mse": 0.03988364556259906,
+        "median_prediction_rmse_to_reference": 0.06428078848686546,
+        "median_time_s": 0.29436279996298254
+      }
+    }
+  },
+  "ridge_sgd_batch_size": {
+    "5": {
+      "eta_grid": [
+        0.001,
+        0.0025099014421834116,
+        0.006299605249474363,
+        0.015811388300841896,
+        0.03968502629920497,
+        0.09960550474146113,
+        0.25
+      ],
+      "tail_cost_scores": [
+        0.006200342057519991,
+        0.0035019974381748946,
+        0.0009015721478651305,
+        6.432721967774256e-05,
+        0.00022075649962514793,
+        0.0020348053447021394,
+        null
+      ],
+      "constant": {
+        "eta0": 0.015811388300841896,
+        "decay_t1_epochs": null,
+        "updates_per_epoch": 16,
+        "total_updates": 32000,
+        "sample_gradient_evaluations": 160000,
+        "median_excess_cost_checkpoints": {
+          "1": 0.03780472807072387,
+          "10": 0.019092980293584482,
+          "100": 0.006607017103291073,
+          "500": 0.0018914902899694018,
+          "1000": 0.0004463051133976534,
+          "2000": 5.307210811000135e-05
+        },
+        "median_final_relative_error": 0.04831258212540757,
+        "median_excess_cost": 5.307210811000135e-05,
+        "median_test_mse": 0.0271862209833651,
+        "median_prediction_rmse_to_reference": 0.010610736333082717,
+        "median_time_s": 0.26496749999932945
+      },
+      "decaying_same_initial_eta": {
+        "eta0": 0.015811388300841896,
+        "decay_t1_epochs": 250,
+        "updates_per_epoch": 16,
+        "total_updates": 32000,
+        "sample_gradient_evaluations": 160000,
+        "median_excess_cost_checkpoints": {
+          "1": 0.03781425697786234,
+          "10": 0.01931369032279093,
+          "100": 0.006974071404742991,
+          "500": 0.0037823226343028475,
+          "1000": 0.002561647742743676,
+          "2000": 0.001657046837884181
+        },
+        "median_final_relative_error": 0.41910184471867873,
+        "median_excess_cost": 0.001657046837884181,
+        "median_test_mse": 0.04116867510313503,
+        "median_prediction_rmse_to_reference": 0.0685790708847125,
+        "median_time_s": 0.27959400007966906
+      }
+    },
+    "20": {
+      "eta_grid": [
+        0.001,
+        0.0025099014421834116,
+        0.006299605249474363,
+        0.015811388300841896,
+        0.03968502629920497,
+        0.09960550474146113,
+        0.25
+      ],
+      "tail_cost_scores": [
+        0.00962283587423616,
+        0.00719603855781465,
+        0.00496889667901608,
+        0.002077355828011235,
+        0.0002652223983562673,
+        0.000139269467187415,
+        0.0036154732178179105
+      ],
+      "constant": {
+        "eta0": 0.09960550474146113,
+        "decay_t1_epochs": null,
+        "updates_per_epoch": 4,
+        "total_updates": 8000,
+        "sample_gradient_evaluations": 160000,
+        "median_excess_cost_checkpoints": {
+          "1": 0.037965046074235606,
+          "10": 0.014216463741515788,
+          "100": 0.005631526917977272,
+          "500": 0.000903991364151608,
+          "1000": 0.00022912396543943794,
+          "2000": 0.000598126986310437
+        },
+        "median_final_relative_error": 0.011736691197647205,
+        "median_excess_cost": 0.000598126986310437,
+        "median_test_mse": 0.02650098263276173,
+        "median_prediction_rmse_to_reference": 0.027269644267217945,
+        "median_time_s": 0.09891010005958378
+      },
+      "decaying_same_initial_eta": {
+        "eta0": 0.09960550474146113,
+        "decay_t1_epochs": 250,
+        "updates_per_epoch": 4,
+        "total_updates": 8000,
+        "sample_gradient_evaluations": 160000,
+        "median_excess_cost_checkpoints": {
+          "1": 0.03796390126515824,
+          "10": 0.014406413444240904,
+          "100": 0.005959994960271397,
+          "500": 0.002317002600082059,
+          "1000": 0.0012793440867476628,
+          "2000": 0.0006505585593065515
+        },
+        "median_final_relative_error": 0.26324679580093213,
+        "median_excess_cost": 0.0006505585593065515,
+        "median_test_mse": 0.03458837522878623,
+        "median_prediction_rmse_to_reference": 0.0448190066325347,
+        "median_time_s": 0.09501239995006472
+      }
+    },
+    "80": {
+      "eta_grid": [
+        0.001,
+        0.0025099014421834116,
+        0.006299605249474363,
+        0.015811388300841896,
+        0.03968502629920497,
+        0.09960550474146113,
+        0.25
+      ],
+      "tail_cost_scores": [
+        0.02233877437391614,
+        0.012735575662466024,
+        0.008100220386430832,
+        0.006232365977414726,
+        0.0035536204334247813,
+        0.0009429083341831772,
+        3.633480941560358e-05
+      ],
+      "constant": {
+        "eta0": 0.25,
+        "decay_t1_epochs": null,
+        "updates_per_epoch": 1,
+        "total_updates": 2000,
+        "sample_gradient_evaluations": 160000,
+        "median_excess_cost_checkpoints": {
+          "1": 0.053026504719087375,
+          "10": 0.023260276212950463,
+          "100": 0.006650319713583517,
+          "500": 0.0019773097221186427,
+          "1000": 0.000470889471046787,
+          "2000": 2.7381179831479502e-05
+        },
+        "median_final_relative_error": 0.05406061830729017,
+        "median_excess_cost": 2.7381179831479502e-05,
+        "median_test_mse": 0.0270994260682549,
+        "median_prediction_rmse_to_reference": 0.00961763135636908,
+        "median_time_s": 0.054704600013792515
+      },
+      "decaying_same_initial_eta": {
+        "eta0": 0.25,
+        "decay_t1_epochs": 250,
+        "updates_per_epoch": 1,
+        "total_updates": 2000,
+        "sample_gradient_evaluations": 160000,
+        "median_excess_cost_checkpoints": {
+          "1": 0.053026504719087375,
+          "10": 0.021234342289160397,
+          "100": 0.007003490020531914,
+          "500": 0.003850460360466542,
+          "1000": 0.0026298875275459037,
+          "2000": 0.0017125498889057553
+        },
+        "median_final_relative_error": 0.4259985621122748,
+        "median_excess_cost": 0.0017125498889057553,
+        "median_test_mse": 0.04157462188125778,
+        "median_prediction_rmse_to_reference": 0.06999612988470477,
+        "median_time_s": 0.053221500013023615
+      }
+    }
+  },
+  "ridge_full_batch_gd_eta_opt": {
+    "eta0": 0.25960008471543405,
+    "decay_t1_epochs": null,
+    "updates_per_epoch": 1,
+    "total_updates": 2000,
+    "sample_gradient_evaluations": 160000,
+    "median_excess_cost_checkpoints": {
+      "1": 0.05574220744652093,
+      "10": 0.038255320581759955,
+      "100": 0.021626268009646222,
+      "500": 0.006492208858709773,
+      "1000": 0.0014781738053384619,
+      "2000": 7.71401730060399e-05
+    },
+    "median_final_relative_error": 0.04850968985546892,
+    "median_excess_cost": 7.71401730060399e-05,
+    "median_test_mse": 0.027201340340803366,
+    "median_prediction_rmse_to_reference": 0.011712694443828713,
+    "median_time_s": 0.052772599970921874
+  },
+  "ridge_full_batch_sgd_vs_gd_max_abs": 2.220446049250313e-16
+}

@@ -1,0 +1,110 @@
+{
+  "date": "2026-10-05",
+  "performed_by": "OpenAI Codex in the Codex desktop app",
+  "scope": "Completed generated report draft covering a-i, personal worked solution guide, four supplementary experiments, course-linked source review and targeted corrections. Student review remains separate.",
+  "test_suite": {
+    "command": "python -m pytest tests -q",
+    "cwd": "Project1/code",
+    "passed": 26,
+    "seconds_reported_by_pytest": 7.95,
+    "new_test": "test_high_degree_ols_matches_sklearn_with_explicit_svd_cutoff"
+  },
+  "environment": {
+    "python": "3.13.15",
+    "numpy": "2.5.2",
+    "scipy": "1.18.1",
+    "scikit-learn": "1.9.0",
+    "matplotlib": "3.11.1",
+    "autograd": "1.9.1",
+    "pytest": "9.1.1"
+  },
+  "benchmarks": {
+    "reproduced": true,
+    "all_values_equal_to_preserved_result": true,
+    "values": {
+      "ols_vs_sklearn_max_abs_prediction": 7.593925488436071e-14,
+      "ridge_vs_sklearn_max_abs_theta": 0.0,
+      "ols_scaled_vs_centred_max_abs_prediction_p10": 1.2789769243681803e-13,
+      "gradient_autograd_vs_analytic_max_relative": 1.5620354234419248e-15,
+      "sgd_full_batch_vs_gd_max_abs": 2.220446049250313e-16,
+      "fista_vs_sklearn_lasso_max_abs_theta_p6": 1.5341705683624696e-10,
+      "fista_vs_sklearn_lasso_same_zeros_p6": true,
+      "own_kfold_vs_sklearn_max_relative": 3.5970047377087226e-13,
+      "bootstrap_identity_relative": 1.2504527946402763e-16
+    }
+  },
+  "experiments_executed": [
+    "ridge_supplement.py",
+    "verification_supplement.py",
+    "model_selection_check.py",
+    "lasso_course_comparison.py",
+    "part_d_cross_validation.py (rerun after OLS rank-cutoff correction)",
+    "benchmarks.py"
+  ],
+  "original_experiments_not_fully_rerun": [
+    "a",
+    "b",
+    "c",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i"
+  ],
+  "ols_cutoff_correction": {
+    "sklearn_version": "1.9.0",
+    "explicit_relative_cutoff": 1e-15,
+    "selected_degrees_changed": false,
+    "degree20_cv_mse": {
+      "fivefold": 1782.36342,
+      "tenfold": 7.977106
+    },
+    "part_i": "Already direct SVD; output preserved"
+  },
+  "python_validation": {
+    "files_parsed": 24,
+    "functions_with_provenance": 122,
+    "functions_missing_provenance": []
+  },
+  "document_validation": {
+    "main_figure_references_resolve": 18,
+    "bibliography_entries": 28,
+    "todo_calls_remaining": 0,
+    "final_prose_completed": true,
+    "student_review_recorded": false,
+    "latex_braces_environments_references_checked": true,
+    "final_pdf_visually_verified": false,
+    "compiler_status": "Built-in compiler failed: Unable to find standard directories for platform. No TeX-source diagnostics returned. Final PDF layout remains unverified."
+  },
+  "source_research": {
+    "course_book_pdf_pages": 625,
+    "book_version": "2026-09-23",
+    "local_project_pdf": "Project1.pdf",
+    "local_rubric": "EvaluationForm.md",
+    "local_llm_guidelines": "LLM_Usage_Declaration_Guidelines.md",
+    "source_map": "../Report_Writing_Guide.md, section 9",
+    "remote_exercises": "Weeks 35–38 fetched from official EducationalMaterialUiO/MachineLearningUiO repository"
+  },
+  "limitations": [
+    "No guaranteed grade; the 95/100 self-assessment is conditional content readiness.",
+    "Lasso refinement checks selected models, not every grid candidate.",
+    "Original timings are not fresh measurements unless in a supplementary result.",
+    "Agent checks do not establish student's own verification or understanding."
+  ],
+  "result_sha256": {
+    "benchmarks.json": "4fe03745a94aa21041d268e49ca16202a3f3aa0fa2c862d31b0a4d575f54dbac",
+    "lasso_course_comparison.json": "3d26e6edfccf1e768f57794e42283f9d8f68d2f47bf1fc9f8280329006f5c116",
+    "model_selection_check.json": "27e48bf5dd87b353d6164a8f3ddbaf01f8877891d64791fe55aed220bc874041",
+    "part_a.json": "f5c6ade2fa14ec55ecb8a4da73e72e5563e7852ee0501f2b45fb8be904ed238a",
+    "part_b.json": "e6d67b31102df45c95f7989356b4545382d2af6eb735dabd47d2e0a932b37fc9",
+    "part_c.json": "0dc2e31734ee136c4f0f2dd8904826a500ffe267dd73a4bcc0973e291b4e6971",
+    "part_d.json": "a0848afa69acd0e90511d15f00dc5257df5b75f27565fad8b04ae97bd90ce6fd",
+    "part_e.json": "a2333e56fe373e2281e9213df8950318a06878ca1876cf5630e77f5d5c53f0c6",
+    "part_f.json": "06b346a543fb7a7cd0ad2d12ed93685002c5df6681301a8b63128eaa69eaa5e2",
+    "part_g.json": "b854e3053bcf95d26752b75b6fafff3bd50a38f2446521cd0e8e7d0f3ab04309",
+    "part_h.json": "8cb775ef35630cb73387957ad58f9bb2dcf3da797260bf35dbfa85c81b2f8d93",
+    "part_i.json": "70a04a941e5b03887ceaaf137c0abbca39c99118e9e97671c825638188d18253",
+    "ridge_supplement.json": "49604416c04b4e5e2223165657afd883e1f25aa13abd758d7d3886385ff1be1a",
+    "verification_supplement.json": "0ff210d51865945a8b04382a724ac54a75a59999985bccb7d844eebdeef248dd"
+  }
+}
